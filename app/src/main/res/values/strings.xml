@@ -13,6 +13,7 @@
     <string name="custom_type">+ create type</string>
     <string name="empty_field">the field must not be empty</string>
     <string name="maximum_length">maximum insertion length reached</string>
+    <string name="invalid_value">Invalid value</string>
     <string name="good">good</string>
     <string name="bad">bad</string>
 </resources>

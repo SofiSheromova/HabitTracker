@@ -1,5 +1,6 @@
 package com.example.habittracker
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -11,6 +12,7 @@ import com.example.habittracker.cards.CardsAdapter
 import com.example.habittracker.cards.Periodicity
 import com.example.habittracker.cards.Type
 import com.example.habittracker.databinding.ActivityMainBinding
+import org.json.JSONObject
 
 val cards = mutableListOf(
     Card(
@@ -63,9 +65,42 @@ class MainActivity : AppCompatActivity() {
         setupCardCreateButton()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != RESULT_OK) return
+
+        when (requestCode) {
+            Constants.CREATE_CARD -> {
+                val card = JSONObject(data?.getStringExtra(Constants.CARD_JSON) ?: "{}")
+                adapter.addCards(Card.fromJSON(card))
+            }
+            Constants.EDIT_CARD -> {
+                val card = JSONObject(data?.getStringExtra(Constants.CARD_JSON) ?: "{}")
+                val position = data?.getIntExtra(Constants.CARD_POSITION, -1) ?: -1
+                if (position != -1) {
+                    adapter.editCard(position, Card.fromJSON(card))
+
+                }
+            }
+        }
+        adapter.notifyDataSetChanged()
+    }
+
     private fun getCardClickListener(cardsRecycler: RecyclerView): View.OnClickListener {
         return View.OnClickListener { view ->
             if (view == null) return@OnClickListener
+            val itemPosition: Int = cardsRecycler.getChildLayoutPosition(view)
+            // TODO: не трогать cards...
+            val item: Card = cards[itemPosition]
+            val sendIntent = Intent(this, CardEditorActivity::class.java).apply {
+                val bundle = Bundle().apply {
+                    putString(Constants.CARD_JSON, item.toJSON().toString())
+                    putInt(Constants.CARD_POSITION, itemPosition)
+                }
+                putExtras(bundle)
+            }
+            startActivityForResult(sendIntent, Constants.EDIT_CARD)
         }
     }
 
@@ -79,8 +114,8 @@ class MainActivity : AppCompatActivity() {
         binding.cardCreateButton.setOnClickListener {
             if (it == null)
                 return@setOnClickListener
-//            val sendIntent = Intent(this, CardEditorActivity::class.java)
-//            startActivityForResult(sendIntent, Constants.CREATE_CARD)
+            val sendIntent = Intent(this, CardEditorActivity::class.java)
+            startActivityForResult(sendIntent, Constants.CREATE_CARD)
         }
     }
 }

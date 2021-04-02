@@ -13,4 +13,7 @@
     <string name="custom_type">+ новый тип</string>
     <string name="empty_field">поле не должно быть пустым</string>
     <string name="maximum_length">достигнута максимальная длина ввода</string>
+    <string name="invalid_value">Некорректное значение</string>
+    <string name="good">хорошая</string>
+    <string name="bad">плохая</string>
 </resources>
