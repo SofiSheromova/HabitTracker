@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="CardView.Custom" parent="CardView">
+        <item name="cardCornerRadius">10dp</item>
+        <item name="android:layout_height">300dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+
+    <style name="Button.Custom" parent="Widget.AppCompat.Button">
+        <item name="android:backgroundTint">@color/colorAccent</item>
+        <item name="android:textColor">@color/textColor</item>
+    </style>
+
+</resources>
