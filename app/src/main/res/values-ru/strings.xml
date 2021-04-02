@@ -1,3 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Трекер привычек</string>
+    <string name="title">Название</string>
+    <string name="description">Описание</string>
+    <string name="type">Тип</string>
+    <string name="priority">Приоритет</string>
+    <string name="periodicity">Переодичность</string>
+    <string name="everyday">Ежедневно</string>
+    <string name="times_in">раз в</string>
+    <string name="days">дня</string>
+    <string name="save">сохранить</string>
+    <string name="custom_type">+ новый тип</string>
+    <string name="empty_field">поле не должно быть пустым</string>
+    <string name="maximum_length">достигнута максимальная длина ввода</string>
 </resources>

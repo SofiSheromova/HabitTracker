@@ -1,3 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">HabitTracker</string>
+    <string name="app_name">Habits Tracker</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="type">Type</string>
+    <string name="priority">Priority</string>
+    <string name="periodicity">Periodicity</string>
+    <string name="everyday">Everyday</string>
+    <string name="times_in">times in</string>
+    <string name="days">days</string>
+    <string name="save">save</string>
+    <string name="custom_type">+ create type</string>
+    <string name="empty_field">the field must not be empty</string>
+    <string name="maximum_length">maximum insertion length reached</string>
 </resources>
