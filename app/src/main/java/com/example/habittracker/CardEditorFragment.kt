@@ -1,29 +1,58 @@
 package com.example.habittracker
 
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.SeekBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.Periodicity
 import com.example.habittracker.cards.Type
-import com.example.habittracker.databinding.ActivityCardEditorBinding
+import com.example.habittracker.databinding.FragmentCardEditorBinding
 import org.json.JSONObject
 
-class CardEditorActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityCardEditorBinding
+class CardEditorFragment : Fragment() {
+    private lateinit var binding: FragmentCardEditorBinding
+    private var fragmentSendDataListener: OnFragmentSendDataListener? = null
+    private lateinit var card: Card
+    private var cardPosition: Int = -1
+
+    internal interface OnFragmentSendDataListener {
+        fun onSendData(card: Card, cardPosition: Int)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            fragmentSendDataListener = context as OnFragmentSendDataListener
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context должен реализовывать интерфейс CardEditorFragment.OnFragmentSendDataListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCardEditorBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        val data = extractCardFrom(arguments)
+        card = data.value
+        cardPosition = data.position
+    }
 
-        val (cardPosition, card) = extractCardFromBundle()
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentCardEditorBinding.inflate(inflater, container, false)
+        val view = binding.root
+//        inflater.inflate(R.layout.fragment_card_editor, container, false)
 
         fillFieldsWithValues(card)
 
@@ -31,16 +60,44 @@ class CardEditorActivity : AppCompatActivity() {
         binding.descriptionEdit.addTextChangedListener(getDescriptionTextWatcher(card))
         binding.typeRadioGroup.setOnCheckedChangeListener(getTypeChangeListener(card))
         binding.prioritySeekBar.setOnSeekBarChangeListener(getPriorityChangeListener(card))
-        binding.submitButton.setOnClickListener(getSubmitClickListener(card, cardPosition))
         binding.repetitionsNumberEdit.addTextChangedListener(getRepetitionsNumberTextWatcher(card))
         binding.daysNumberEdit.addTextChangedListener(getDaysNumberTextWatcher(card))
+        binding.submitButton.setOnClickListener(getSubmitClickListener(card, cardPosition))
+
+        return view
     }
 
-    private fun extractCardFromBundle(): Item<Card> {
-        val cardJSON = intent.getStringExtra(Constants.CARD_JSON)
-        val cardPosition = intent.getIntExtra(Constants.CARD_POSITION, -1)
-        val card: Card = if (cardJSON != null) Card.fromJSON(JSONObject(cardJSON)) else Card()
-        return Item(cardPosition, card)
+    // обновление текстового поля
+    fun setSelectedItem(selectedItem: Card?) {
+        if (selectedItem != null)
+            fillFieldsWithValues(selectedItem)
+        else
+            fillFieldsWithValues(Card())
+//        val view = view?.findViewById<View>(R.id.detailsText) as TextView
+//        view.text = selectedItem
+    }
+
+    private fun extractCardFrom(bundle: Bundle?): Item2<Card> {
+        var myCard: Card? = null
+        var cardIndex: Int = -1
+        bundle?.let {
+            val cardJSON = it.getString(Constants.CARD_JSON)
+            cardIndex = it.getInt(Constants.CARD_POSITION, -1)
+            if (cardJSON != null)
+                myCard = Card.fromJSON(JSONObject(cardJSON))
+        }
+        return Item2(cardIndex, myCard ?: Card())
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(card: Card, cardPosition: Int) =
+            CardEditorFragment().apply {
+                arguments = Bundle().apply {
+                    putString(Constants.CARD_JSON, card.toJSON().toString())
+                    putInt(Constants.CARD_POSITION, cardPosition)
+                }
+            }
     }
 
     private fun fillFieldsWithValues(card: Card) {
@@ -136,16 +193,17 @@ class CardEditorActivity : AppCompatActivity() {
 
     private val getSubmitClickListener = { card: Card, cardPosition: Int ->
         View.OnClickListener {
-            Log.d("TAG", card.toJSON().toString())
-            val intent = Intent().apply {
-                val bundle = Bundle().apply {
-                    putString(Constants.CARD_JSON, card.toJSON().toString())
-                    putInt(Constants.CARD_POSITION, cardPosition)
-                }
-                putExtras(bundle)
-            }
-            setResult(RESULT_OK, intent)
-            finish()
+            Log.d("TAG2", card.toJSON().toString())
+            fragmentSendDataListener?.onSendData(card, cardPosition)
+//            val intent = Intent().apply {
+//                val bundle = Bundle().apply {
+//                    putString(Constants.CARD_JSON, card.toJSON().toString())
+//                    putInt(Constants.CARD_POSITION, cardPosition)
+//                }
+//                putExtras(bundle)
+//            }
+//            setResult(AppCompatActivity.RESULT_OK, intent)
+//            finish()
         }
     }
 
@@ -158,6 +216,7 @@ class CardEditorActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                Log.d("TAG2", card.toJSON().toString())
                 val content = s.toString()
                 when {
                     content.isEmpty() -> {
@@ -203,4 +262,4 @@ class CardEditorActivity : AppCompatActivity() {
     }
 }
 
-data class Item<T>(val position: Int, val value: T)
+data class Item2<T>(val position: Int, val value: T)

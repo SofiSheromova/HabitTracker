@@ -3,12 +3,9 @@ package com.example.habittracker
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.FragmentTransaction
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.example.habittracker.cards.Card
-import com.example.habittracker.cards.CardsAdapter
 import com.example.habittracker.cards.Periodicity
 import com.example.habittracker.cards.Type
 import com.example.habittracker.databinding.ActivityMainBinding
@@ -42,9 +39,12 @@ val cards = mutableListOf(
 )
 //val cards = mutableListOf<Card>()
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    CardsFragment.OnFragmentSendDataListener,
+    CardEditorFragment.OnFragmentSendDataListener {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter: CardsAdapter
+    private var cardEditTransaction: FragmentTransaction? = null
+//    private lateinit var adapter: CardsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,15 +52,15 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val cardsRecycler: RecyclerView = binding.cardsView
-        cardsRecycler.layoutManager = LinearLayoutManager(
-            this,
-            LinearLayoutManager.VERTICAL,
-            false
-        )
-
-        adapter = CardsAdapter(getCardClickListener(cardsRecycler), cards)
-        cardsRecycler.adapter = adapter
+//        val cardsRecycler: RecyclerView = binding.cardsView
+//        cardsRecycler.layoutManager = LinearLayoutManager(
+//            this,
+//            LinearLayoutManager.VERTICAL,
+//            false
+//        )
+//
+//        adapter = CardsAdapter(getCardClickListener(cardsRecycler), cards)
+//        cardsRecycler.adapter = adapter
 
         setupCardCreateButton()
     }
@@ -70,39 +70,41 @@ class MainActivity : AppCompatActivity() {
 
         if (resultCode != RESULT_OK) return
 
+        // TODO может куда-то перенести? Если ли смысл?
+        val cardsFragment = supportFragmentManager
+            .findFragmentById(R.id.cards_fragment) as CardsFragment?
+
         when (requestCode) {
             Constants.CREATE_CARD -> {
                 val card = JSONObject(data?.getStringExtra(Constants.CARD_JSON) ?: "{}")
-                adapter.addCards(Card.fromJSON(card))
+                cardsFragment?.addCard(Card.fromJSON(card))
             }
             Constants.EDIT_CARD -> {
                 val card = JSONObject(data?.getStringExtra(Constants.CARD_JSON) ?: "{}")
                 val position = data?.getIntExtra(Constants.CARD_POSITION, -1) ?: -1
                 if (position != -1) {
-                    adapter.editCard(position, Card.fromJSON(card))
-
+                    cardsFragment?.editCard(position, Card.fromJSON(card))
                 }
             }
         }
-        adapter.notifyDataSetChanged()
     }
 
-    private fun getCardClickListener(cardsRecycler: RecyclerView): View.OnClickListener {
-        return View.OnClickListener { view ->
-            if (view == null) return@OnClickListener
-            val itemPosition: Int = cardsRecycler.getChildLayoutPosition(view)
-            // TODO: не трогать cards...
-            val item: Card = cards[itemPosition]
-            val sendIntent = Intent(this, CardEditorActivity::class.java).apply {
-                val bundle = Bundle().apply {
-                    putString(Constants.CARD_JSON, item.toJSON().toString())
-                    putInt(Constants.CARD_POSITION, itemPosition)
-                }
-                putExtras(bundle)
-            }
-            startActivityForResult(sendIntent, Constants.EDIT_CARD)
-        }
-    }
+//    private fun getCardClickListener(cardsRecycler: RecyclerView): View.OnClickListener {
+//        return View.OnClickListener { view ->
+//            if (view == null) return@OnClickListener
+//            val itemPosition: Int = cardsRecycler.getChildLayoutPosition(view)
+//            // TODO: не трогать cards...
+//            val item: Card = cards[itemPosition]
+//            val sendIntent = Intent(this, CardEditorActivity::class.java).apply {
+//                val bundle = Bundle().apply {
+//                    putString(Constants.CARD_JSON, item.toJSON().toString())
+//                    putInt(Constants.CARD_POSITION, itemPosition)
+//                }
+//                putExtras(bundle)
+//            }
+//            startActivityForResult(sendIntent, Constants.EDIT_CARD)
+//        }
+//    }
 
     private fun setupCardCreateButton() {
         val icon = VectorDrawableCompat.create(
@@ -111,11 +113,85 @@ class MainActivity : AppCompatActivity() {
             null
         )
         binding.cardCreateButton.setImageDrawable(icon)
+//        binding.cardCreateButton.setOnClickListener {
+//            if (it == null)
+//                return@setOnClickListener
+//            val sendIntent = Intent(this, CardEditorActivity::class.java)
+//            startActivityForResult(sendIntent, Constants.CREATE_CARD)
+//        }
+
         binding.cardCreateButton.setOnClickListener {
             if (it == null)
                 return@setOnClickListener
-            val sendIntent = Intent(this, CardEditorActivity::class.java)
-            startActivityForResult(sendIntent, Constants.CREATE_CARD)
+//            cardEditTransaction = supportFragmentManager.beginTransaction()
+//            cardEditTransaction!!
+//                .add(
+//                    R.id.card_editor_fragment,
+//                    CardEditorFragment.newInstance(Card(), -1)
+//                )
+//                .commit()
+            val intent = Intent(
+                applicationContext,
+                DetailActivity::class.java
+            )
+//            intent.putExtra(DetailActivity.SELECTED_ITEM, selectedItem?.toJSON().toString())
+            startActivityForResult(intent, Constants.CREATE_CARD)
+        }
+    }
+
+    override fun onSendCard(selectedItem: Card?, selectedIndex: Int) {
+        val fragment = supportFragmentManager
+            .findFragmentById(R.id.cards_fragment) as CardEditorFragment?
+        if (fragment != null && fragment.isVisible) {
+            fragment.setSelectedItem(selectedItem)
+        } else {
+//            supportFragmentManager.beginTransaction()
+//                .add(
+//                    R.id.card_editor_fragment,
+//                    CardEditorFragment.newInstance(selectedItem ?: Card(), selectedIndex)
+//                )
+//                .commit()
+            val intent = Intent(
+                applicationContext,
+                DetailActivity::class.java
+            ).apply {
+                val bundle = Bundle().apply {
+                    putString(Constants.CARD_JSON, selectedItem?.toJSON().toString())
+                    putInt(Constants.CARD_POSITION, selectedIndex)
+                }
+                putExtras(bundle)
+            }
+            startActivityForResult(intent, Constants.EDIT_CARD)
+        }
+    }
+
+    override fun onSendData(card: Card, cardPosition: Int) {
+//        val intent = Intent().apply {
+//            val bundle = Bundle().apply {
+//                putString(Constants.CARD_JSON, card.toJSON().toString())
+//                putInt(Constants.CARD_POSITION, cardPosition)
+//            }
+//            putExtras(bundle)
+//        }
+//        setResult(RESULT_OK, intent)
+//        finish()
+
+//        val cardEditorFragment = supportFragmentManager
+//            .findFragmentById(R.id.card_editor_fragment) as CardEditorFragment
+//        cardEditTransaction
+//            ?.remove(cardEditorFragment)
+//            ?.addToBackStack(null)
+//            ?.commit()
+
+
+        // TODO может куда-то перенести? Если ли смысл?
+        val cardsFragment = supportFragmentManager
+            .findFragmentById(R.id.cards_fragment) as CardsFragment?
+
+        if (cardPosition >= 0) {
+            cardsFragment?.editCard(cardPosition, card)
+        } else {
+            cardsFragment?.addCard(card)
         }
     }
 }
