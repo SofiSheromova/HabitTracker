@@ -33,13 +33,13 @@ open class CardsAdapter(
         return cards.size
     }
 
-    fun addCards(vararg items: Card) {
-        cards.addAll(items)
-    }
+//    fun addCards(vararg items: Card) {
+//        cards.addAll(items)
+//    }
 
-    fun editCard(position: Int, card: Card) {
-        cards[position] = card
-    }
+//    fun editCard(position: Int, card: Card) {
+//        cards[position] = card
+//    }
 
     open operator fun get(itemPosition: Int): Card? {
         return cards.getOrNull(itemPosition)

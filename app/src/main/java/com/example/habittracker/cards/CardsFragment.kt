@@ -7,9 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.habittracker.cards.Card
-import com.example.habittracker.cards.CardsAdapter
-import com.example.habittracker.cards.OnItemClickListener
 import com.example.habittracker.databinding.FragmentCardsOldBinding
 
 val cards = mutableListOf<Card>()
@@ -17,6 +14,7 @@ val cards = mutableListOf<Card>()
 class CardsFragment : Fragment(), OnItemClickListener {
     private lateinit var binding: FragmentCardsOldBinding
     private var fragmentSendDataListener: OnFragmentSendDataListener? = null
+    private lateinit var adaptersManager: CardsAdapterManager
     private lateinit var adapter: CardsAdapter
 
     internal interface OnFragmentSendDataListener {
@@ -37,7 +35,9 @@ class CardsFragment : Fragment(), OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = CardsAdapter(cards, this)
+        adaptersManager = CardsAdapterManager(cards, this)
+        //adapter = adaptersManager.createAdapter()
+        adapter = adaptersManager.createFilterAdapter { it.type == Type.GOOD }
     }
 
     override fun onCreateView(
@@ -57,15 +57,15 @@ class CardsFragment : Fragment(), OnItemClickListener {
     }
 
     fun addCard(card: Card) {
-        adapter.addCards(card)
-        adapter.notifyItemInserted(adapter.itemCount - 1)
-//        adapter.notifyDataSetChanged()
+        adaptersManager.addCard(card)
+//        adapter.addCards(card)
+//        adapter.notifyItemInserted(adapter.itemCount - 1)
     }
 
     fun editCard(cardPosition: Int, card: Card) {
-        adapter.editCard(cardPosition, card)
-        adapter.notifyItemChanged(cardPosition)
-//        adapter.notifyDataSetChanged()
+        adaptersManager.editCard(cardPosition, card)
+//        adapter.editCard(cardPosition, card)
+//        adapter.notifyItemChanged(cardPosition)
     }
 
     override fun onItemClicked(card: Card, position: Int) {
