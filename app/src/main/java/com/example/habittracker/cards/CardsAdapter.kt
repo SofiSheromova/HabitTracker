@@ -55,6 +55,10 @@ class CardsAdapter(
         cards[position] = card
     }
 
+    operator fun get(itemPosition: Int): Card? {
+        return cards.getOrNull(itemPosition)
+    }
+
     class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = itemView.findViewById<View>(R.id.card_title) as TextView
         var description: TextView = itemView.findViewById<View>(R.id.card_description) as TextView
