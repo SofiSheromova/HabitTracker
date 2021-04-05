@@ -12,11 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/card_editor_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/card_create_button"
         android:layout_width="wrap_content"

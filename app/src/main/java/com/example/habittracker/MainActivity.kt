@@ -62,22 +62,14 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onSendCard(selectedItem: Card, selectedIndex: Int) {
-        // здесь будет всегда выполняться else, потому что сейчас по задумке
-        // редактирование карты открывается на новом экране
-        val fragment = supportFragmentManager
-            .findFragmentById(R.id.card_editor_fragment) as CardEditorFragment?
-        if (fragment != null && fragment.isVisible) {
-            fragment.setSelectedCard(selectedItem)
-        } else {
-            val intent = Intent(this, CardEditorActivity::class.java).apply {
-                val bundle = Bundle().apply {
-                    putString(Constants.CARD_JSON, selectedItem.toJSON().toString())
-                    putInt(Constants.CARD_POSITION, selectedIndex)
-                }
-                putExtras(bundle)
+        val intent = Intent(this, CardEditorActivity::class.java).apply {
+            val bundle = Bundle().apply {
+                putString(Constants.CARD_JSON, selectedItem.toJSON().toString())
+                putInt(Constants.CARD_POSITION, selectedIndex)
             }
-            startActivityForResult(intent, Constants.EDIT_CARD)
+            putExtras(bundle)
         }
+        startActivityForResult(intent, Constants.EDIT_CARD)
     }
 
     override fun onSendData(card: Card, cardPosition: Int) {

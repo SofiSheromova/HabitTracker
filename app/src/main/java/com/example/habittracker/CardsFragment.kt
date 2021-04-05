@@ -63,7 +63,6 @@ class CardsFragment : Fragment() {
         }
     }
 
-
     fun addCard(card: Card) {
         adapter.addCards(card)
         adapter.notifyDataSetChanged()
