@@ -6,11 +6,15 @@ import android.os.Bundle
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.example.habittracker.cards.Card
 import com.example.habittracker.databinding.ActivityMainBinding
-import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(),
     CardsFragment.OnFragmentSendDataListener,
     CardEditorFragment.OnFragmentSendDataListener {
+    companion object {
+        private const val CREATE_CARD = 56
+        private const val EDIT_CARD = 45
+    }
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,15 +37,16 @@ class MainActivity : AppCompatActivity(),
             .findFragmentById(R.id.cards_fragment) as CardsFragment?
 
         when (requestCode) {
-            Constants.CREATE_CARD -> {
-                val card = JSONObject(data?.getStringExtra(Constants.CARD_JSON) ?: "{}")
-                cardsFragment?.addCard(Card.fromJSON(card))
+            CREATE_CARD -> {
+                val card = Card.fromJsonOrNull(data?.getStringExtra(CardEditorActivity.CARD_JSON))
+                if (cardsFragment != null && card != null)
+                    cardsFragment.addCard(card)
             }
-            Constants.EDIT_CARD -> {
-                val card = JSONObject(data?.getStringExtra(Constants.CARD_JSON) ?: "{}")
-                val position = data?.getIntExtra(Constants.CARD_POSITION, -1) ?: -1
-                if (position != -1) {
-                    cardsFragment?.editCard(position, Card.fromJSON(card))
+            EDIT_CARD -> {
+                val card = Card.fromJsonOrNull(data?.getStringExtra(CardEditorActivity.CARD_JSON))
+                val position = data?.getIntExtra(CardEditorActivity.CARD_POSITION, -1) ?: -1
+                if (cardsFragment != null && card != null && position != -1) {
+                    cardsFragment.editCard(position, card)
                 }
             }
         }
@@ -57,19 +62,19 @@ class MainActivity : AppCompatActivity(),
 
         binding.cardCreateButton.setOnClickListener {
             val intent = Intent(this, CardEditorActivity::class.java)
-            startActivityForResult(intent, Constants.CREATE_CARD)
+            startActivityForResult(intent, CREATE_CARD)
         }
     }
 
     override fun onSendCard(selectedItem: Card, selectedIndex: Int) {
         val intent = Intent(this, CardEditorActivity::class.java).apply {
             val bundle = Bundle().apply {
-                putString(Constants.CARD_JSON, selectedItem.toJSON().toString())
-                putInt(Constants.CARD_POSITION, selectedIndex)
+                putString(CardEditorActivity.CARD_JSON, selectedItem.toJSON().toString())
+                putInt(CardEditorActivity.CARD_POSITION, selectedIndex)
             }
             putExtras(bundle)
         }
-        startActivityForResult(intent, Constants.EDIT_CARD)
+        startActivityForResult(intent, EDIT_CARD)
     }
 
     override fun onSendData(card: Card, cardPosition: Int) {

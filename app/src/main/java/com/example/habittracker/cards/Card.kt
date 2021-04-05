@@ -1,5 +1,6 @@
 package com.example.habittracker.cards
 
+import org.json.JSONException
 import org.json.JSONObject
 
 class Card(
@@ -27,7 +28,8 @@ class Card(
         private const val REPETITIONS_NUMBER_KEY = "REPETITIONS_NUMBER"
         private const val DAYS_NUMBER_KEY = "DAYS_NUMBER"
 
-        fun fromJSON(json: JSONObject): Card {
+        private fun fromJson(jsonString: String): Card {
+            val json = JSONObject(jsonString)
             return Card(
                 json.getString(TITLE_KEY),
                 json.getString(DESCRIPTION_KEY),
@@ -39,6 +41,16 @@ class Card(
                 json.getInt(PRIORITY_KEY),
                 json.getString(COLOR_KEY)
             )
+        }
+
+        fun fromJsonOrNull(jsonString: String?): Card? {
+            if (jsonString == null)
+                return null
+            return try {
+                fromJson(jsonString)
+            } catch (e: JSONException) {
+                null
+            }
         }
     }
 

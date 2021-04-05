@@ -19,6 +19,21 @@ import com.example.habittracker.databinding.FragmentCardEditorBinding
 import org.json.JSONObject
 
 class CardEditorFragment : Fragment() {
+
+    companion object {
+        const val CARD_JSON = "CARD_JSON"
+        const val CARD_POSITION = "POSITION"
+
+        @JvmStatic
+        fun newInstance(card: Card, cardPosition: Int) =
+            CardEditorFragment().apply {
+                arguments = Bundle().apply {
+                    putString(CARD_JSON, card.toJSON().toString())
+                    putInt(CARD_POSITION, cardPosition)
+                }
+            }
+    }
+
     private lateinit var binding: FragmentCardEditorBinding
     private var fragmentSendDataListener: OnFragmentSendDataListener? = null
     private lateinit var card: Card
@@ -67,34 +82,10 @@ class CardEditorFragment : Fragment() {
         return view
     }
 
-    fun setSelectedCard(card: Card?) {
-        if (card != null)
-            fillFieldsWithValues(card)
-        else
-            fillFieldsWithValues(Card())
-    }
-
     private fun extractCardFrom(bundle: Bundle?): Item<Card> {
-        var myCard: Card? = null
-        var cardIndex: Int = -1
-        bundle?.let {
-            val cardJSON = it.getString(Constants.CARD_JSON)
-            cardIndex = it.getInt(Constants.CARD_POSITION, -1)
-            if (cardJSON != null)
-                myCard = Card.fromJSON(JSONObject(cardJSON))
-        }
-        return Item(cardIndex, myCard ?: Card())
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(card: Card, cardPosition: Int) =
-            CardEditorFragment().apply {
-                arguments = Bundle().apply {
-                    putString(Constants.CARD_JSON, card.toJSON().toString())
-                    putInt(Constants.CARD_POSITION, cardPosition)
-                }
-            }
+        val extractedCard: Card? = Card.fromJsonOrNull(bundle?.getString(CARD_JSON))
+        val cardIndex: Int = bundle?.getInt(CARD_POSITION, -1) ?: -1
+        return Item(cardIndex, extractedCard ?: Card())
     }
 
     private fun fillFieldsWithValues(card: Card) {

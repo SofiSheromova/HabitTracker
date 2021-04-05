@@ -12,11 +12,11 @@ import com.example.habittracker.cards.CardsAdapter
 import com.example.habittracker.cards.OnItemClickListener
 import com.example.habittracker.databinding.FragmentCardsBinding
 
+val cards = mutableListOf<Card>()
 
 class CardsFragment : Fragment(), OnItemClickListener {
     private lateinit var binding: FragmentCardsBinding
     private var fragmentSendDataListener: OnFragmentSendDataListener? = null
-    private var cards = mutableListOf<Card>()
     private lateinit var adapter: CardsAdapter
 
     internal interface OnFragmentSendDataListener {

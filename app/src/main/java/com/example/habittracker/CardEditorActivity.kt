@@ -1,17 +1,19 @@
 package com.example.habittracker
 
-
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.habittracker.cards.Card
 import com.example.habittracker.databinding.ActivityCardEditorBinding
-import org.json.JSONObject
+
 
 class CardEditorActivity : AppCompatActivity(), CardEditorFragment.OnFragmentSendDataListener {
+    companion object {
+        const val CARD_JSON = "CARD_JSON"
+        const val CARD_POSITION = "POSITION"
+    }
+
     private lateinit var binding: ActivityCardEditorBinding
-    var selectedItem: Card? = null
-    var selectedIndex: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,12 +21,29 @@ class CardEditorActivity : AppCompatActivity(), CardEditorFragment.OnFragmentSen
         val view = binding.root
         setContentView(view)
 
+        if (savedInstanceState == null)
+            addCardEditorFragment()
+    }
+
+    override fun onSendData(card: Card, cardPosition: Int) {
+        val intent = Intent().apply {
+            val bundle = Bundle().apply {
+                putString(CardEditorFragment.CARD_JSON, card.toJSON().toString())
+                putInt(CardEditorFragment.CARD_POSITION, cardPosition)
+            }
+            putExtras(bundle)
+        }
+        setResult(RESULT_OK, intent)
+        finish()
+    }
+
+    private fun addCardEditorFragment() {
         val extras = intent.extras
-        if (extras != null) {
-            val cardJSON = extras.getString(Constants.CARD_JSON)
-            selectedIndex = extras.getInt(Constants.CARD_POSITION)
-            if (cardJSON != null)
-                selectedItem = Card.fromJSON(JSONObject(cardJSON))
+        val selectedIndex = extras?.getInt(CARD_POSITION) ?: -1
+        val selectedItem: Card? = if (extras != null) {
+            Card.fromJsonOrNull(extras.getString(CARD_JSON))
+        } else {
+            null
         }
 
         supportFragmentManager.beginTransaction()
@@ -33,24 +52,5 @@ class CardEditorActivity : AppCompatActivity(), CardEditorFragment.OnFragmentSen
                 CardEditorFragment.newInstance(selectedItem ?: Card(), selectedIndex)
             )
             .commit()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val fragment = supportFragmentManager
-            .findFragmentById(R.id.card_editor_fragment) as CardEditorFragment?
-        fragment?.setSelectedCard(selectedItem)
-    }
-
-    override fun onSendData(card: Card, cardPosition: Int) {
-        val intent = Intent().apply {
-            val bundle = Bundle().apply {
-                putString(Constants.CARD_JSON, card.toJSON().toString())
-                putInt(Constants.CARD_POSITION, cardPosition)
-            }
-            putExtras(bundle)
-        }
-        setResult(RESULT_OK, intent)
-        finish()
     }
 }
