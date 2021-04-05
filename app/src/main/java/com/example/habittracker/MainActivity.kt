@@ -3,64 +3,21 @@ package com.example.habittracker
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.FragmentTransaction
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.example.habittracker.cards.Card
-import com.example.habittracker.cards.Periodicity
-import com.example.habittracker.cards.Type
 import com.example.habittracker.databinding.ActivityMainBinding
 import org.json.JSONObject
-
-val cards = mutableListOf(
-    Card(
-        "title1",
-        "description1",
-        Periodicity(1, 1),
-        Type.GOOD,
-        0,
-        "#ebffe3"
-    ),
-    Card(
-        "title2",
-        "description2",
-        Periodicity(1, 2),
-        Type.BAD,
-        1,
-        "#e3feff"
-    ),
-    Card(
-        "title3",
-        "description3",
-        Periodicity(1, 3),
-        Type.GOOD,
-        3,
-        "#ffe3f2"
-    ),
-)
-//val cards = mutableListOf<Card>()
 
 class MainActivity : AppCompatActivity(),
     CardsFragment.OnFragmentSendDataListener,
     CardEditorFragment.OnFragmentSendDataListener {
     private lateinit var binding: ActivityMainBinding
-    private var cardEditTransaction: FragmentTransaction? = null
-//    private lateinit var adapter: CardsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-//        val cardsRecycler: RecyclerView = binding.cardsView
-//        cardsRecycler.layoutManager = LinearLayoutManager(
-//            this,
-//            LinearLayoutManager.VERTICAL,
-//            false
-//        )
-//
-//        adapter = CardsAdapter(getCardClickListener(cardsRecycler), cards)
-//        cardsRecycler.adapter = adapter
 
         setupCardCreateButton()
     }
@@ -70,7 +27,8 @@ class MainActivity : AppCompatActivity(),
 
         if (resultCode != RESULT_OK) return
 
-        // TODO может куда-то перенести? Если ли смысл?
+        // TODO: дорогая ли это операция? Данный фрагмент добавлен из xml,
+        //  есть ли смысл вынести это в поле класса и не искать?
         val cardsFragment = supportFragmentManager
             .findFragmentById(R.id.cards_fragment) as CardsFragment?
 
@@ -89,23 +47,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-//    private fun getCardClickListener(cardsRecycler: RecyclerView): View.OnClickListener {
-//        return View.OnClickListener { view ->
-//            if (view == null) return@OnClickListener
-//            val itemPosition: Int = cardsRecycler.getChildLayoutPosition(view)
-//            // TODO: не трогать cards...
-//            val item: Card = cards[itemPosition]
-//            val sendIntent = Intent(this, CardEditorActivity::class.java).apply {
-//                val bundle = Bundle().apply {
-//                    putString(Constants.CARD_JSON, item.toJSON().toString())
-//                    putInt(Constants.CARD_POSITION, itemPosition)
-//                }
-//                putExtras(bundle)
-//            }
-//            startActivityForResult(sendIntent, Constants.EDIT_CARD)
-//        }
-//    }
-
     private fun setupCardCreateButton() {
         val icon = VectorDrawableCompat.create(
             resources,
@@ -113,50 +54,24 @@ class MainActivity : AppCompatActivity(),
             null
         )
         binding.cardCreateButton.setImageDrawable(icon)
-//        binding.cardCreateButton.setOnClickListener {
-//            if (it == null)
-//                return@setOnClickListener
-//            val sendIntent = Intent(this, CardEditorActivity::class.java)
-//            startActivityForResult(sendIntent, Constants.CREATE_CARD)
-//        }
 
         binding.cardCreateButton.setOnClickListener {
-            if (it == null)
-                return@setOnClickListener
-//            cardEditTransaction = supportFragmentManager.beginTransaction()
-//            cardEditTransaction!!
-//                .add(
-//                    R.id.card_editor_fragment,
-//                    CardEditorFragment.newInstance(Card(), -1)
-//                )
-//                .commit()
-            val intent = Intent(
-                applicationContext,
-                DetailActivity::class.java
-            )
-//            intent.putExtra(DetailActivity.SELECTED_ITEM, selectedItem?.toJSON().toString())
+            val intent = Intent(this, CardEditorActivity::class.java)
             startActivityForResult(intent, Constants.CREATE_CARD)
         }
     }
 
-    override fun onSendCard(selectedItem: Card?, selectedIndex: Int) {
+    override fun onSendCard(selectedItem: Card, selectedIndex: Int) {
+        // здесь будет всегда выполняться else, потому что сейчас по задумке
+        // редактирование карты открывается на новом экране
         val fragment = supportFragmentManager
-            .findFragmentById(R.id.cards_fragment) as CardEditorFragment?
+            .findFragmentById(R.id.card_editor_fragment) as CardEditorFragment?
         if (fragment != null && fragment.isVisible) {
-            fragment.setSelectedItem(selectedItem)
+            fragment.setSelectedCard(selectedItem)
         } else {
-//            supportFragmentManager.beginTransaction()
-//                .add(
-//                    R.id.card_editor_fragment,
-//                    CardEditorFragment.newInstance(selectedItem ?: Card(), selectedIndex)
-//                )
-//                .commit()
-            val intent = Intent(
-                applicationContext,
-                DetailActivity::class.java
-            ).apply {
+            val intent = Intent(this, CardEditorActivity::class.java).apply {
                 val bundle = Bundle().apply {
-                    putString(Constants.CARD_JSON, selectedItem?.toJSON().toString())
+                    putString(Constants.CARD_JSON, selectedItem.toJSON().toString())
                     putInt(Constants.CARD_POSITION, selectedIndex)
                 }
                 putExtras(bundle)
@@ -166,25 +81,6 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onSendData(card: Card, cardPosition: Int) {
-//        val intent = Intent().apply {
-//            val bundle = Bundle().apply {
-//                putString(Constants.CARD_JSON, card.toJSON().toString())
-//                putInt(Constants.CARD_POSITION, cardPosition)
-//            }
-//            putExtras(bundle)
-//        }
-//        setResult(RESULT_OK, intent)
-//        finish()
-
-//        val cardEditorFragment = supportFragmentManager
-//            .findFragmentById(R.id.card_editor_fragment) as CardEditorFragment
-//        cardEditTransaction
-//            ?.remove(cardEditorFragment)
-//            ?.addToBackStack(null)
-//            ?.commit()
-
-
-        // TODO может куда-то перенести? Если ли смысл?
         val cardsFragment = supportFragmentManager
             .findFragmentById(R.id.cards_fragment) as CardsFragment?
 

@@ -1,18 +1,16 @@
 package com.example.habittracker
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.SeekBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.Periodicity
@@ -35,7 +33,10 @@ class CardEditorFragment : Fragment() {
         try {
             fragmentSendDataListener = context as OnFragmentSendDataListener
         } catch (e: ClassCastException) {
-            throw ClassCastException("$context должен реализовывать интерфейс CardEditorFragment.OnFragmentSendDataListener")
+            throw ClassCastException(
+                "$context must implement the interface " +
+                        "CardEditorFragment.OnFragmentSendDataListener"
+            )
         }
     }
 
@@ -49,10 +50,9 @@ class CardEditorFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCardEditorBinding.inflate(inflater, container, false)
         val view = binding.root
-//        inflater.inflate(R.layout.fragment_card_editor, container, false)
 
         fillFieldsWithValues(card)
 
@@ -67,17 +67,14 @@ class CardEditorFragment : Fragment() {
         return view
     }
 
-    // обновление текстового поля
-    fun setSelectedItem(selectedItem: Card?) {
-        if (selectedItem != null)
-            fillFieldsWithValues(selectedItem)
+    fun setSelectedCard(card: Card?) {
+        if (card != null)
+            fillFieldsWithValues(card)
         else
             fillFieldsWithValues(Card())
-//        val view = view?.findViewById<View>(R.id.detailsText) as TextView
-//        view.text = selectedItem
     }
 
-    private fun extractCardFrom(bundle: Bundle?): Item2<Card> {
+    private fun extractCardFrom(bundle: Bundle?): Item<Card> {
         var myCard: Card? = null
         var cardIndex: Int = -1
         bundle?.let {
@@ -86,7 +83,7 @@ class CardEditorFragment : Fragment() {
             if (cardJSON != null)
                 myCard = Card.fromJSON(JSONObject(cardJSON))
         }
-        return Item2(cardIndex, myCard ?: Card())
+        return Item(cardIndex, myCard ?: Card())
     }
 
     companion object {
@@ -112,10 +109,6 @@ class CardEditorFragment : Fragment() {
         }
 
         binding.prioritySeekBar.progress = card.priority
-        Log.d(
-            "TAGGG",
-            "${card.priority}, ${binding.prioritySeekBar.progress}, ${binding.prioritySeekBar.max}"
-        )
 
         binding.repetitionsNumberEdit.setText(card.periodicity.repetitionsNumber.toString())
         binding.daysNumberEdit.setText(card.periodicity.daysNumber.toString())
@@ -171,9 +164,7 @@ class CardEditorFragment : Fragment() {
     private val getTypeChangeListener = { card: Card ->
         RadioGroup.OnCheckedChangeListener { group, checkedId ->
             val checkedRadioButton = group!!.findViewById(checkedId) as RadioButton
-            Log.d("TAG", group.indexOfChild(checkedRadioButton).toString())
             card.type = Type.valueOf(group.indexOfChild(checkedRadioButton))
-            Log.d("TAG", card.type.toString())
         }
     }
 
@@ -193,17 +184,7 @@ class CardEditorFragment : Fragment() {
 
     private val getSubmitClickListener = { card: Card, cardPosition: Int ->
         View.OnClickListener {
-            Log.d("TAG2", card.toJSON().toString())
             fragmentSendDataListener?.onSendData(card, cardPosition)
-//            val intent = Intent().apply {
-//                val bundle = Bundle().apply {
-//                    putString(Constants.CARD_JSON, card.toJSON().toString())
-//                    putInt(Constants.CARD_POSITION, cardPosition)
-//                }
-//                putExtras(bundle)
-//            }
-//            setResult(AppCompatActivity.RESULT_OK, intent)
-//            finish()
         }
     }
 
@@ -216,20 +197,9 @@ class CardEditorFragment : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                Log.d("TAG2", card.toJSON().toString())
                 val content = s.toString()
-                when {
-                    content.isEmpty() -> {
-                        binding.repetitionsNumberEdit.error =
-                            resources.getString(R.string.empty_field)
-                    }
-                    content == "0" -> {
-                        binding.repetitionsNumberEdit.error =
-                            resources.getString(R.string.invalid_value)
-                    }
-                    else -> {
-                        card.periodicity = Periodicity(content.toInt(), card.periodicity.daysNumber)
-                    }
+                if (numberFieldValidator(binding.repetitionsNumberEdit)) {
+                    card.periodicity = Periodicity(content.toInt(), card.periodicity.daysNumber)
                 }
             }
         }
@@ -245,21 +215,29 @@ class CardEditorFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {
                 val content = s.toString()
-                when {
-                    content.isEmpty() -> {
-                        binding.daysNumberEdit.error = resources.getString(R.string.empty_field)
-                    }
-                    content == "0" -> {
-                        binding.daysNumberEdit.error = resources.getString(R.string.invalid_value)
-                    }
-                    else -> {
-                        card.periodicity =
-                            Periodicity(card.periodicity.repetitionsNumber, content.toInt())
-                    }
+                if (numberFieldValidator(binding.daysNumberEdit)) {
+                    card.periodicity =
+                        Periodicity(card.periodicity.repetitionsNumber, content.toInt())
                 }
             }
         }
     }
+
+    private fun numberFieldValidator(field: EditText): Boolean {
+        val content = field.text.toString()
+        var isValid = true
+        when {
+            content.isEmpty() -> {
+                field.error = resources.getString(R.string.empty_field)
+                isValid = false
+            }
+            content == "0" -> {
+                field.error = resources.getString(R.string.invalid_value)
+                isValid = false
+            }
+        }
+        return isValid
+    }
 }
 
-data class Item2<T>(val position: Int, val value: T)
+data class Item<T>(val position: Int, val value: T)

@@ -1,7 +1,6 @@
 package com.example.habittracker
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.CardsAdapter
 import com.example.habittracker.databinding.FragmentCardsBinding
-import org.json.JSONObject
 
 
 class CardsFragment : Fragment() {
@@ -22,7 +20,7 @@ class CardsFragment : Fragment() {
     private lateinit var adapter: CardsAdapter
 
     internal interface OnFragmentSendDataListener {
-        fun onSendCard(selectedItem: Card?, selectedIndex: Int)
+        fun onSendCard(selectedItem: Card, selectedIndex: Int)
     }
 
     override fun onAttach(context: Context) {
@@ -30,7 +28,10 @@ class CardsFragment : Fragment() {
         try {
             fragmentSendDataListener = context as OnFragmentSendDataListener
         } catch (e: ClassCastException) {
-            throw ClassCastException("$context должен реализовывать интерфейс OnFragmentSendDataListener")
+            throw ClassCastException(
+                "$context must implement the interface " +
+                        "CardsFragment.OnFragmentSendDataListener"
+            )
         }
     }
 
@@ -42,16 +43,14 @@ class CardsFragment : Fragment() {
             inflater, container, false
         )
         val view = binding.root
-        // val view = inflater.inflate(R.layout.fragment_cards, container, false)
 
-        val cardsRecycler = binding.cardsList
-        cardsRecycler.layoutManager = LinearLayoutManager(
+        binding.cardsRecycler.layoutManager = LinearLayoutManager(
             context,
             LinearLayoutManager.VERTICAL,
             false
         )
-        adapter = CardsAdapter(getCardClickListener(cardsRecycler), cards)
-        cardsRecycler.adapter = adapter
+        adapter = CardsAdapter(getCardClickListener(binding.cardsRecycler), cards)
+        binding.cardsRecycler.adapter = adapter
         return view
     }
 
@@ -59,27 +58,18 @@ class CardsFragment : Fragment() {
         return View.OnClickListener { view ->
             if (view == null) return@OnClickListener
             val itemPosition: Int = cardsRecycler.getChildLayoutPosition(view)
-            // TODO: не трогать cards...
-            val item = cards[itemPosition]
-//            fragmentSendDataListener?.onSendCard(item, itemPosition)
-            val sendIntent = Intent(context, DetailActivity::class.java).apply {
-                val bundle = Bundle().apply {
-                    putString(Constants.CARD_JSON, item.toJSON().toString())
-                    putInt(Constants.CARD_POSITION, itemPosition)
-                }
-                putExtras(bundle)
-            }
-            activity?.startActivityForResult(sendIntent, Constants.EDIT_CARD)
+            val item = adapter[itemPosition]
+            fragmentSendDataListener?.onSendCard(item!!, itemPosition)
         }
     }
 
 
-    public fun addCard(card: Card) {
+    fun addCard(card: Card) {
         adapter.addCards(card)
         adapter.notifyDataSetChanged()
     }
 
-    public fun editCard(cardPosition: Int, card: Card) {
+    fun editCard(cardPosition: Int, card: Card) {
         adapter.editCard(cardPosition, card)
         adapter.notifyDataSetChanged()
     }
