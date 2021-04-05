@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.cardEditor
 
 import android.content.Context
 import android.os.Bundle
@@ -12,11 +12,11 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import com.example.habittracker.R
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.Periodicity
 import com.example.habittracker.cards.Type
 import com.example.habittracker.databinding.FragmentCardEditorBinding
-import org.json.JSONObject
 
 class CardEditorFragment : Fragment() {
 

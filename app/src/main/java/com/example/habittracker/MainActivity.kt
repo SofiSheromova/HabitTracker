@@ -4,7 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.example.habittracker.cardEditor.CardEditorActivity
+import com.example.habittracker.cardEditor.CardEditorFragment
 import com.example.habittracker.cards.Card
+import com.example.habittracker.cards.CardsFragment
 import com.example.habittracker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(),

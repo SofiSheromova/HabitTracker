@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.R
 
 
-class CardsAdapter(
+open class CardsAdapter(
     private val cards: MutableList<Card>,
     private val onItemClickListener: OnItemClickListener,
 ) :
@@ -41,7 +41,7 @@ class CardsAdapter(
         cards[position] = card
     }
 
-    operator fun get(itemPosition: Int): Card? {
+    open operator fun get(itemPosition: Int): Card? {
         return cards.getOrNull(itemPosition)
     }
 

@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.habittracker.cards
 
 import android.content.Context
 import android.os.Bundle
@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.CardsAdapter
 import com.example.habittracker.cards.OnItemClickListener
-import com.example.habittracker.databinding.FragmentCardsBinding
+import com.example.habittracker.databinding.FragmentCardsOldBinding
 
 val cards = mutableListOf<Card>()
 
 class CardsFragment : Fragment(), OnItemClickListener {
-    private lateinit var binding: FragmentCardsBinding
+    private lateinit var binding: FragmentCardsOldBinding
     private var fragmentSendDataListener: OnFragmentSendDataListener? = null
     private lateinit var adapter: CardsAdapter
 
@@ -44,7 +44,7 @@ class CardsFragment : Fragment(), OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCardsBinding.inflate(inflater, container, false)
+        binding = FragmentCardsOldBinding.inflate(inflater, container, false)
         val view = binding.root
 
         binding.cardsRecycler.layoutManager = LinearLayoutManager(
@@ -58,12 +58,14 @@ class CardsFragment : Fragment(), OnItemClickListener {
 
     fun addCard(card: Card) {
         adapter.addCards(card)
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemInserted(adapter.itemCount - 1)
+//        adapter.notifyDataSetChanged()
     }
 
     fun editCard(cardPosition: Int, card: Card) {
         adapter.editCard(cardPosition, card)
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemChanged(cardPosition)
+//        adapter.notifyDataSetChanged()
     }
 
     override fun onItemClicked(card: Card, position: Int) {

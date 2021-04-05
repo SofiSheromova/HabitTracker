@@ -1,8 +1,9 @@
-package com.example.habittracker
+package com.example.habittracker.cardEditor
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.habittracker.R
 import com.example.habittracker.cards.Card
 import com.example.habittracker.databinding.ActivityCardEditorBinding
 
