@@ -12,8 +12,8 @@ import com.example.habittracker.R
 
 
 class CardsAdapter(
-    private val onItemClickListener: View.OnClickListener,
-    private val cards: MutableList<Card>
+    private val cards: MutableList<Card>,
+    private val onItemClickListener: OnItemClickListener,
 ) :
     RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
 
@@ -21,26 +21,12 @@ class CardsAdapter(
         val view: View = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.card_item_view, parent, false)
-        view.setOnClickListener(onItemClickListener)
         return CardViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val card: Card = cards[position]
-        holder.title.text = card.title
-        holder.description.text = card.description
-        holder.priority.text = card.priority.toString()
-        holder.periodicity.text = card.periodicity.toString()
-
-        if (card.type == Type.GOOD) {
-            holder.like.visibility = View.VISIBLE
-            holder.dislike.visibility = View.INVISIBLE
-        } else {
-            holder.like.visibility = View.INVISIBLE
-            holder.dislike.visibility = View.VISIBLE
-        }
-
-        holder.setColor(card.color)
+        holder.bind(card, position, onItemClickListener)
     }
 
     override fun getItemCount(): Int {
@@ -74,5 +60,31 @@ class CardsAdapter(
             } catch (e: IllegalArgumentException) {
             }
         }
+
+        fun bind(card: Card, position: Int, clickListener: OnItemClickListener) {
+            title.text = card.title
+            description.text = card.description
+            priority.text = card.priority.toString()
+            periodicity.text = card.periodicity.toString()
+
+            if (card.type == Type.GOOD) {
+                like.visibility = View.VISIBLE
+                dislike.visibility = View.INVISIBLE
+            } else {
+                like.visibility = View.INVISIBLE
+                dislike.visibility = View.VISIBLE
+            }
+
+            setColor(card.color)
+
+            itemView.setOnClickListener {
+                clickListener.onItemClicked(card, position)
+            }
+        }
     }
+}
+
+
+interface OnItemClickListener {
+    fun onItemClicked(card: Card, position: Int)
 }

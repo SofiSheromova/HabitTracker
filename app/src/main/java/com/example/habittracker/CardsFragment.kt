@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.CardsAdapter
+import com.example.habittracker.cards.OnItemClickListener
 import com.example.habittracker.databinding.FragmentCardsBinding
 
 
-class CardsFragment : Fragment() {
+class CardsFragment : Fragment(), OnItemClickListener {
     private lateinit var binding: FragmentCardsBinding
     private var fragmentSendDataListener: OnFragmentSendDataListener? = null
     private var cards = mutableListOf<Card>()
@@ -35,13 +35,16 @@ class CardsFragment : Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adapter = CardsAdapter(cards, this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCardsBinding.inflate(
-            inflater, container, false
-        )
+        binding = FragmentCardsBinding.inflate(inflater, container, false)
         val view = binding.root
 
         binding.cardsRecycler.layoutManager = LinearLayoutManager(
@@ -49,18 +52,8 @@ class CardsFragment : Fragment() {
             LinearLayoutManager.VERTICAL,
             false
         )
-        adapter = CardsAdapter(getCardClickListener(binding.cardsRecycler), cards)
         binding.cardsRecycler.adapter = adapter
         return view
-    }
-
-    private fun getCardClickListener(cardsRecycler: RecyclerView): View.OnClickListener {
-        return View.OnClickListener { view ->
-            if (view == null) return@OnClickListener
-            val itemPosition: Int = cardsRecycler.getChildLayoutPosition(view)
-            val item = adapter[itemPosition]
-            fragmentSendDataListener?.onSendCard(item!!, itemPosition)
-        }
     }
 
     fun addCard(card: Card) {
@@ -71,5 +64,9 @@ class CardsFragment : Fragment() {
     fun editCard(cardPosition: Int, card: Card) {
         adapter.editCard(cardPosition, card)
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onItemClicked(card: Card, position: Int) {
+        fragmentSendDataListener?.onSendCard(card, position)
     }
 }
