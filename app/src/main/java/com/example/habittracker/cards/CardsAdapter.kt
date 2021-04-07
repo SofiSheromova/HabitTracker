@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.R
+import com.example.habittracker.model.Card
+import com.example.habittracker.model.Type
 
 
 open class CardsAdapter(

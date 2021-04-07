@@ -1,73 +1,43 @@
-package com.example.habittracker.cardEditor
+package com.example.habittracker.editor
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.SeekBar
+import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import cards
 import com.example.habittracker.R
+import com.example.habittracker.databinding.FragmentCardEditorBinding
 import com.example.habittracker.model.Card
 import com.example.habittracker.model.Periodicity
 import com.example.habittracker.model.Type
-import com.example.habittracker.databinding.FragmentCardEditorBinding
 
-class CardEditorFragment : Fragment() {
+class EditorFragment : Fragment() {
 
-    companion object {
-        const val CARD_ID = "CARD_ID"
-
-        @JvmStatic
-        fun newInstance(cardId: String?) =
-            CardEditorFragment().apply {
-                arguments = Bundle().apply {
-                    putString(CARD_ID, cardId)
-                }
-            }
-    }
+    private val args by navArgs<EditorFragmentArgs>()
 
     private lateinit var binding: FragmentCardEditorBinding
 
-    private lateinit var fragmentSendDataListener: OnFragmentSendDataListener
     private lateinit var state: Card
     private var originalCard: Card? = null
 
-    internal interface OnFragmentSendDataListener {
-        fun onFormSubmit()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        try {
-            fragmentSendDataListener = context as OnFragmentSendDataListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException(
-                "$context must implement the interface " +
-                        "CardEditorFragment.OnFragmentSendDataListener"
-            )
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val cardId = arguments?.getString(CARD_ID)
-        originalCard = cards.find { it.id == cardId }
+        originalCard = args.card
         state = originalCard?.copy() ?: Card()
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCardEditorBinding.inflate(inflater, container, false)
-        val view = binding.root
 
         fillFieldsWithValues(state)
 
@@ -79,7 +49,7 @@ class CardEditorFragment : Fragment() {
         binding.daysNumberEdit.addTextChangedListener(getDaysNumberTextWatcher(state))
         binding.submitButton.setOnClickListener(getSubmitClickListener(state))
 
-        return view
+        return binding.root
     }
 
     private fun fillFieldsWithValues(card: Card) {
@@ -179,7 +149,7 @@ class CardEditorFragment : Fragment() {
             } else {
                 cards.add(card)
             }
-            fragmentSendDataListener.onFormSubmit()
+            Navigation.findNavController(binding.root).navigate(R.id.action_nav_editor_to_nav_home)
         }
     }
 

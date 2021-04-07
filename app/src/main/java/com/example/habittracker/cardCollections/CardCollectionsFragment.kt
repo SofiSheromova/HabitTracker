@@ -10,6 +10,7 @@ import androidx.viewpager2.widget.ViewPager2
 import cards
 import com.example.habittracker.R
 import com.example.habittracker.cards.*
+import com.example.habittracker.model.Card
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 

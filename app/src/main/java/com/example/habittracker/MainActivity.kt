@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.example.habittracker.cardCollections.CardCollectionsFragment
 import com.example.habittracker.cardEditor.CardEditorActivity
-import com.example.habittracker.cards.Card
+import com.example.habittracker.model.Card
 import com.example.habittracker.cards.OnFragmentSendDataListener
 import com.example.habittracker.databinding.ActivityMainBinding
 
