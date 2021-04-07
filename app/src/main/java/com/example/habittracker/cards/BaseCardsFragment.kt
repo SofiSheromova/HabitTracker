@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.habittracker.databinding.FragmentCardsOldBinding
+import com.example.habittracker.databinding.FragmentCardsBinding
 
 interface HasCardsAdapterManager {
     val adapterManager: CardsAdapterManager
@@ -18,7 +18,7 @@ internal interface OnFragmentSendDataListener {
 }
 
 open class BaseCardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
-    private lateinit var binding: FragmentCardsOldBinding
+    private lateinit var binding: FragmentCardsBinding
     private lateinit var fragmentSendDataListener: OnFragmentSendDataListener
     protected lateinit var adapterManager: CardsAdapterManager
     protected lateinit var adapter: CardsAdapter
@@ -52,7 +52,7 @@ open class BaseCardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCardsOldBinding.inflate(inflater, container, false)
+        binding = FragmentCardsBinding.inflate(inflater, container, false)
         val view = binding.root
 
         binding.cardsRecycler.layoutManager = LinearLayoutManager(
