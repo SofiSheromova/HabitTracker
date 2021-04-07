@@ -9,35 +9,43 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habittracker.databinding.FragmentCardsOldBinding
 
-val cards = mutableListOf<Card>()
+interface HasCardsAdapterManager {
+    val adapterManager: CardsAdapterManager
+}
 
-class CardsFragment : Fragment(), OnItemClickListener {
+internal interface OnFragmentSendDataListener {
+    fun onSendCard(selectedItem: Card)
+}
+
+open class BaseCardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var binding: FragmentCardsOldBinding
-    private var fragmentSendDataListener: OnFragmentSendDataListener? = null
-    private lateinit var adapterManager: CardsAdapterManager
-    private lateinit var adapter: CardsAdapter
-
-    internal interface OnFragmentSendDataListener {
-        fun onSendCard(selectedItem: Card, selectedIndex: Int)
-    }
+    private lateinit var fragmentSendDataListener: OnFragmentSendDataListener
+    protected lateinit var adapterManager: CardsAdapterManager
+    protected lateinit var adapter: CardsAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            fragmentSendDataListener = context as OnFragmentSendDataListener
+            fragmentSendDataListener = parentFragment as OnFragmentSendDataListener
         } catch (e: ClassCastException) {
             throw ClassCastException(
-                "$context must implement the interface " +
+                "$parentFragment must implement the interface " +
                         "CardsFragment.OnFragmentSendDataListener"
+            )
+        }
+
+        try {
+            adapterManager = (parentFragment as HasCardsAdapterManager).adapterManager
+        } catch (e: ClassCastException) {
+            throw ClassCastException(
+                "$parentFragment must implement the interface HasCardsAdapterManager"
             )
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapterManager = CardsAdapterManager(cards, this)
-        //adapter = adaptersManager.createAdapter()
-        adapter = adapterManager.createFilterAdapter { it.type == Type.GOOD }
+        adapter = adapterManager.createAdapter()
     }
 
     override fun onCreateView(
@@ -56,24 +64,7 @@ class CardsFragment : Fragment(), OnItemClickListener {
         return view
     }
 
-    fun addCard(card: Card) {
-        adapterManager.addCard(card)
-//        adapter.addCards(card)
-//        adapter.notifyItemInserted(adapter.itemCount - 1)
-    }
-
-    fun editCard(cardPosition: Int, card: Card) {
-        adapterManager.editCard(cardPosition, card)
-//        adapter.editCard(cardPosition, card)
-//        adapter.notifyItemChanged(cardPosition)
-    }
-
-    fun notifyItemChanged() {
-        adapterManager.notifyItemChanged()
-    }
-
     override fun onItemClicked(card: Card) {
-        val cardIndex = adapter.indexOf(card)
-        fragmentSendDataListener?.onSendCard(card, cardIndex)
+        fragmentSendDataListener.onSendCard(card)
     }
 }

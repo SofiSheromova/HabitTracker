@@ -17,6 +17,10 @@ open class CardsAdapter(
 ) :
     RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
 
+    interface OnItemClickListener {
+        fun onItemClicked(card: Card)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view: View = LayoutInflater
             .from(parent.context)
@@ -32,14 +36,6 @@ open class CardsAdapter(
     override fun getItemCount(): Int {
         return cards.size
     }
-
-//    fun addCards(vararg items: Card) {
-//        cards.addAll(items)
-//    }
-
-//    fun editCard(position: Int, card: Card) {
-//        cards[position] = card
-//    }
 
     open operator fun get(itemPosition: Int): Card? {
         return cards.getOrNull(itemPosition)
@@ -87,8 +83,4 @@ open class CardsAdapter(
             }
         }
     }
-}
-
-interface OnItemClickListener {
-    fun onItemClicked(card: Card)
 }

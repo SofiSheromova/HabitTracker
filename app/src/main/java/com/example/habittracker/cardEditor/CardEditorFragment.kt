@@ -12,18 +12,17 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import cards
 import com.example.habittracker.R
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.Periodicity
 import com.example.habittracker.cards.Type
-import com.example.habittracker.cards.cards
 import com.example.habittracker.databinding.FragmentCardEditorBinding
 
 class CardEditorFragment : Fragment() {
 
     companion object {
         const val CARD_ID = "CARD_ID"
-//        const val CARD_POSITION = "POSITION"
 
         @JvmStatic
         fun newInstance(cardId: String?) =
@@ -39,10 +38,9 @@ class CardEditorFragment : Fragment() {
     private lateinit var fragmentSendDataListener: OnFragmentSendDataListener
     private lateinit var state: Card
     private var originalCard: Card? = null
-//    private var cardPosition: Int = -1
 
     internal interface OnFragmentSendDataListener {
-        fun submit()
+        fun onFormSubmit()
     }
 
     override fun onAttach(context: Context) {
@@ -59,12 +57,9 @@ class CardEditorFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        val data = extractCardFrom(arguments)
         val cardId = arguments?.getString(CARD_ID)
-        val index = cards.indexOfFirst { it.id == cardId }
         originalCard = cards.find { it.id == cardId }
         state = originalCard?.copy() ?: Card()
-        //        cardPosition = data.position
     }
 
     override fun onCreateView(
@@ -184,7 +179,7 @@ class CardEditorFragment : Fragment() {
             } else {
                 cards.add(card)
             }
-            fragmentSendDataListener.submit()
+            fragmentSendDataListener.onFormSubmit()
         }
     }
 
@@ -239,5 +234,3 @@ class CardEditorFragment : Fragment() {
         return isValid
     }
 }
-
-data class Item<T>(val position: Int, val value: T)
