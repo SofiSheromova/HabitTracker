@@ -16,4 +16,7 @@
     <string name="invalid_value">Некорректное значение</string>
     <string name="good">хорошая</string>
     <string name="bad">плохая</string>
+    <string name="menu_home">Главная</string>
+    <string name="menu_info">Информация</string>
+    <string name="menu_editor">Редактор</string>
 </resources>

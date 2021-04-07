@@ -9,7 +9,7 @@
         android:id="@+id/nav_home"
         android:name="com.example.habittracker.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_card_collections">
         <action
             android:id="@+id/action_nav_home_to_nav_editor"
             app:destination="@id/nav_editor" />
@@ -25,7 +25,7 @@
         android:id="@+id/nav_editor"
         android:name="com.example.habittracker.editor.EditorFragment"
         android:label="@string/menu_editor"
-        tools:layout="@layout/fragment_editor" >
+        tools:layout="@layout/fragment_card_editor">
         <action
             android:id="@+id/action_nav_editor_to_nav_home"
             app:destination="@id/nav_home" />

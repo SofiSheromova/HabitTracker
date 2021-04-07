@@ -10,7 +10,6 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import androidx.viewpager2.widget.ViewPager2
 import cards
 import com.example.habittracker.R
-import com.example.habittracker.cardCollections.CardCollectionsAdapter
 import com.example.habittracker.cards.CardsAdapter
 import com.example.habittracker.cards.CardsAdapterManager
 import com.example.habittracker.cards.HasCardsAdapterManager
@@ -22,27 +21,13 @@ import com.google.android.material.tabs.TabLayoutMediator
 class HomeFragment :
     Fragment(),
     CardsAdapter.OnItemClickListener,
-//    OnFragmentSendDataListener,
     HasCardsAdapterManager {
 
     private lateinit var binding: FragmentCardCollectionsBinding
     private lateinit var cardCollectionsAdapter: CardCollectionsAdapter
     private lateinit var viewPager: ViewPager2
 
-    //    private lateinit var fragmentSendDataListener: OnFragmentSendDataListener
     override lateinit var adapterManager: CardsAdapterManager
-
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        try {
-//            fragmentSendDataListener = context as OnFragmentSendDataListener
-//        } catch (e: ClassCastException) {
-//            throw ClassCastException(
-//                "$context must implement the interface " +
-//                        "OnFragmentSendDataListener"
-//            )
-//        }
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +74,4 @@ class HomeFragment :
             Navigation.findNavController(binding.root).navigate(action)
         }
     }
-
-//    override fun onSendCard(selectedItem: Card) {
-//        fragmentSendDataListener.onSendCard(selectedItem)
-//    }
 }
