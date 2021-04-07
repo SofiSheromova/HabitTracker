@@ -11,11 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.R
 
 
-class CardsAdapter(
+open class CardsAdapter(
     private val cards: MutableList<Card>,
     private val onItemClickListener: OnItemClickListener,
 ) :
     RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
+
+    interface OnItemClickListener {
+        fun onItemClicked(card: Card)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view: View = LayoutInflater
@@ -26,23 +30,19 @@ class CardsAdapter(
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val card: Card = cards[position]
-        holder.bind(card, position, onItemClickListener)
+        holder.bind(card, onItemClickListener)
     }
 
     override fun getItemCount(): Int {
         return cards.size
     }
 
-    fun addCards(vararg items: Card) {
-        cards.addAll(items)
-    }
-
-    fun editCard(position: Int, card: Card) {
-        cards[position] = card
-    }
-
-    operator fun get(itemPosition: Int): Card? {
+    open operator fun get(itemPosition: Int): Card? {
         return cards.getOrNull(itemPosition)
+    }
+
+    open fun indexOf(card: Card): Int {
+        return cards.indexOf(card)
     }
 
     class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -55,13 +55,14 @@ class CardsAdapter(
 
         var card: CardView = itemView.findViewById<View>(R.id.card) as CardView
         val setColor = { color: String? ->
-            try {
-                card.setCardBackgroundColor(Color.parseColor(color))
-            } catch (e: IllegalArgumentException) {
-            }
+            if (color != null)
+                try {
+                    card.setCardBackgroundColor(Color.parseColor(color))
+                } catch (e: IllegalArgumentException) {
+                }
         }
 
-        fun bind(card: Card, position: Int, clickListener: OnItemClickListener) {
+        fun bind(card: Card, clickListener: OnItemClickListener) {
             title.text = card.title
             description.text = card.description
             priority.text = card.priority.toString()
@@ -78,13 +79,8 @@ class CardsAdapter(
             setColor(card.color)
 
             itemView.setOnClickListener {
-                clickListener.onItemClicked(card, position)
+                clickListener.onItemClicked(card)
             }
         }
     }
-}
-
-
-interface OnItemClickListener {
-    fun onItemClicked(card: Card, position: Int)
 }

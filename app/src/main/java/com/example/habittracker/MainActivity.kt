@@ -4,12 +4,13 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.example.habittracker.cardCollections.CardCollectionsFragment
+import com.example.habittracker.cardEditor.CardEditorActivity
 import com.example.habittracker.cards.Card
+import com.example.habittracker.cards.OnFragmentSendDataListener
 import com.example.habittracker.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(),
-    CardsFragment.OnFragmentSendDataListener,
-    CardEditorFragment.OnFragmentSendDataListener {
+class MainActivity : AppCompatActivity(), OnFragmentSendDataListener {
     companion object {
         private const val CREATE_CARD = 56
         private const val EDIT_CARD = 45
@@ -33,22 +34,11 @@ class MainActivity : AppCompatActivity(),
 
         // TODO: дорогая ли это операция? Данный фрагмент добавлен из xml,
         //  есть ли смысл вынести это в поле класса и не искать?
-        val cardsFragment = supportFragmentManager
-            .findFragmentById(R.id.cards_fragment) as CardsFragment?
+        val cardCollectionsFragment = supportFragmentManager
+            .findFragmentById(R.id.cards_fragment) as CardCollectionsFragment?
 
-        when (requestCode) {
-            CREATE_CARD -> {
-                val card = Card.fromJsonOrNull(data?.getStringExtra(CardEditorActivity.CARD_JSON))
-                if (cardsFragment != null && card != null)
-                    cardsFragment.addCard(card)
-            }
-            EDIT_CARD -> {
-                val card = Card.fromJsonOrNull(data?.getStringExtra(CardEditorActivity.CARD_JSON))
-                val position = data?.getIntExtra(CardEditorActivity.CARD_POSITION, -1) ?: -1
-                if (cardsFragment != null && card != null && position != -1) {
-                    cardsFragment.editCard(position, card)
-                }
-            }
+        if (requestCode == CREATE_CARD || requestCode == EDIT_CARD) {
+            cardCollectionsFragment?.adapterManager?.notifyItemChanged()
         }
     }
 
@@ -66,25 +56,13 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onSendCard(selectedItem: Card, selectedIndex: Int) {
+    override fun onSendCard(selectedItem: Card) {
         val intent = Intent(this, CardEditorActivity::class.java).apply {
             val bundle = Bundle().apply {
-                putString(CardEditorActivity.CARD_JSON, selectedItem.toJSON().toString())
-                putInt(CardEditorActivity.CARD_POSITION, selectedIndex)
+                putString(CardEditorActivity.CARD_ID, selectedItem.id)
             }
             putExtras(bundle)
         }
         startActivityForResult(intent, EDIT_CARD)
-    }
-
-    override fun onSendData(card: Card, cardPosition: Int) {
-        val cardsFragment = supportFragmentManager
-            .findFragmentById(R.id.cards_fragment) as CardsFragment?
-
-        if (cardPosition >= 0) {
-            cardsFragment?.editCard(cardPosition, card)
-        } else {
-            cardsFragment?.addCard(card)
-        }
     }
 }
