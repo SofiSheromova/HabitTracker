@@ -14,7 +14,7 @@ val cards = mutableListOf<Card>()
 class CardsFragment : Fragment(), OnItemClickListener {
     private lateinit var binding: FragmentCardsOldBinding
     private var fragmentSendDataListener: OnFragmentSendDataListener? = null
-    private lateinit var adaptersManager: CardsAdapterManager
+    private lateinit var adapterManager: CardsAdapterManager
     private lateinit var adapter: CardsAdapter
 
     internal interface OnFragmentSendDataListener {
@@ -35,9 +35,9 @@ class CardsFragment : Fragment(), OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adaptersManager = CardsAdapterManager(cards, this)
+        adapterManager = CardsAdapterManager(cards, this)
         //adapter = adaptersManager.createAdapter()
-        adapter = adaptersManager.createFilterAdapter { it.type == Type.GOOD }
+        adapter = adapterManager.createFilterAdapter { it.type == Type.GOOD }
     }
 
     override fun onCreateView(
@@ -57,18 +57,23 @@ class CardsFragment : Fragment(), OnItemClickListener {
     }
 
     fun addCard(card: Card) {
-        adaptersManager.addCard(card)
+        adapterManager.addCard(card)
 //        adapter.addCards(card)
 //        adapter.notifyItemInserted(adapter.itemCount - 1)
     }
 
     fun editCard(cardPosition: Int, card: Card) {
-        adaptersManager.editCard(cardPosition, card)
+        adapterManager.editCard(cardPosition, card)
 //        adapter.editCard(cardPosition, card)
 //        adapter.notifyItemChanged(cardPosition)
     }
 
-    override fun onItemClicked(card: Card, position: Int) {
-        fragmentSendDataListener?.onSendCard(card, position)
+    fun notifyItemChanged() {
+        adapterManager.notifyItemChanged()
+    }
+
+    override fun onItemClicked(card: Card) {
+        val cardIndex = adapter.indexOf(card)
+        fragmentSendDataListener?.onSendCard(card, cardIndex)
     }
 }

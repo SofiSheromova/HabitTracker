@@ -26,7 +26,7 @@ open class CardsAdapter(
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         val card: Card = cards[position]
-        holder.bind(card, position, onItemClickListener)
+        holder.bind(card, onItemClickListener)
     }
 
     override fun getItemCount(): Int {
@@ -45,6 +45,10 @@ open class CardsAdapter(
         return cards.getOrNull(itemPosition)
     }
 
+    open fun indexOf(card: Card): Int {
+        return cards.indexOf(card)
+    }
+
     class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = itemView.findViewById<View>(R.id.card_title) as TextView
         var description: TextView = itemView.findViewById<View>(R.id.card_description) as TextView
@@ -55,13 +59,14 @@ open class CardsAdapter(
 
         var card: CardView = itemView.findViewById<View>(R.id.card) as CardView
         val setColor = { color: String? ->
-            try {
-                card.setCardBackgroundColor(Color.parseColor(color))
-            } catch (e: IllegalArgumentException) {
-            }
+            if (color != null)
+                try {
+                    card.setCardBackgroundColor(Color.parseColor(color))
+                } catch (e: IllegalArgumentException) {
+                }
         }
 
-        fun bind(card: Card, position: Int, clickListener: OnItemClickListener) {
+        fun bind(card: Card, clickListener: OnItemClickListener) {
             title.text = card.title
             description.text = card.description
             priority.text = card.priority.toString()
@@ -78,13 +83,12 @@ open class CardsAdapter(
             setColor(card.color)
 
             itemView.setOnClickListener {
-                clickListener.onItemClicked(card, position)
+                clickListener.onItemClicked(card)
             }
         }
     }
 }
 
-
 interface OnItemClickListener {
-    fun onItemClicked(card: Card, position: Int)
+    fun onItemClicked(card: Card)
 }

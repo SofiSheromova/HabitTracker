@@ -16,31 +16,33 @@ import com.example.habittracker.R
 import com.example.habittracker.cards.Card
 import com.example.habittracker.cards.Periodicity
 import com.example.habittracker.cards.Type
+import com.example.habittracker.cards.cards
 import com.example.habittracker.databinding.FragmentCardEditorBinding
 
 class CardEditorFragment : Fragment() {
 
     companion object {
-        const val CARD_JSON = "CARD_JSON"
-        const val CARD_POSITION = "POSITION"
+        const val CARD_ID = "CARD_ID"
+//        const val CARD_POSITION = "POSITION"
 
         @JvmStatic
-        fun newInstance(card: Card, cardPosition: Int) =
+        fun newInstance(cardId: String?) =
             CardEditorFragment().apply {
                 arguments = Bundle().apply {
-                    putString(CARD_JSON, card.toJSON().toString())
-                    putInt(CARD_POSITION, cardPosition)
+                    putString(CARD_ID, cardId)
                 }
             }
     }
 
     private lateinit var binding: FragmentCardEditorBinding
-    private var fragmentSendDataListener: OnFragmentSendDataListener? = null
-    private lateinit var card: Card
-    private var cardPosition: Int = -1
+
+    private lateinit var fragmentSendDataListener: OnFragmentSendDataListener
+    private lateinit var state: Card
+    private var originalCard: Card? = null
+//    private var cardPosition: Int = -1
 
     internal interface OnFragmentSendDataListener {
-        fun onSendData(card: Card, cardPosition: Int)
+        fun submit()
     }
 
     override fun onAttach(context: Context) {
@@ -57,9 +59,12 @@ class CardEditorFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val data = extractCardFrom(arguments)
-        card = data.value
-        cardPosition = data.position
+//        val data = extractCardFrom(arguments)
+        val cardId = arguments?.getString(CARD_ID)
+        val index = cards.indexOfFirst { it.id == cardId }
+        originalCard = cards.find { it.id == cardId }
+        state = originalCard?.copy() ?: Card()
+        //        cardPosition = data.position
     }
 
     override fun onCreateView(
@@ -69,23 +74,17 @@ class CardEditorFragment : Fragment() {
         binding = FragmentCardEditorBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        fillFieldsWithValues(card)
+        fillFieldsWithValues(state)
 
-        binding.titleEdit.addTextChangedListener(getTitleTextWatcher(card))
-        binding.descriptionEdit.addTextChangedListener(getDescriptionTextWatcher(card))
-        binding.typeRadioGroup.setOnCheckedChangeListener(getTypeChangeListener(card))
-        binding.prioritySeekBar.setOnSeekBarChangeListener(getPriorityChangeListener(card))
-        binding.repetitionsNumberEdit.addTextChangedListener(getRepetitionsNumberTextWatcher(card))
-        binding.daysNumberEdit.addTextChangedListener(getDaysNumberTextWatcher(card))
-        binding.submitButton.setOnClickListener(getSubmitClickListener(card, cardPosition))
+        binding.titleEdit.addTextChangedListener(getTitleTextWatcher(state))
+        binding.descriptionEdit.addTextChangedListener(getDescriptionTextWatcher(state))
+        binding.typeRadioGroup.setOnCheckedChangeListener(getTypeChangeListener(state))
+        binding.prioritySeekBar.setOnSeekBarChangeListener(getPriorityChangeListener(state))
+        binding.repetitionsNumberEdit.addTextChangedListener(getRepetitionsNumberTextWatcher(state))
+        binding.daysNumberEdit.addTextChangedListener(getDaysNumberTextWatcher(state))
+        binding.submitButton.setOnClickListener(getSubmitClickListener(state))
 
         return view
-    }
-
-    private fun extractCardFrom(bundle: Bundle?): Item<Card> {
-        val extractedCard: Card? = Card.fromJsonOrNull(bundle?.getString(CARD_JSON))
-        val cardIndex: Int = bundle?.getInt(CARD_POSITION, -1) ?: -1
-        return Item(cardIndex, extractedCard ?: Card())
     }
 
     private fun fillFieldsWithValues(card: Card) {
@@ -173,9 +172,19 @@ class CardEditorFragment : Fragment() {
         }
     }
 
-    private val getSubmitClickListener = { card: Card, cardPosition: Int ->
+    private val getSubmitClickListener = { card: Card ->
         View.OnClickListener {
-            fragmentSendDataListener?.onSendData(card, cardPosition)
+            val index = if (originalCard != null) {
+                cards.indexOf(originalCard)
+            } else {
+                -1
+            }
+            if (index != -1) {
+                cards[index] = card
+            } else {
+                cards.add(card)
+            }
+            fragmentSendDataListener.submit()
         }
     }
 

@@ -2,8 +2,11 @@ package com.example.habittracker.cards
 
 import org.json.JSONException
 import org.json.JSONObject
+import java.sql.Timestamp
+
 
 class Card(
+    var id: String,
     var title: String,
     var description: String,
     var periodicity: Periodicity,
@@ -11,6 +14,24 @@ class Card(
     var priority: Int,
     var color: String? = null
 ) {
+
+    constructor(
+        title: String,
+        description: String,
+        periodicity: Periodicity,
+        type: Type,
+        priority: Int,
+        color: String? = null
+    ) : this(
+        Timestamp(System.currentTimeMillis()).toString(),
+        title,
+        description,
+        periodicity,
+        type,
+        priority,
+        color
+    )
+
     constructor() : this(
         "",
         "",
@@ -20,6 +41,7 @@ class Card(
     )
 
     companion object {
+        private const val ID = "CARD_ID"
         private const val TITLE_KEY = "TITLE"
         private const val DESCRIPTION_KEY = "DESCRIPTION"
         private const val PRIORITY_KEY = "PRIORITY"
@@ -31,6 +53,7 @@ class Card(
         private fun fromJson(jsonString: String): Card {
             val json = JSONObject(jsonString)
             return Card(
+                json.getString(ID),
                 json.getString(TITLE_KEY),
                 json.getString(DESCRIPTION_KEY),
                 Periodicity(
@@ -54,8 +77,13 @@ class Card(
         }
     }
 
+    fun copy(): Card {
+        return Card(this.title, this.description, this.periodicity, this.type, this.priority)
+    }
+
     fun toJSON(): JSONObject {
         val content = mutableMapOf(
+            ID to id,
             TITLE_KEY to title,
             DESCRIPTION_KEY to description,
             PRIORITY_KEY to priority,
