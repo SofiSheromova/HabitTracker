@@ -149,7 +149,7 @@ class EditorFragment : Fragment() {
             } else {
                 cards.add(card)
             }
-            Navigation.findNavController(binding.root).navigate(R.id.action_nav_editor_to_nav_home)
+            Navigation.findNavController(binding.root).popBackStack()
         }
     }
 

@@ -26,9 +26,6 @@
         android:name="com.example.habittracker.editor.EditorFragment"
         android:label="@string/menu_editor"
         tools:layout="@layout/fragment_card_editor">
-        <action
-            android:id="@+id/action_nav_editor_to_nav_home"
-            app:destination="@id/nav_home" />
         <argument
             android:name="card"
             app:argType="com.example.habittracker.model.Card"
