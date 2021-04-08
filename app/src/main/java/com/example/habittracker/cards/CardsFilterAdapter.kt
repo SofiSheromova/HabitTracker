@@ -1,5 +1,7 @@
 package com.example.habittracker.cards
 
+import com.example.habittracker.model.Card
+
 class CardsFilterAdapter(
     private val cards: MutableList<Card>,
     private val onItemClickListener: OnItemClickListener,

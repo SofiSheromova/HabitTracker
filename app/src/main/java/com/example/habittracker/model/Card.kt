@@ -1,5 +1,7 @@
-package com.example.habittracker.cards
+package com.example.habittracker.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import java.sql.Timestamp
 
 class Card(
@@ -9,8 +11,17 @@ class Card(
     var type: Type,
     var priority: Int,
     var color: String? = null
-) {
+) : Parcelable {
     val id: String = Timestamp(System.currentTimeMillis()).toString()
+
+    constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        Periodicity(parcel.readInt(), parcel.readInt()),
+        Type.valueOf(parcel.readInt()),
+        parcel.readInt(),
+        parcel.readString()
+    )
 
     constructor() : this(
         "",
@@ -22,6 +33,27 @@ class Card(
 
     fun copy(): Card {
         return Card(this.title, this.description, this.periodicity, this.type, this.priority)
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(title)
+        parcel.writeString(description)
+        parcel.writeInt(priority)
+        parcel.writeString(color)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Card> {
+        override fun createFromParcel(parcel: Parcel): Card {
+            return Card(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Card?> {
+            return arrayOfNulls(size)
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-package com.example.habittracker.cardCollections
+package com.example.habittracker.home
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter

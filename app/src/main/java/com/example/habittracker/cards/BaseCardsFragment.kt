@@ -8,31 +8,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habittracker.databinding.FragmentCardsBinding
+import com.example.habittracker.model.Card
 
 interface HasCardsAdapterManager {
     val adapterManager: CardsAdapterManager
 }
 
-internal interface OnFragmentSendDataListener {
-    fun onSendCard(selectedItem: Card)
-}
-
-open class BaseCardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
+open class BaseCardsFragment : Fragment() {
     private lateinit var binding: FragmentCardsBinding
-    private lateinit var fragmentSendDataListener: OnFragmentSendDataListener
+
     protected lateinit var adapterManager: CardsAdapterManager
     protected lateinit var adapter: CardsAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        try {
-            fragmentSendDataListener = parentFragment as OnFragmentSendDataListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException(
-                "$parentFragment must implement the interface " +
-                        "CardsFragment.OnFragmentSendDataListener"
-            )
-        }
 
         try {
             adapterManager = (parentFragment as HasCardsAdapterManager).adapterManager
@@ -62,9 +51,5 @@ open class BaseCardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         )
         binding.cardsRecycler.adapter = adapter
         return view
-    }
-
-    override fun onItemClicked(card: Card) {
-        fragmentSendDataListener.onSendCard(card)
     }
 }

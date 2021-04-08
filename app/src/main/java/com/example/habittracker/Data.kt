@@ -1,3 +1,3 @@
-import com.example.habittracker.cards.Card
+import com.example.habittracker.model.Card
 
 val cards = mutableListOf<Card>()

@@ -1,5 +1,7 @@
 package com.example.habittracker.cards
 
+import com.example.habittracker.model.Card
+
 
 class CardsAdapterManager(
     private val cards: MutableList<Card>,
