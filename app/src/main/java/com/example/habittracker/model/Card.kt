@@ -1,8 +1,22 @@
 package com.example.habittracker.model
 
+import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import java.sql.Timestamp
+import kotlin.random.Random
+
+
+fun generateColor(): String {
+    return String.format(
+        "#%06X", 0xFFFFFF and Color.argb(
+            100,
+            Random.nextInt(180, 240),
+            Random.nextInt(180, 240),
+            Random.nextInt(180, 240)
+        )
+    )
+}
 
 class Card(
     var title: String,
@@ -10,7 +24,7 @@ class Card(
     var periodicity: Periodicity,
     var type: Type,
     var priority: Int,
-    var color: String? = null
+    var color: String? = generateColor()
 ) : Parcelable {
     val id: String = Timestamp(System.currentTimeMillis()).toString()
 
