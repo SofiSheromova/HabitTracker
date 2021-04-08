@@ -17,7 +17,7 @@ class InfoFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_info, container, false)
         val textView: TextView = root.findViewById(R.id.text_info)
-        textView.text = "Info Fragment"
+        textView.text = resources.getString(R.string.info)
 
         return root
     }

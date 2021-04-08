@@ -20,10 +20,4 @@ class CardsAdapterManager(
         adapters.add(adapter)
         return adapter
     }
-
-    fun notifyItemChanged() {
-        for (adapter in adapters) {
-            adapter.notifyDataSetChanged()
-        }
-    }
 }

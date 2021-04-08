@@ -19,4 +19,7 @@
     <string name="menu_home">Главная</string>
     <string name="menu_info">Информация</string>
     <string name="menu_editor">Редактор</string>
+    <string name="info">Приложения для контроля за плохими и хорошими привычками</string>
+    <string name="good_habits">хорошие привычки</string>
+    <string name="bad_habits">плохие привычки</string>
 </resources>

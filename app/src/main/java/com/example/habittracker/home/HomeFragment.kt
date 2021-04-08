@@ -51,7 +51,10 @@ class HomeFragment :
 
         val tabLayout = view.findViewById(R.id.cardCollectionsTabLayout) as TabLayout
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = "collection ${(position + 1)}"
+            tab.text = when (position) {
+                0 -> resources.getString(R.string.good_habits)
+                else -> resources.getString(R.string.bad_habits)
+            }
         }.attach()
 
     }
