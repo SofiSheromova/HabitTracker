@@ -1,4 +1,4 @@
-package com.example.habittracker.cards
+package com.example.habittracker.ui.cards
 
 import android.graphics.Color
 import android.view.LayoutInflater

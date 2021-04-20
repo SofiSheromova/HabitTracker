@@ -68,6 +68,33 @@ class Card(
         override fun newArray(size: Int): Array<Card?> {
             return arrayOfNulls(size)
         }
+
+        private val _cards = mutableMapOf<String, Card>()
+
+        fun getAll(): List<Card> {
+            return _cards.values.toList()
+        }
+
+        fun getById(id: String): Card? {
+            return _cards[id]
+        }
+
+        fun insertAll(vararg cards: Card) {
+            for (card in cards) {
+                _cards[card.id] = card
+            }
+        }
+
+        fun update(id: String, card: Card): Boolean {
+            val originalCard = _cards[id] ?: return false
+            originalCard.title = card.title
+            originalCard.description = card.description
+            originalCard.periodicity = card.periodicity
+            originalCard.type = card.type
+            originalCard.priority = card.priority
+            originalCard.color = card.color
+            return true
+        }
     }
 }
 

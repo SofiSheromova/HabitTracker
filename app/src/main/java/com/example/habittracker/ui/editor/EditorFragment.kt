@@ -1,4 +1,4 @@
-package com.example.habittracker.editor
+package com.example.habittracker.ui.editor
 
 import android.os.Bundle
 import android.text.Editable
@@ -6,48 +6,46 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
-import cards
 import com.example.habittracker.R
-import com.example.habittracker.databinding.FragmentCardEditorBinding
+import com.example.habittracker.databinding.FragmentEditorBinding
 import com.example.habittracker.model.Card
-import com.example.habittracker.model.Periodicity
 import com.example.habittracker.model.Type
+import com.example.habittracker.model.Periodicity
+import com.example.habittracker.ui.home.HomeViewModel
 
 class EditorFragment : Fragment() {
-
-    private val args by navArgs<EditorFragmentArgs>()
-
-    private lateinit var binding: FragmentCardEditorBinding
-
-    private lateinit var state: Card
-    private var originalCard: Card? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        originalCard = args.card
-        state = originalCard?.copy() ?: Card()
-    }
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var editorViewModel: EditorViewModel
+    private lateinit var binding: FragmentEditorBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCardEditorBinding.inflate(inflater, container, false)
+        binding = FragmentEditorBinding.inflate(inflater, container, false)
 
-        fillFieldsWithValues(state)
+        homeViewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
+        editorViewModel = ViewModelProvider(requireActivity()).get(EditorViewModel::class.java)
 
-        binding.titleEdit.addTextChangedListener(getTitleTextWatcher(state))
-        binding.descriptionEdit.addTextChangedListener(getDescriptionTextWatcher(state))
-        binding.typeRadioGroup.setOnCheckedChangeListener(getTypeChangeListener(state))
-        binding.prioritySeekBar.setOnSeekBarChangeListener(getPriorityChangeListener(state))
-        binding.repetitionsNumberEdit.addTextChangedListener(getRepetitionsNumberTextWatcher(state))
-        binding.daysNumberEdit.addTextChangedListener(getDaysNumberTextWatcher(state))
-        binding.submitButton.setOnClickListener(getSubmitClickListener(state))
+        editorViewModel.cardLiveData.observe(viewLifecycleOwner, {
+            fillFieldsWithValues(it)
+        })
+
+        binding.titleEdit.addTextChangedListener(getTitleTextWatcher())
+        binding.descriptionEdit.addTextChangedListener(getDescriptionTextWatcher())
+        binding.typeRadioGroup.setOnCheckedChangeListener(getTypeChangeListener())
+        binding.prioritySeekBar.setOnSeekBarChangeListener(getPriorityChangeListener())
+        binding.repetitionsNumberEdit.addTextChangedListener(getRepetitionsNumberTextWatcher())
+        binding.daysNumberEdit.addTextChangedListener(getDaysNumberTextWatcher())
+        binding.submitButton.setOnClickListener(getSubmitClickListener())
 
         return binding.root
     }
@@ -69,7 +67,7 @@ class EditorFragment : Fragment() {
         binding.daysNumberEdit.setText(card.periodicity.daysNumber.toString())
     }
 
-    private val getTitleTextWatcher = { card: Card ->
+    private val getTitleTextWatcher = {
         object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -87,14 +85,15 @@ class EditorFragment : Fragment() {
                         binding.titleEdit.error = resources.getString(R.string.maximum_length)
                     }
                     else -> {
-                        card.title = binding.titleEdit.text.toString()
+                        editorViewModel.setTitle(binding.titleEdit.text.toString())
+//                        card.title = binding.titleEdit.text.toString()
                     }
                 }
             }
         }
     }
 
-    private val getDescriptionTextWatcher = { card: Card ->
+    private val getDescriptionTextWatcher = {
         object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -109,24 +108,28 @@ class EditorFragment : Fragment() {
                         binding.descriptionEdit.error = resources.getString(R.string.maximum_length)
                     }
                     else -> {
-                        card.description = binding.descriptionEdit.text.toString()
+                        editorViewModel.setDescription(binding.descriptionEdit.text.toString())
+//                        card.description = binding.descriptionEdit.text.toString()
                     }
                 }
             }
         }
     }
 
-    private val getTypeChangeListener = { card: Card ->
+    private val getTypeChangeListener = {
         RadioGroup.OnCheckedChangeListener { group, checkedId ->
             val checkedRadioButton = group!!.findViewById(checkedId) as RadioButton
-            card.type = Type.valueOf(group.indexOfChild(checkedRadioButton))
+            val index = group.indexOfChild(checkedRadioButton)
+            editorViewModel.setType(index)
+//            card.type = Type.valueOf(index)
         }
     }
 
-    private val getPriorityChangeListener = { card: Card ->
+    private val getPriorityChangeListener = {
         object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                card.priority = progress
+                editorViewModel.setPriority(progress)
+//                card.priority = progress
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -137,23 +140,7 @@ class EditorFragment : Fragment() {
         }
     }
 
-    private val getSubmitClickListener = { card: Card ->
-        View.OnClickListener {
-            val index = if (originalCard != null) {
-                cards.indexOf(originalCard)
-            } else {
-                -1
-            }
-            if (index != -1) {
-                cards[index] = card
-            } else {
-                cards.add(card)
-            }
-            Navigation.findNavController(binding.root).popBackStack()
-        }
-    }
-
-    private val getRepetitionsNumberTextWatcher = { card: Card ->
+    private val getRepetitionsNumberTextWatcher = {
         object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -164,13 +151,14 @@ class EditorFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 val content = s.toString()
                 if (numberFieldValidator(binding.repetitionsNumberEdit)) {
-                    card.periodicity = Periodicity(content.toInt(), card.periodicity.daysNumber)
+                    editorViewModel.setRepetitionsNumber(content.toInt())
+//                    card.periodicity = Periodicity(content.toInt(), card.periodicity.daysNumber)
                 }
             }
         }
     }
 
-    private val getDaysNumberTextWatcher = { card: Card ->
+    private val getDaysNumberTextWatcher = {
         object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -181,8 +169,9 @@ class EditorFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 val content = s.toString()
                 if (numberFieldValidator(binding.daysNumberEdit)) {
-                    card.periodicity =
-                        Periodicity(card.periodicity.repetitionsNumber, content.toInt())
+                    editorViewModel.setDaysNumber(content.toInt())
+//                    card.periodicity =
+//                        Periodicity(card.periodicity.repetitionsNumber, content.toInt())
                 }
             }
         }
@@ -202,5 +191,14 @@ class EditorFragment : Fragment() {
             }
         }
         return isValid
+    }
+
+    private val getSubmitClickListener = {
+        View.OnClickListener {
+            editorViewModel.updateCard()
+            homeViewModel.refreshValue()
+
+            Navigation.findNavController(binding.root).popBackStack()
+        }
     }
 }
