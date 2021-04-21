@@ -92,7 +92,7 @@ class Card(
             originalCard.periodicity = card.periodicity
             originalCard.type = card.type
             originalCard.priority = card.priority
-            originalCard.color = card.color
+            //originalCard.color = card.color
             return true
         }
     }

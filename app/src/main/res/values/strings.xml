@@ -22,4 +22,5 @@
     <string name="good_habits">good habits</string>
     <string name="bad_habits">bad habits</string>
     <string name="info">Apps for controlling good and bad habits</string>
+    <string name="error_too_short">Too short</string>
 </resources>

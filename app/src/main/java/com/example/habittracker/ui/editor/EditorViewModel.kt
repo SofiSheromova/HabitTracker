@@ -1,5 +1,8 @@
 package com.example.habittracker.ui.editor
 
+import android.view.View.OnFocusChangeListener
+import android.widget.EditText
+import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,58 +16,89 @@ class EditorViewModel : ViewModel() {
             value = null
         }
 
-    private val _stateLiveData: MutableLiveData<Card> = MutableLiveData<Card>()
-        .apply {
-            value = Card()
-        }
-
-    val cardLiveData: LiveData<Card> = _stateLiveData
+    val editor: EditorFields = EditorFields()
+    var isSaving = false
 
     fun setCard(card: Card) {
         _original.value = card
-        _stateLiveData.value = card.copy()
+        editor.fillFields(card)
     }
 
     fun setEmptyCard() {
         _original.value = null
-        _stateLiveData.value = Card()
+        editor.clearFields()
     }
 
-    fun updateCard() {
-        _original.value.let { original ->
-            if (original != null) {
-                _stateLiveData.value?.let { state -> Card.update(original.id, state) }
+    val onFocusTitle: OnFocusChangeListener = OnFocusChangeListener { view, focused ->
+        val et = view as EditText
+        if (et.text.isNotEmpty() && !focused) {
+            editor.isTitleValid(true)
+        }
+    }
+
+    val onFocusDescription: OnFocusChangeListener = OnFocusChangeListener { view, focused ->
+        val et = view as EditText
+        if (et.text.isNotEmpty() && !focused) {
+            editor.isDescriptionValid(true)
+        }
+    }
+
+    val onFocusRepetitionsNumber: OnFocusChangeListener = OnFocusChangeListener { view, focused ->
+        val et = view as EditText
+        if (et.text.isNotEmpty() && !focused) {
+            editor.isRepetitionsNumberValid(true)
+        }
+    }
+
+    val onFocusDaysNumber: OnFocusChangeListener = OnFocusChangeListener { view, focused ->
+        val et = view as EditText
+        if (et.text.isNotEmpty() && !focused) {
+            editor.isDaysNumberValid(true)
+        }
+    }
+
+    private val _buttonClick: MutableLiveData<EditorFields> = MutableLiveData<EditorFields>()
+    val buttonClick: LiveData<EditorFields> = _buttonClick
+
+    private fun updateCard(editor: EditorFields) {
+        val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
+        val state = Card(editor.title, editor.description, period, editor.type, editor.priority)
+        _original.value.let {
+            if (it != null) {
+                Card.update(it.id, state)
             } else {
-                _stateLiveData.value?.let { state -> Card.insertAll(state) }
+                Card.insertAll(state)
             }
         }
     }
 
-    fun setTitle(value: String) {
-        _stateLiveData.value?.title = value
-    }
-
-    fun setDescription(value: String) {
-        _stateLiveData.value?.description = value
-    }
-
-    fun setType(value: Int) {
-        _stateLiveData.value?.type = Type.valueOf(value)
-    }
-
-    fun setPriority(value: Int) {
-        _stateLiveData.value?.priority = value
-    }
-
-    fun setRepetitionsNumber(value: Int) {
-        _stateLiveData.value?.let {
-            it.periodicity = Periodicity(value, it.periodicity.daysNumber)
+    fun onButtonClick() {
+        editor.let {
+            if (it.isValid()) {
+                updateCard(it)
+                isSaving = true
+                _buttonClick.value = it
+            }
         }
     }
 
-    fun setDaysNumber(value: Int) {
-        _stateLiveData.value?.let {
-            it.periodicity = Periodicity(it.periodicity.repetitionsNumber, value)
+    companion object {
+        @BindingAdapter("error")
+        @JvmStatic
+        fun setError(editText: EditText, strOrResId: Int?) {
+            if (strOrResId is Int) {
+                editText.error = editText.context.getString((strOrResId as Int?)!!)
+            } else {
+                editText.error = strOrResId as String?
+            }
+        }
+
+        @BindingAdapter("onFocus")
+        @JvmStatic
+        fun bindFocusChange(editText: EditText, onFocusChangeListener: OnFocusChangeListener?) {
+            if (editText.onFocusChangeListener == null) {
+                editText.onFocusChangeListener = onFocusChangeListener
+            }
         }
     }
 }

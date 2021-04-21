@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id "org.jetbrains.kotlin.kapt"
 }
 
 android {
@@ -16,6 +17,8 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    android.buildFeatures.dataBinding = true
 
     buildTypes {
         release {
