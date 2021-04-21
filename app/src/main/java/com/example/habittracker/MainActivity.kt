@@ -1,68 +1,63 @@
 package com.example.habittracker
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import com.example.habittracker.cardCollections.CardCollectionsFragment
-import com.example.habittracker.cardEditor.CardEditorActivity
-import com.example.habittracker.cards.Card
-import com.example.habittracker.cards.OnFragmentSendDataListener
-import com.example.habittracker.databinding.ActivityMainBinding
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import com.google.android.material.navigation.NavigationView
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 
-class MainActivity : AppCompatActivity(), OnFragmentSendDataListener {
-    companion object {
-        private const val CREATE_CARD = 56
-        private const val EDIT_CARD = 45
-    }
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(R.layout.activity_main)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
-        setupCardCreateButton()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != RESULT_OK) return
-
-        // TODO: дорогая ли это операция? Данный фрагмент добавлен из xml,
-        //  есть ли смысл вынести это в поле класса и не искать?
-        val cardCollectionsFragment = supportFragmentManager
-            .findFragmentById(R.id.cards_fragment) as CardCollectionsFragment?
-
-        if (requestCode == CREATE_CARD || requestCode == EDIT_CARD) {
-            cardCollectionsFragment?.adapterManager?.notifyItemChanged()
-        }
-    }
-
-    private fun setupCardCreateButton() {
-        val icon = VectorDrawableCompat.create(
-            resources,
-            R.drawable.ic_baseline_add_24,
-            null
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val navController = findNavController(R.id.nav_host_fragment)
+        navController.addOnDestinationChangedListener(this)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.nav_home, R.id.nav_info), drawerLayout
         )
-        binding.cardCreateButton.setImageDrawable(icon)
-
-        binding.cardCreateButton.setOnClickListener {
-            val intent = Intent(this, CardEditorActivity::class.java)
-            startActivityForResult(intent, CREATE_CARD)
-        }
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
     }
 
-    override fun onSendCard(selectedItem: Card) {
-        val intent = Intent(this, CardEditorActivity::class.java).apply {
-            val bundle = Bundle().apply {
-                putString(CardEditorActivity.CARD_ID, selectedItem.id)
-            }
-            putExtras(bundle)
-        }
-        startActivityForResult(intent, EDIT_CARD)
+    override fun onDestroy() {
+        super.onDestroy()
+        val navController = findNavController(R.id.nav_host_fragment)
+        navController.removeOnDestinationChangedListener(this)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onDestinationChanged(
+        controller: NavController,
+        destination: NavDestination,
+        arguments: Bundle?
+    ) {
+        currentFocus?.hideKeyboard()
+    }
+
+    fun View.hideKeyboard() {
+        val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 }

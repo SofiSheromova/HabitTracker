@@ -1,4 +1,4 @@
-package com.example.habittracker.cards
+package com.example.habittracker.ui.cards
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -7,15 +7,21 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.R
+import com.example.habittracker.model.Card
+import com.example.habittracker.model.Type
 
 
 open class CardsAdapter(
-    private val cards: MutableList<Card>,
-    private val onItemClickListener: OnItemClickListener,
+    private val cardsLiveData: LiveData<List<Card>>,
+    protected val onItemClickListener: OnItemClickListener,
 ) :
     RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
+    protected val cards: List<Card>
+        get() = cardsLiveData.value ?: listOf()
+
 
     interface OnItemClickListener {
         fun onItemClicked(card: Card)
