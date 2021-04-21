@@ -41,16 +41,16 @@ class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         editorViewModel.buttonClick.observe(viewLifecycleOwner, { editorModel ->
-//            Toast.makeText(
-//                activity,
-//                "Title ${editorModel.title}, " +
-//                        "Description ${editorModel.description}, " +
-//                        "Type ${editorModel.type.value}, " +
-//                        "Priority ${editorModel.priority}, " +
-//                        "RepNumber ${editorModel.repetitionsNumber}, " +
-//                        "DaysNumber ${editorModel.daysNumber}, ",
-//                Toast.LENGTH_SHORT
-//            ).show()
+            //Toast.makeText(
+            //    activity,
+            //    "Title ${editorModel.title}, " +
+            //            "Description ${editorModel.description}, " +
+            //            "Type ${editorModel.type.value}, " +
+            //            "Priority ${editorModel.priority}, " +
+            //            "RepNumber ${editorModel.repetitionsNumber}, " +
+            //            "DaysNumber ${editorModel.daysNumber}, ",
+            //    Toast.LENGTH_SHORT
+            //).show()
 
             // TODO не понятно почему observer запускается каждый раз кроме первого
             if (editorViewModel.isSaving) {

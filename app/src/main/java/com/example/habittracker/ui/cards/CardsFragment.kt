@@ -20,7 +20,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var cardsViewModel: CardsViewModel
     private lateinit var editorViewModel: EditorViewModel
 
-    private lateinit var adapter: FilterCardsAdapter
+    private lateinit var adapter: CardsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,12 +30,18 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         editorViewModel = ViewModelProvider(requireActivity())
             .get(EditorViewModel::class.java)
 
-        var filter: (Card) -> Boolean = { true }
+        var filter: ((Card) -> Boolean)? = null
         arguments?.takeIf { it.containsKey(FILTER_NAME) }?.apply {
-            filter = FILTERS[getString(FILTER_NAME)] ?: filter
+            filter = FILTERS[getString(FILTER_NAME)]
         }
 
-        adapter = FilterCardsAdapter(cardsViewModel.habitsLiveData, this, filter)
+        filter.let {
+            adapter = if (it == null) {
+                CardsAdapter(cardsViewModel.habitsLiveData, this)
+            } else {
+                FilterCardsAdapter(cardsViewModel.habitsLiveData, this, it)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -55,7 +61,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     }
 
     companion object {
-        const val FILTER_NAME = "object"
+        const val FILTER_NAME = "FILTER_NAME"
         const val GOOD_TYPE = "GOOD_TYPE"
         const val BAD_TYPE = "BAD_TYPE"
         private val FILTERS = mapOf<String, (Card) -> Boolean>(
