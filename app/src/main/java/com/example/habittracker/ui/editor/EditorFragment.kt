@@ -10,20 +10,26 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentEditorBinding
 import com.example.habittracker.model.Card
 import com.example.habittracker.model.Type
-import com.example.habittracker.model.Periodicity
-import com.example.habittracker.ui.home.HomeViewModel
+import com.example.habittracker.ui.cards.CardsViewModel
 
 class EditorFragment : Fragment() {
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var cardsViewModel: CardsViewModel
     private lateinit var editorViewModel: EditorViewModel
     private lateinit var binding: FragmentEditorBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        cardsViewModel = ViewModelProvider(requireActivity())
+            .get(CardsViewModel::class.java)
+        editorViewModel = ViewModelProvider(requireActivity())
+            .get(EditorViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,10 +37,11 @@ class EditorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        homeViewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
-        editorViewModel = ViewModelProvider(requireActivity()).get(EditorViewModel::class.java)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         editorViewModel.cardLiveData.observe(viewLifecycleOwner, {
             fillFieldsWithValues(it)
         })
@@ -46,8 +53,6 @@ class EditorFragment : Fragment() {
         binding.repetitionsNumberEdit.addTextChangedListener(getRepetitionsNumberTextWatcher())
         binding.daysNumberEdit.addTextChangedListener(getDaysNumberTextWatcher())
         binding.submitButton.setOnClickListener(getSubmitClickListener())
-
-        return binding.root
     }
 
     private fun fillFieldsWithValues(card: Card) {
@@ -86,7 +91,6 @@ class EditorFragment : Fragment() {
                     }
                     else -> {
                         editorViewModel.setTitle(binding.titleEdit.text.toString())
-//                        card.title = binding.titleEdit.text.toString()
                     }
                 }
             }
@@ -109,7 +113,6 @@ class EditorFragment : Fragment() {
                     }
                     else -> {
                         editorViewModel.setDescription(binding.descriptionEdit.text.toString())
-//                        card.description = binding.descriptionEdit.text.toString()
                     }
                 }
             }
@@ -121,7 +124,6 @@ class EditorFragment : Fragment() {
             val checkedRadioButton = group!!.findViewById(checkedId) as RadioButton
             val index = group.indexOfChild(checkedRadioButton)
             editorViewModel.setType(index)
-//            card.type = Type.valueOf(index)
         }
     }
 
@@ -129,7 +131,6 @@ class EditorFragment : Fragment() {
         object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 editorViewModel.setPriority(progress)
-//                card.priority = progress
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -152,7 +153,6 @@ class EditorFragment : Fragment() {
                 val content = s.toString()
                 if (numberFieldValidator(binding.repetitionsNumberEdit)) {
                     editorViewModel.setRepetitionsNumber(content.toInt())
-//                    card.periodicity = Periodicity(content.toInt(), card.periodicity.daysNumber)
                 }
             }
         }
@@ -170,8 +170,6 @@ class EditorFragment : Fragment() {
                 val content = s.toString()
                 if (numberFieldValidator(binding.daysNumberEdit)) {
                     editorViewModel.setDaysNumber(content.toInt())
-//                    card.periodicity =
-//                        Periodicity(card.periodicity.repetitionsNumber, content.toInt())
                 }
             }
         }
@@ -196,7 +194,7 @@ class EditorFragment : Fragment() {
     private val getSubmitClickListener = {
         View.OnClickListener {
             editorViewModel.updateCard()
-            homeViewModel.refreshValue()
+            cardsViewModel.refreshValue()
 
             Navigation.findNavController(binding.root).popBackStack()
         }

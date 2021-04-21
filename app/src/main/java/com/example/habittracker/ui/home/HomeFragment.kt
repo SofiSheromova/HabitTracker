@@ -10,23 +10,23 @@ import androidx.navigation.Navigation
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.habittracker.R
-import com.example.habittracker.ui.cards.*
 import com.example.habittracker.databinding.FragmentHomeBinding
-import com.example.habittracker.model.Card
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
-class HomeFragment :
-    CardsAdapter.OnItemClickListener,
-    Fragment() {
-
-    private lateinit var homeViewModel: HomeViewModel
+class HomeFragment : Fragment() {
     private lateinit var editorViewModel: EditorViewModel
     private lateinit var binding: FragmentHomeBinding
 
     private lateinit var cardCollectionsAdapter: CardCollectionsAdapter
     private lateinit var viewPager: ViewPager2
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        editorViewModel = ViewModelProvider(requireActivity())
+            .get(EditorViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,11 +35,6 @@ class HomeFragment :
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         setupCardCreateButton()
-
-        homeViewModel =
-            ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
-        editorViewModel =
-            ViewModelProvider(requireActivity()).get(EditorViewModel::class.java)
         return binding.root
     }
 
@@ -58,13 +53,6 @@ class HomeFragment :
         }.attach()
     }
 
-    override fun onItemClicked(card: Card) {
-////        val action = HomeFragmentDirections.actionNavHomeToNavEditor(card)
-////        Navigation.findNavController(binding.root).navigate(action)
-        editorViewModel.setCard(card)
-        Navigation.findNavController(binding.root).navigate(R.id.action_nav_home_to_nav_editor)
-    }
-
     private fun setupCardCreateButton() {
         val icon = VectorDrawableCompat.create(
             resources,
@@ -74,11 +62,8 @@ class HomeFragment :
         binding.cardCreateButton.setImageDrawable(icon)
 
         binding.cardCreateButton.setOnClickListener {
-//            val action = HomeFragmentDirections.actionNavHomeToNavEditor(null)
-//            Navigation.findNavController(binding.root).navigate(action)
-            editorViewModel.setCard()
+            editorViewModel.setEmptyCard()
             Navigation.findNavController(binding.root).navigate(R.id.action_nav_home_to_nav_editor)
         }
     }
 }
-

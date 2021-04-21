@@ -6,40 +6,43 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.model.Card
 import com.example.habittracker.model.Type
-import com.example.habittracker.ui.home.HomeViewModel
+import com.example.habittracker.ui.editor.EditorViewModel
 
-class CardsFragment : Fragment() {
+class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var binding: FragmentCardsBinding
-    private lateinit var homeViewModel: HomeViewModel
 
-    private lateinit var adapter: CardsAdapter
+    private lateinit var cardsViewModel: CardsViewModel
+    private lateinit var editorViewModel: EditorViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentCardsBinding.inflate(inflater, container, false)
-        val view = binding.root
+    private lateinit var adapter: FilterCardsAdapter
 
-        homeViewModel =
-            ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        cardsViewModel = ViewModelProvider(requireActivity())
+            .get(CardsViewModel::class.java)
+        editorViewModel = ViewModelProvider(requireActivity())
+            .get(EditorViewModel::class.java)
 
         var filter: (Card) -> Boolean = { true }
         arguments?.takeIf { it.containsKey(FILTER_NAME) }?.apply {
             filter = FILTERS[getString(FILTER_NAME)] ?: filter
         }
 
-        val cards = homeViewModel.habitsLiveData.value
-        val filteredCards: MutableList<Card> =
-            cards?.filter(filter)?.toMutableList() ?: mutableListOf()
+        adapter = FilterCardsAdapter(cardsViewModel.habitsLiveData, this, filter)
+    }
 
-        val onItemClickListener = parentFragment as CardsAdapter.OnItemClickListener
-
-        adapter = CardsAdapter(filteredCards, onItemClickListener)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentCardsBinding.inflate(inflater, container, false)
 
         binding.cardsRecycler.layoutManager = LinearLayoutManager(
             context,
@@ -47,7 +50,8 @@ class CardsFragment : Fragment() {
             false
         )
         binding.cardsRecycler.adapter = adapter
-        return view
+
+        return binding.root
     }
 
     companion object {
@@ -58,5 +62,10 @@ class CardsFragment : Fragment() {
             GOOD_TYPE to { card -> card.type == Type.GOOD },
             BAD_TYPE to { card -> card.type == Type.BAD }
         )
+    }
+
+    override fun onItemClicked(card: Card) {
+        editorViewModel.setCard(card)
+        Navigation.findNavController(binding.root).navigate(R.id.action_nav_home_to_nav_editor)
     }
 }

@@ -10,7 +10,7 @@ import com.example.habittracker.model.Type
 class EditorViewModel : ViewModel() {
     private val _original: MutableLiveData<Card> = MutableLiveData<Card>()
         .apply {
-            value = Card()
+            value = null
         }
 
     private val _stateLiveData: MutableLiveData<Card> = MutableLiveData<Card>()
@@ -20,14 +20,14 @@ class EditorViewModel : ViewModel() {
 
     val cardLiveData: LiveData<Card> = _stateLiveData
 
-    fun setCard() {
-        _original.value = null
-        _stateLiveData.value = Card()
-    }
-
     fun setCard(card: Card) {
         _original.value = card
         _stateLiveData.value = card.copy()
+    }
+
+    fun setEmptyCard() {
+        _original.value = null
+        _stateLiveData.value = Card()
     }
 
     fun updateCard() {
@@ -38,7 +38,6 @@ class EditorViewModel : ViewModel() {
                 _stateLiveData.value?.let { state -> Card.insertAll(state) }
             }
         }
-
     }
 
     fun setTitle(value: String) {
