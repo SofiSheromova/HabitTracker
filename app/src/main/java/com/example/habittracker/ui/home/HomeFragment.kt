@@ -54,13 +54,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCardCreateButton() {
-        val icon = VectorDrawableCompat.create(
-            resources,
-            R.drawable.ic_baseline_add_24,
-            null
-        )
-        binding.cardCreateButton.setImageDrawable(icon)
-
         binding.cardCreateButton.setOnClickListener {
             editorViewModel.setEmptyCard()
             Navigation.findNavController(binding.root).navigate(R.id.action_nav_home_to_nav_editor)
