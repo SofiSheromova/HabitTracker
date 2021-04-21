@@ -42,6 +42,10 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
                 FilterCardsAdapter(cardsViewModel.habitsLiveData, this, it)
             }
         }
+
+        cardsViewModel.habitsLiveData.observe(this, {
+            adapter.notifyDataSetChanged()
+        })
     }
 
     override fun onCreateView(

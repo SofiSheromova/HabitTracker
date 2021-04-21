@@ -4,18 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentHomeBinding
+import com.example.habittracker.ui.cards.CardsViewModel
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
+    private lateinit var cardsViewModel: CardsViewModel
     private lateinit var editorViewModel: EditorViewModel
     private lateinit var binding: FragmentHomeBinding
 
@@ -24,6 +26,8 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cardsViewModel = ViewModelProvider(requireActivity())
+            .get(CardsViewModel::class.java)
         editorViewModel = ViewModelProvider(requireActivity())
             .get(EditorViewModel::class.java)
     }
@@ -33,7 +37,11 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_home, container, false
+        )
+        binding.lifecycleOwner = this
+        binding.viewModel = cardsViewModel
         setupCardCreateButton()
         return binding.root
     }
