@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.habittracker.home.HomeFragment"
+        android:name="com.example.habittracker.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_card_collections">
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_nav_home_to_nav_editor"
             app:destination="@id/nav_editor" />
@@ -17,18 +17,13 @@
 
     <fragment
         android:id="@+id/nav_info"
-        android:name="com.example.habittracker.info.InfoFragment"
+        android:name="com.example.habittracker.ui.info.InfoFragment"
         android:label="@string/menu_info"
         tools:layout="@layout/fragment_info" />
 
     <fragment
         android:id="@+id/nav_editor"
-        android:name="com.example.habittracker.editor.EditorFragment"
+        android:name="com.example.habittracker.ui.editor.EditorFragment"
         android:label="@string/menu_editor"
-        tools:layout="@layout/fragment_card_editor">
-        <argument
-            android:name="card"
-            app:argType="com.example.habittracker.model.Card"
-            app:nullable="true" />
-    </fragment>
+        tools:layout="@layout/fragment_editor" />
 </navigation>
