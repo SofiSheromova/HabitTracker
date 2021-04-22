@@ -28,4 +28,5 @@
     <string name="sort_by_title">Сортировка по названию</string>
     <string name="arrow_down">вниз</string>
     <string name="arrow_up">вверх</string>
+    <string name="all_habits">все привычки</string>
 </resources>
