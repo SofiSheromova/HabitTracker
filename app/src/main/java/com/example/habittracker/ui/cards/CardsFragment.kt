@@ -35,13 +35,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
             filter = FILTERS[getString(FILTER_NAME)]
         }
 
-        filter.let {
-            adapter = if (it == null) {
-                CardsAdapter(cardsViewModel.habitsLiveData, this)
-            } else {
-                FilterCardsAdapter(cardsViewModel.habitsLiveData, this, it)
-            }
-        }
+        adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, filter)
 
         cardsViewModel.habitsLiveData.observe(this, {
             adapter.notifyDataSetChanged()

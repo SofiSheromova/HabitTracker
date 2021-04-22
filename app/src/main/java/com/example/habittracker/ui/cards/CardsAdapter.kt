@@ -14,14 +14,17 @@ import com.example.habittracker.model.Card
 import com.example.habittracker.model.Type
 
 
-open class CardsAdapter(
+class CardsAdapter(
     private val cardsLiveData: LiveData<List<Card>>,
-    protected val onItemClickListener: OnItemClickListener,
-) :
-    RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
-    protected val cards: List<Card>
-        get() = cardsLiveData.value ?: listOf()
-
+    private val onItemClickListener: OnItemClickListener,
+    private val filter: ((Card) -> Boolean)? = null
+) : RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
+    private val cards: List<Card>
+        get() {
+            val value = cardsLiveData.value ?: listOf()
+            filter?.let { return value.filter(it) }
+            return value
+        }
 
     interface OnItemClickListener {
         fun onItemClicked(card: Card)
@@ -43,11 +46,11 @@ open class CardsAdapter(
         return cards.size
     }
 
-    open operator fun get(itemPosition: Int): Card? {
+    operator fun get(itemPosition: Int): Card? {
         return cards.getOrNull(itemPosition)
     }
 
-    open fun indexOf(card: Card): Int {
+    fun indexOf(card: Card): Int {
         return cards.indexOf(card)
     }
 
