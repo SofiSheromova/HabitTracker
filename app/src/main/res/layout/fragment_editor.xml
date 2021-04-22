@@ -4,7 +4,7 @@
 
     <data>
 
-        <import type="android.view.View" />
+        <import type="com.example.habittracker.model.Type" />
 
         <variable
             name="viewModel"
@@ -76,7 +76,7 @@
                         android:id="@+id/radio_good"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:checked="@{viewModel.editor.isGoodType}"
+                        android:checked="@{viewModel.editor.type == Type.GOOD}"
                         android:onClick="@{() -> viewModel.editor.setGoodType()}"
                         android:text="@string/good" />
 
@@ -84,7 +84,7 @@
                         android:id="@+id/radio_bad"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:checked="@{viewModel.editor.isBadType}"
+                        android:checked="@{viewModel.editor.type == Type.BAD}"
                         android:onClick="@{() -> viewModel.editor.setBadType()}"
                         android:text="@string/bad" />
                 </RadioGroup>
@@ -118,8 +118,8 @@
                         android:id="@+id/repetitions_number_edit"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:autofillHints="1"
                         android:ems="2"
+                        android:importantForAutofill="no"
                         android:inputType="numberDecimal"
                         android:text="@={viewModel.editor.repetitionsNumber}"
                         app:error="@{viewModel.editor.repetitionsNumberError}"
@@ -136,8 +136,8 @@
                         android:id="@+id/days_number_edit"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
-                        android:autofillHints="1"
                         android:ems="2"
+                        android:importantForAutofill="no"
                         android:inputType="numberDecimal"
                         android:text="@={viewModel.editor.daysNumber}"
                         app:error="@{viewModel.editor.daysNumberError}"

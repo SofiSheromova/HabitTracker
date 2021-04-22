@@ -23,4 +23,11 @@
     <string name="good_habits">хорошие привычки</string>
     <string name="bad_habits">плохие привычки</string>
     <string name="error_too_short">Слишком коротко</string>
+    <string name="bottom_sheet_peek">Сортировки и фильтры</string>
+    <string name="search_bar_hint">Поиск</string>
+    <string name="sort_by_title">Сортировка по названию</string>
+    <string name="arrow_down">вниз</string>
+    <string name="arrow_up">вверх</string>
+    <string name="all_habits">все привычки</string>
+    <string name="error_too_long">Cлишко длинно</string>
 </resources>
