@@ -1,9 +1,12 @@
 package com.example.habittracker.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -46,6 +49,7 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("UseCompatLoadingForColorStateLists")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         cardCollectionsAdapter = CardCollectionsAdapter(this)
 
@@ -60,6 +64,29 @@ class HomeFragment : Fragment() {
                 else -> resources.getString(R.string.bad_habits)
             }
         }.attach()
+
+        val sortButtonsByTitle = listOf(binding.titleSortButton, binding.titleReverseSortButton)
+        setDefaultButtonsState(sortButtonsByTitle)
+
+        cardsViewModel.checkedSortButtonLiveData.observe(viewLifecycleOwner, { btn ->
+            setDefaultButtonsState(sortButtonsByTitle)
+            if (btn == null) return@observe
+            sortButtonsByTitle.firstOrNull { it.id == btn.id }?.let { setCheckedButtonState(it) }
+        })
+    }
+
+    private fun setDefaultButtonsState(buttons: List<ImageButton>) {
+        buttons.forEach { setDefaultButtonState(it) }
+    }
+
+    private fun setDefaultButtonState(button: ImageButton) {
+        button.backgroundTintList = resources.getColorStateList(R.color.gray_200, null)
+        button.setColorFilter(ContextCompat.getColor(button.context, R.color.textColor))
+    }
+
+    private fun setCheckedButtonState(button: ImageButton) {
+        button.backgroundTintList = resources.getColorStateList(R.color.colorPrimary, null)
+        button.setColorFilter(ContextCompat.getColor(button.context, R.color.white))
     }
 
     private fun setupCardCreateButton() {

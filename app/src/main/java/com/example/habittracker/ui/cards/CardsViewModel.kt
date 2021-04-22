@@ -1,5 +1,7 @@
 package com.example.habittracker.ui.cards
 
+import android.view.View
+import android.widget.ImageButton
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +15,10 @@ class CardsViewModel : ViewModel() {
     val searchBarLiveData: MutableLiveData<String> = MutableLiveData<String>()
 
     private var _sortedFunction: ((List<Card>) -> List<Card>)? = null
+
+    private val _checkedSortButtonLiveData: MutableLiveData<ImageButton> =
+        MutableLiveData<ImageButton>()
+    val checkedSortButtonLiveData: LiveData<ImageButton> = _checkedSortButtonLiveData
 
     fun refreshValue() {
         var newValue = Card.getAll()
@@ -37,5 +43,15 @@ class CardsViewModel : ViewModel() {
             { cards -> cards.sortedBy { it.title } }
         }
         refreshValue()
+    }
+
+    fun sortByTitle(view: View) {
+        sortByTitle()
+        _checkedSortButtonLiveData.value = view as ImageButton
+    }
+
+    fun reverseSortByTitle(view: View) {
+        sortByTitle(true)
+        _checkedSortButtonLiveData.value = view as ImageButton
     }
 }
