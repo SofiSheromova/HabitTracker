@@ -42,7 +42,7 @@ class Card(
         "",
         Periodicity(1, 1),
         Type.GOOD,
-        0,
+        1,
     )
 
     fun copy(): Card {

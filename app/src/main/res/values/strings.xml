@@ -24,6 +24,7 @@
     <string name="bad_habits">bad habits</string>
     <string name="info">Apps for controlling good and bad habits</string>
     <string name="error_too_short">Too short</string>
+    <string name="error_too_long">Too long</string>
     <string name="card_create_button" translatable="false">card_create_button</string>
     <string name="bottom_sheet_peek">Sorts and filters</string>
     <string name="search_bar_hint">Search</string>

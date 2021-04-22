@@ -36,9 +36,6 @@ class EditorFields : BaseObservable() {
         type = Type.BAD
     }
 
-    val isGoodType = type == Type.GOOD
-    val isBadType = type == Type.BAD
-
     var priority: Int = 1
         set(value) {
             field = value
@@ -96,17 +93,25 @@ class EditorFields : BaseObservable() {
     }
 
     fun isTitleValid(setMessage: Boolean): Boolean {
-        if (title.length > 5) {
+        if (title.length in TITLE_MIN_LENGTH..TITLE_MAX_LENGTH) {
             titleError.set(null)
             return true
         }
-        if (setMessage)
+        if (setMessage && title.length < TITLE_MIN_LENGTH)
             titleError.set(R.string.error_too_short)
+        if (setMessage && title.length > TITLE_MAX_LENGTH)
+            titleError.set(R.string.error_too_long)
         return false
     }
 
     fun isDescriptionValid(setMessage: Boolean): Boolean {
-        return true
+        if (description.length <= DESCRIPTION_MAX_LENGTH) {
+            titleError.set(null)
+            return true
+        }
+        if (setMessage)
+            titleError.set(R.string.error_too_long)
+        return false
     }
 
     fun isRepetitionsNumberValid(setMessage: Boolean): Boolean {
@@ -127,5 +132,12 @@ class EditorFields : BaseObservable() {
         if (setMessage)
             daysNumberError.set(R.string.invalid_value)
         return false
+    }
+
+    companion object {
+        private const val TITLE_MIN_LENGTH: Int = 5
+        private const val TITLE_MAX_LENGTH: Int = 50
+
+        private const val DESCRIPTION_MAX_LENGTH: Int = 140
     }
 }
