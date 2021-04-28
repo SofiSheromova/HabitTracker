@@ -1,8 +1,12 @@
 package com.example.habittracker.model
 
 class Periodicity(_repetitionsNumber: Int, _daysNumber: Int) {
-    val repetitionsNumber: Int
-    val daysNumber: Int
+
+    constructor() : this(1, 1)
+
+    // TODO пришлось сделать var из-за ошибок с базой данных
+    var repetitionsNumber: Int
+    var daysNumber: Int
 
     init {
         val gcd = getGCD(_repetitionsNumber, _daysNumber)

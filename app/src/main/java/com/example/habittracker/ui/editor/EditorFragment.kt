@@ -8,8 +8,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentEditorBinding
+import com.example.habittracker.ui.cards.CardsViewModelFactory
 import com.example.habittracker.ui.cards.CardsViewModel
 
 class EditorFragment : Fragment() {
@@ -19,9 +21,12 @@ class EditorFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cardsViewModel = ViewModelProvider(requireActivity())
+
+        val repository = (requireActivity().application as HabitTrackerApplication).repository
+
+        cardsViewModel = ViewModelProvider(requireActivity(), CardsViewModelFactory(repository))
             .get(CardsViewModel::class.java)
-        editorViewModel = ViewModelProvider(requireActivity())
+        editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
             .get(EditorViewModel::class.java)
     }
 
@@ -44,7 +49,6 @@ class EditorFragment : Fragment() {
             if (editorViewModel.isSaving) {
                 editorViewModel.isSaving = false
 
-                cardsViewModel.refreshValue()
                 Navigation.findNavController(binding.root).popBackStack()
             }
         })

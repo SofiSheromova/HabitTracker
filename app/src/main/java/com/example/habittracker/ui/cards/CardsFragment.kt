@@ -8,11 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.model.Card
 import com.example.habittracker.model.Type
 import com.example.habittracker.ui.editor.EditorViewModel
+import com.example.habittracker.ui.editor.EditorViewModelFactory
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var binding: FragmentCardsBinding
@@ -25,9 +27,11 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        cardsViewModel = ViewModelProvider(requireActivity())
+        val repository = (requireActivity().application as HabitTrackerApplication).repository
+
+        cardsViewModel = ViewModelProvider(requireActivity(), CardsViewModelFactory(repository))
             .get(CardsViewModel::class.java)
-        editorViewModel = ViewModelProvider(requireActivity())
+        editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
             .get(EditorViewModel::class.java)
 
         var filter: ((Card) -> Boolean)? = null

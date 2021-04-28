@@ -12,10 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
+import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentHomeBinding
+import com.example.habittracker.ui.cards.CardsViewModelFactory
 import com.example.habittracker.ui.cards.CardsViewModel
 import com.example.habittracker.ui.editor.EditorViewModel
+import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -29,9 +32,12 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cardsViewModel = ViewModelProvider(requireActivity())
+
+        val repository = (requireActivity().application as HabitTrackerApplication).repository
+
+        cardsViewModel = ViewModelProvider(requireActivity(), CardsViewModelFactory(repository))
             .get(CardsViewModel::class.java)
-        editorViewModel = ViewModelProvider(requireActivity())
+        editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
             .get(EditorViewModel::class.java)
     }
 

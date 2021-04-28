@@ -6,11 +6,14 @@ import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.habittracker.model.Card
+import com.example.habittracker.model.CardRepository
 import com.example.habittracker.model.Periodicity
 import com.example.habittracker.model.Type
+import com.example.habittracker.ui.cards.CardsViewModel
 
-class EditorViewModel : ViewModel() {
+class EditorViewModel(private val repository: CardRepository) : ViewModel() {
     private val _original: MutableLiveData<Card> = MutableLiveData<Card>()
         .apply {
             value = null
@@ -65,9 +68,11 @@ class EditorViewModel : ViewModel() {
         val state = Card(editor.title, editor.description, period, editor.type, editor.priority)
         _original.value.let {
             if (it != null) {
-                Card.update(it.id, state)
+//                Card.update(it.id, state)
+                repository.update(it.id, state)
             } else {
-                Card.insertAll(state)
+                repository.insertAll(state)
+//                Card.insertAll(state)
             }
         }
     }
@@ -100,5 +105,15 @@ class EditorViewModel : ViewModel() {
                 editText.onFocusChangeListener = onFocusChangeListener
             }
         }
+    }
+}
+
+class EditorViewModelFactory(private val repository: CardRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return EditorViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
