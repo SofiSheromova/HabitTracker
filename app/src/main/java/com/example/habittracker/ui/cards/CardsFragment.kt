@@ -39,7 +39,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
             filter = FILTERS[getString(FILTER_NAME)]
         }
 
-        adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, filter)
+        adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext(), filter)
 
         cardsViewModel.habitsLiveData.observe(this, {
             adapter.notifyDataSetChanged()

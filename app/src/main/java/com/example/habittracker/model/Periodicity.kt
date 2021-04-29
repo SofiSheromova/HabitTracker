@@ -25,11 +25,4 @@ class Periodicity(_repetitionsNumber: Int, _daysNumber: Int) {
         }
         return n1
     }
-
-    override fun toString(): String {
-        if (repetitionsNumber == 1 && daysNumber == 1) {
-            return "Everyday"
-        }
-        return "$repetitionsNumber times in $daysNumber days"
-    }
 }

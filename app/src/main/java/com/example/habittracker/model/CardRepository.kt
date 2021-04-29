@@ -6,12 +6,15 @@ class CardRepository(private val cardDao: CardDao) {
     val allCards: LiveData<List<Card>> = cardDao.getAll()
 
     fun insertAll(vararg cards: Card) {
-        for (card in cards)
         cardDao.insertAll(*cards)
     }
 
-    fun update(id: Long, card: Card) {
-        card.id = id
-        cardDao.updateAll(card)
+    fun update(original: Card, newState: Card) {
+        original.update(newState)
+        cardDao.updateAll(original)
+    }
+
+    fun delete(card: Card) {
+        cardDao.delete(card)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.habittracker.ui.cards
 
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +12,14 @@ import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.R
 import com.example.habittracker.model.Card
+import com.example.habittracker.model.Periodicity
 import com.example.habittracker.model.Type
 
-
+// TODO нормально ли передавать контекст в адаптер? И как в реальном мире борятся со склонением слов?))
 class CardsAdapter(
     private val cardsLiveData: LiveData<List<Card>>,
     private val onItemClickListener: OnItemClickListener,
+    private val context: Context,
     private val filter: ((Card) -> Boolean)? = null
 ) : RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
     private val cards: List<Card>
@@ -34,7 +37,7 @@ class CardsAdapter(
         val view: View = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.card_item_view, parent, false)
-        return CardViewHolder(view)
+        return CardViewHolder(view, context)
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
@@ -54,7 +57,10 @@ class CardsAdapter(
         return cards.indexOf(card)
     }
 
-    class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class CardViewHolder(
+        itemView: View,
+        private val context: Context
+    ) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = itemView.findViewById<View>(R.id.card_title) as TextView
         var description: TextView = itemView.findViewById<View>(R.id.card_description) as TextView
         var priority: TextView = itemView.findViewById<View>(R.id.card_priority) as TextView
@@ -63,19 +69,15 @@ class CardsAdapter(
         var dislike: ImageView = itemView.findViewById<View>(R.id.dislike_icon) as ImageView
 
         var card: CardView = itemView.findViewById<View>(R.id.card) as CardView
-        val setColor = { color: String? ->
-            if (color != null)
-                try {
-                    card.setCardBackgroundColor(Color.parseColor(color))
-                } catch (e: IllegalArgumentException) {
-                }
+        val setColor = { color: String ->
+            card.setCardBackgroundColor(Color.parseColor(color))
         }
 
         fun bind(card: Card, clickListener: OnItemClickListener) {
             title.text = card.title
             description.text = card.description
             priority.text = card.priority.toString()
-            periodicity.text = card.periodicity.toString()
+            periodicity.text = formatPeriodicity(card.periodicity)
 
             if (card.type == Type.GOOD) {
                 like.visibility = View.VISIBLE
@@ -89,6 +91,19 @@ class CardsAdapter(
 
             itemView.setOnClickListener {
                 clickListener.onItemClicked(card)
+            }
+        }
+
+        private fun formatPeriodicity(periodicity: Periodicity): String {
+            val repetitionsNumber = periodicity.repetitionsNumber
+            val daysNumber = periodicity.daysNumber
+            return if (repetitionsNumber == 1 && daysNumber == 1) {
+                context.resources.getString(R.string.everyday)
+            } else {
+                "$repetitionsNumber " +
+                        context.resources.getString(R.string.times_in) + " " +
+                        "$daysNumber " +
+                        context.resources.getString(R.string.days)
             }
         }
     }

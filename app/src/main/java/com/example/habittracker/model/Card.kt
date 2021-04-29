@@ -19,12 +19,12 @@ private fun generateColor(): String {
 @Entity(tableName = "card_table")
 @TypeConverters(HabitTypeConverter::class)
 class Card(
-    @ColumnInfo val title: String,
-    @ColumnInfo val description: String,
+    @ColumnInfo var title: String,
+    @ColumnInfo var description: String,
     @Embedded var periodicity: Periodicity,
-    @ColumnInfo val type: Type,
-    @ColumnInfo val priority: Int,
-    @ColumnInfo var color: String? = generateColor()
+    @ColumnInfo var type: Type,
+    @ColumnInfo var priority: Int,
+    @ColumnInfo var color: String = generateColor()
 ) {
     @PrimaryKey(autoGenerate = true)
     // TODO из-за базы данных это var, что печально
@@ -37,6 +37,15 @@ class Card(
         Type.GOOD,
         1,
     )
+
+    fun update(state: Card) {
+        this.title = state.title
+        this.description = state.description
+        this.periodicity = state.periodicity
+        this.type = state.type
+        this.priority = state.priority
+        // this.color = state.color
+    }
 }
 
 class HabitTypeConverter {
