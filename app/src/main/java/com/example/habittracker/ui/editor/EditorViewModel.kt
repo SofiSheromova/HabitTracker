@@ -12,21 +12,23 @@ import com.example.habittracker.model.CardRepository
 import com.example.habittracker.model.Periodicity
 
 class EditorViewModel(private val repository: CardRepository) : ViewModel() {
-    private val _original: MutableLiveData<Card> = MutableLiveData<Card>()
+    private val original: MutableLiveData<Card> = MutableLiveData<Card>()
         .apply {
             value = null
         }
+    val cardExists: Boolean
+        get() = original.value != null
 
     val editor: EditorFields = EditorFields()
     var isSaving = false
 
     fun setCard(card: Card) {
-        _original.value = card
+        original.value = card
         editor.fillFields(card)
     }
 
     fun setEmptyCard() {
-        _original.value = null
+        original.value = null
         editor.clearFields()
     }
 
@@ -58,13 +60,16 @@ class EditorViewModel(private val repository: CardRepository) : ViewModel() {
         }
     }
 
-    private val _buttonClick: MutableLiveData<EditorFields> = MutableLiveData<EditorFields>()
-    val buttonClick: LiveData<EditorFields> = _buttonClick
+    private val _onSaveButtonClick: MutableLiveData<EditorFields> = MutableLiveData<EditorFields>()
+    val onSaveButtonClick: LiveData<EditorFields> = _onSaveButtonClick
+
+    private val _onDeleteButtonClick: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val onDeleteButtonClick: LiveData<Boolean> = _onDeleteButtonClick
 
     private fun updateCard(editor: EditorFields) {
         val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
         val state = Card(editor.title, editor.description, period, editor.type, editor.priority)
-        _original.value.let {
+        original.value.let {
             if (it != null) {
                 repository.update(it, state)
             } else {
@@ -73,14 +78,22 @@ class EditorViewModel(private val repository: CardRepository) : ViewModel() {
         }
     }
 
-    fun onButtonClick() {
+    fun onSave() {
         editor.let {
             if (it.isValid()) {
                 updateCard(it)
                 isSaving = true
-                _buttonClick.value = it
+                _onSaveButtonClick.value = it
             }
         }
+    }
+
+    fun onDelete() {
+        original.value?.let {
+            repository.delete(it)
+        }
+        _onDeleteButtonClick.value = true
+        _onDeleteButtonClick.value = false
     }
 
     companion object {

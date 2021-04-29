@@ -11,8 +11,8 @@ import androidx.navigation.Navigation
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentEditorBinding
-import com.example.habittracker.ui.cards.CardsViewModelFactory
 import com.example.habittracker.ui.cards.CardsViewModel
+import com.example.habittracker.ui.cards.CardsViewModelFactory
 
 class EditorFragment : Fragment() {
     private lateinit var cardsViewModel: CardsViewModel
@@ -45,11 +45,19 @@ class EditorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        editorViewModel.buttonClick.observe(viewLifecycleOwner, {
+        editorViewModel.onSaveButtonClick.observe(viewLifecycleOwner, {
             if (editorViewModel.isSaving) {
                 editorViewModel.isSaving = false
 
                 Navigation.findNavController(binding.root).popBackStack()
+            }
+        })
+
+        editorViewModel.onDeleteButtonClick.observe(viewLifecycleOwner, {
+            it?.let {
+                if (it) {
+                    Navigation.findNavController(binding.root).popBackStack()
+                }
             }
         })
     }
