@@ -15,11 +15,11 @@ interface CardDao {
     fun findByTitle(title: String): LiveData<Card>
 
     @Update
-    fun updateAll(vararg cards: Card)
+    suspend fun updateAll(vararg cards: Card)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertAll(vararg cards: Card)
+    suspend fun insertAll(vararg cards: Card)
 
     @Delete
-    fun delete(feed: Card)
+    suspend fun delete(feed: Card)
 }

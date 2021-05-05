@@ -14,10 +14,7 @@ class HabitTrackerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        database = Room
-            .databaseBuilder(this, CardDatabase::class.java, "card_database")
-            .allowMainThreadQueries()
-            .build()
+        database = CardDatabase.getDatabase(this)
         repository = CardRepository(database.cardDao())
     }
 }
