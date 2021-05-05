@@ -14,17 +14,10 @@ class HabitTrackerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
         database = Room
             .databaseBuilder(this, CardDatabase::class.java, "card_database")
             .allowMainThreadQueries()
             .build()
         repository = CardRepository(database.cardDao())
-
-    }
-
-    companion object {
-        var instance: HabitTrackerApplication? = null
-            private set
     }
 }

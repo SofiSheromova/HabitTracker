@@ -5,17 +5,6 @@ import androidx.room.*
 import kotlin.random.Random
 
 
-private fun generateColor(): String {
-    return String.format(
-        "#%06X", 0xFFFFFF and Color.argb(
-            100,
-            Random.nextInt(180, 240),
-            Random.nextInt(180, 240),
-            Random.nextInt(180, 240)
-        )
-    )
-}
-
 @Entity(tableName = "card_table")
 @TypeConverters(HabitTypeConverter::class)
 class Card(
@@ -58,4 +47,15 @@ class HabitTypeConverter {
     fun toType(data: Int): Type {
         return Type.valueOf(data)
     }
+}
+
+private fun generateColor(): String {
+    return String.format(
+        "#%06X", 0xFFFFFF and Color.argb(
+            100,
+            Random.nextInt(180, 240),
+            Random.nextInt(180, 240),
+            Random.nextInt(180, 240)
+        )
+    )
 }
