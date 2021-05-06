@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
-import com.example.habittracker.model.Card
+import com.example.habittracker.model.Habit
 import com.example.habittracker.model.Type
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.editor.EditorViewModelFactory
@@ -34,7 +34,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
             .get(EditorViewModel::class.java)
 
-        var filter: ((Card) -> Boolean)? = null
+        var filter: ((Habit) -> Boolean)? = null
         arguments?.takeIf { it.containsKey(FILTER_NAME) }?.apply {
             filter = FILTERS[getString(FILTER_NAME)]
         }
@@ -66,14 +66,14 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         const val FILTER_NAME = "FILTER_NAME"
         const val GOOD_TYPE = "GOOD_TYPE"
         const val BAD_TYPE = "BAD_TYPE"
-        private val FILTERS = mapOf<String, (Card) -> Boolean>(
+        private val FILTERS = mapOf<String, (Habit) -> Boolean>(
             GOOD_TYPE to { card -> card.type == Type.GOOD },
             BAD_TYPE to { card -> card.type == Type.BAD }
         )
     }
 
-    override fun onItemClicked(card: Card) {
-        editorViewModel.setCard(card)
+    override fun onItemClicked(habit: Habit) {
+        editorViewModel.setCard(habit)
         Navigation.findNavController(binding.root).navigate(R.id.action_nav_home_to_nav_editor)
     }
 }

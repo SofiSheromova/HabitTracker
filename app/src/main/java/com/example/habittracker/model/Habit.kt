@@ -5,9 +5,9 @@ import androidx.room.*
 import kotlin.random.Random
 
 
-@Entity(tableName = "card_table")
+@Entity(tableName = "habit_table")
 @TypeConverters(HabitTypeConverter::class)
-class Card(
+class Habit(
     @ColumnInfo var title: String,
     @ColumnInfo var description: String,
     @Embedded var periodicity: Periodicity,
@@ -27,7 +27,7 @@ class Card(
         1,
     )
 
-    fun update(state: Card) {
+    fun update(state: Habit) {
         this.title = state.title
         this.description = state.description
         this.periodicity = state.periodicity

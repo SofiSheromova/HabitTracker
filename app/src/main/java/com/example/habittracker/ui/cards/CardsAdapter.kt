@@ -11,18 +11,18 @@ import androidx.cardview.widget.CardView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habittracker.R
-import com.example.habittracker.model.Card
+import com.example.habittracker.model.Habit
 import com.example.habittracker.model.Periodicity
 import com.example.habittracker.model.Type
 
 // TODO нормально ли передавать контекст в адаптер? И как в реальном мире борятся со склонением слов?))
 class CardsAdapter(
-    private val cardsLiveData: LiveData<List<Card>>,
+    private val cardsLiveData: LiveData<List<Habit>>,
     private val onItemClickListener: OnItemClickListener,
     private val context: Context,
-    private val filter: ((Card) -> Boolean)? = null
+    private val filter: ((Habit) -> Boolean)? = null
 ) : RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
-    private val cards: List<Card>
+    private val habits: List<Habit>
         get() {
             val value = cardsLiveData.value ?: listOf()
             filter?.let { return value.filter(it) }
@@ -30,7 +30,7 @@ class CardsAdapter(
         }
 
     interface OnItemClickListener {
-        fun onItemClicked(card: Card)
+        fun onItemClicked(habit: Habit)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
@@ -41,20 +41,20 @@ class CardsAdapter(
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        val card: Card = cards[position]
-        holder.bind(card, onItemClickListener)
+        val habit: Habit = habits[position]
+        holder.bind(habit, onItemClickListener)
     }
 
     override fun getItemCount(): Int {
-        return cards.size
+        return habits.size
     }
 
-    operator fun get(itemPosition: Int): Card? {
-        return cards.getOrNull(itemPosition)
+    operator fun get(itemPosition: Int): Habit? {
+        return habits.getOrNull(itemPosition)
     }
 
-    fun indexOf(card: Card): Int {
-        return cards.indexOf(card)
+    fun indexOf(habit: Habit): Int {
+        return habits.indexOf(habit)
     }
 
     class CardViewHolder(
@@ -73,13 +73,13 @@ class CardsAdapter(
             card.setCardBackgroundColor(Color.parseColor(color))
         }
 
-        fun bind(card: Card, clickListener: OnItemClickListener) {
-            title.text = card.title
-            description.text = card.description
-            priority.text = card.priority.toString()
-            periodicity.text = formatPeriodicity(card.periodicity)
+        fun bind(habit: Habit, clickListener: OnItemClickListener) {
+            title.text = habit.title
+            description.text = habit.description
+            priority.text = habit.priority.toString()
+            periodicity.text = formatPeriodicity(habit.periodicity)
 
-            if (card.type == Type.GOOD) {
+            if (habit.type == Type.GOOD) {
                 like.visibility = View.VISIBLE
                 dislike.visibility = View.INVISIBLE
             } else {
@@ -87,10 +87,10 @@ class CardsAdapter(
                 dislike.visibility = View.VISIBLE
             }
 
-            setColor(card.color)
+            setColor(habit.color)
 
             itemView.setOnClickListener {
-                clickListener.onItemClicked(card)
+                clickListener.onItemClicked(habit)
             }
         }
 

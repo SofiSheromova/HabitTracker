@@ -4,13 +4,13 @@ import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.*
-import com.example.habittracker.model.Card
-import com.example.habittracker.model.CardRepository
+import com.example.habittracker.model.Habit
+import com.example.habittracker.model.HabitRepository
 import com.example.habittracker.model.Periodicity
 import kotlinx.coroutines.launch
 
-class EditorViewModel(private val repository: CardRepository) : ViewModel() {
-    private val original: MutableLiveData<Card> = MutableLiveData<Card>()
+class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
+    private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
         .apply {
             value = null
         }
@@ -26,11 +26,11 @@ class EditorViewModel(private val repository: CardRepository) : ViewModel() {
     private val _onDeleteButtonClick: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
     val onDeleteButtonClick: LiveData<Boolean> = _onDeleteButtonClick
 
-    private fun updateOriginal(state: Card) = viewModelScope.launch {
+    private fun updateOriginal(state: Habit) = viewModelScope.launch {
         original.value?.let { repository.update(it, state) }
     }
 
-    private fun insertNew(state: Card) = viewModelScope.launch {
+    private fun insertNew(state: Habit) = viewModelScope.launch {
         repository.insertAll(state)
     }
 
@@ -40,9 +40,9 @@ class EditorViewModel(private val repository: CardRepository) : ViewModel() {
         }
     }
 
-    fun setCard(card: Card) {
-        original.value = card
-        editor.fillFields(card)
+    fun setCard(habit: Habit) {
+        original.value = habit
+        editor.fillFields(habit)
     }
 
     fun setEmptyCard() {
@@ -52,7 +52,7 @@ class EditorViewModel(private val repository: CardRepository) : ViewModel() {
 
     private fun updateCard(editor: EditorFields) {
         val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
-        val state = Card(editor.title, editor.description, period, editor.type, editor.priority)
+        val state = Habit(editor.title, editor.description, period, editor.type, editor.priority)
         original.value.let {
             if (it != null) {
                 updateOriginal(state)
@@ -127,7 +127,7 @@ class EditorViewModel(private val repository: CardRepository) : ViewModel() {
     }
 }
 
-class EditorViewModelFactory(private val repository: CardRepository) : ViewModelProvider.Factory {
+class EditorViewModelFactory(private val repository: HabitRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

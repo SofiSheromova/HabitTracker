@@ -1,20 +1,19 @@
 package com.example.habittracker
 
 import android.app.Application
-import androidx.room.Room
-import com.example.habittracker.model.CardDatabase
-import com.example.habittracker.model.CardRepository
+import com.example.habittracker.model.HabitDatabase
+import com.example.habittracker.model.HabitRepository
 
 
 class HabitTrackerApplication : Application() {
-    lateinit var database: CardDatabase
+    lateinit var database: HabitDatabase
         private set
-    lateinit var repository: CardRepository
+    lateinit var repository: HabitRepository
         private set
 
     override fun onCreate() {
         super.onCreate()
-        database = CardDatabase.getDatabase(this)
-        repository = CardRepository(database.cardDao())
+        database = HabitDatabase.getDatabase(this)
+        repository = HabitRepository(database.habitDao())
     }
 }

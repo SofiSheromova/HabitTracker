@@ -5,21 +5,21 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Card::class], version = 1, exportSchema = false)
-abstract class CardDatabase : RoomDatabase() {
+@Database(entities = [Habit::class], version = 1, exportSchema = false)
+abstract class HabitDatabase : RoomDatabase() {
 
-    abstract fun cardDao(): CardDao
+    abstract fun habitDao(): HabitDao
 
     companion object {
         @Volatile
-        private var INSTANCE: CardDatabase? = null
+        private var INSTANCE: HabitDatabase? = null
 
-        fun getDatabase(context: Context): CardDatabase {
+        fun getDatabase(context: Context): HabitDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    CardDatabase::class.java,
-                    "card_database"
+                    HabitDatabase::class.java,
+                    "habit_tracker_database"
                 )
                     .build()
                 INSTANCE = instance
