@@ -5,7 +5,7 @@ import androidx.databinding.Bindable
 import androidx.databinding.ObservableField
 import com.example.habittracker.R
 import com.example.habittracker.BR
-import com.example.habittracker.model.Card
+import com.example.habittracker.model.Habit
 import com.example.habittracker.model.Type
 
 
@@ -67,10 +67,10 @@ class EditorFields : BaseObservable() {
         }
 
     fun clearFields() {
-        fillFields(Card())
+        fillFields(Habit())
     }
 
-    fun fillFields(state: Card) {
+    fun fillFields(state: Habit) {
         title = state.title
         description = state.description
         type = state.type

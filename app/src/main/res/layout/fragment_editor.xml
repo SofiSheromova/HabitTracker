@@ -152,14 +152,32 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/submit_button"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:enabled="@{viewModel.editor.valid}"
-                    android:onClick="@{() -> viewModel.onButtonClick()}"
-                    android:text="@string/save" />
+                    android:layout_margin="10dp">
+
+                    <Button
+                        android:id="@+id/submit_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:enabled="@{viewModel.editor.valid}"
+                        android:onClick="@{() -> viewModel.onSave()}"
+                        android:text="@string/save"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/color_state_delete_button"
+                        android:enabled="@{viewModel.cardExists}"
+                        android:onClick="@{() -> viewModel.onDelete()}"
+                        android:text="@string/delete"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
         </ScrollView>

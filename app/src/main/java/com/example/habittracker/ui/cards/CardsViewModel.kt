@@ -2,26 +2,23 @@ package com.example.habittracker.ui.cards
 
 import android.view.View
 import android.widget.ImageButton
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.habittracker.model.Card
+import androidx.lifecycle.*
+import com.example.habittracker.model.Habit
+import com.example.habittracker.model.HabitRepository
 
-class CardsViewModel : ViewModel() {
-    private val _habitsLiveData: MutableLiveData<List<Card>> = MutableLiveData<List<Card>>().apply {
-        value = Card.getAll()
-    }
-    val habitsLiveData: LiveData<List<Card>> = _habitsLiveData
+class CardsViewModel(private val repository: HabitRepository) : ViewModel() {
     val searchBarLiveData: MutableLiveData<String> = MutableLiveData<String>()
+    private val _habitsLiveData: MediatorLiveData<List<Habit>> = createHabitsMediator()
+    val habitsLiveData: LiveData<List<Habit>> = _habitsLiveData
 
-    private var _sortedFunction: ((List<Card>) -> List<Card>)? = null
+    private var _sortedFunction: ((List<Habit>) -> List<Habit>)? = null
 
     private val _checkedSortButtonLiveData: MutableLiveData<ImageButton> =
         MutableLiveData<ImageButton>()
     val checkedSortButtonLiveData: LiveData<ImageButton> = _checkedSortButtonLiveData
 
-    fun refreshValue() {
-        var newValue = Card.getAll()
+    private fun getHabitsValue(): List<Habit> {
+        var newValue = repository.allHabits.value ?: listOf()
 
         _sortedFunction?.let {
             newValue = it(newValue)
@@ -33,7 +30,19 @@ class CardsViewModel : ViewModel() {
             }
         }
 
-        _habitsLiveData.value = newValue
+        return newValue
+    }
+
+    fun refreshHabitsValue() {
+        _habitsLiveData.value = getHabitsValue()
+    }
+
+    private fun createHabitsMediator(): MediatorLiveData<List<Habit>> {
+        val mediator = MediatorLiveData<List<Habit>>()
+        mediator.addSource(repository.allHabits) {
+            mediator.value = getHabitsValue()
+        }
+        return mediator
     }
 
     fun sortByTitle(reverse: Boolean = false) {
@@ -42,7 +51,7 @@ class CardsViewModel : ViewModel() {
         } else {
             { cards -> cards.sortedBy { it.title } }
         }
-        refreshValue()
+        refreshHabitsValue()
     }
 
     fun sortByTitle(view: View) {
@@ -53,5 +62,15 @@ class CardsViewModel : ViewModel() {
     fun reverseSortByTitle(view: View) {
         sortByTitle(true)
         _checkedSortButtonLiveData.value = view as ImageButton
+    }
+}
+
+class CardsViewModelFactory(private val repository: HabitRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(CardsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return CardsViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
