@@ -3,30 +3,79 @@ package com.example.habittracker.ui.editor
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.habittracker.model.Card
+import androidx.lifecycle.*
+import com.example.habittracker.model.Habit
+import com.example.habittracker.model.HabitRepository
 import com.example.habittracker.model.Periodicity
-import com.example.habittracker.model.Type
+import kotlinx.coroutines.launch
 
-class EditorViewModel : ViewModel() {
-    private val _original: MutableLiveData<Card> = MutableLiveData<Card>()
+class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
+    private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
         .apply {
             value = null
         }
+    val cardExists: Boolean
+        get() = original.value != null
 
     val editor: EditorFields = EditorFields()
-    var isSaving = false
+    var isCardSaving = false
 
-    fun setCard(card: Card) {
-        _original.value = card
-        editor.fillFields(card)
+    private val _onSaveButtonClick: MutableLiveData<EditorFields> = MutableLiveData<EditorFields>()
+    val onSaveButtonClick: LiveData<EditorFields> = _onSaveButtonClick
+
+    private val _onDeleteButtonClick: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val onDeleteButtonClick: LiveData<Boolean> = _onDeleteButtonClick
+
+    private fun updateOriginal(state: Habit) = viewModelScope.launch {
+        original.value?.let { repository.update(it, state) }
+    }
+
+    private fun insertNew(state: Habit) = viewModelScope.launch {
+        repository.insertAll(state)
+    }
+
+    private fun deleteOriginal() = viewModelScope.launch {
+        original.value?.let {
+            repository.delete(it)
+        }
+    }
+
+    fun setCard(habit: Habit) {
+        original.value = habit
+        editor.fillFields(habit)
     }
 
     fun setEmptyCard() {
-        _original.value = null
+        original.value = null
         editor.clearFields()
+    }
+
+    private fun updateCard(editor: EditorFields) {
+        val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
+        val state = Habit(editor.title, editor.description, period, editor.type, editor.priority)
+        original.value.let {
+            if (it != null) {
+                updateOriginal(state)
+            } else {
+                insertNew(state)
+            }
+        }
+    }
+
+    fun onSave() {
+        editor.let {
+            if (it.isValid()) {
+                updateCard(it)
+                isCardSaving = true
+                _onSaveButtonClick.value = it
+            }
+        }
+    }
+
+    fun onDelete() {
+        deleteOriginal()
+        _onDeleteButtonClick.value = true
+        _onDeleteButtonClick.value = false
     }
 
     val onFocusTitle: OnFocusChangeListener = OnFocusChangeListener { view, focused ->
@@ -57,31 +106,6 @@ class EditorViewModel : ViewModel() {
         }
     }
 
-    private val _buttonClick: MutableLiveData<EditorFields> = MutableLiveData<EditorFields>()
-    val buttonClick: LiveData<EditorFields> = _buttonClick
-
-    private fun updateCard(editor: EditorFields) {
-        val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
-        val state = Card(editor.title, editor.description, period, editor.type, editor.priority)
-        _original.value.let {
-            if (it != null) {
-                Card.update(it.id, state)
-            } else {
-                Card.insertAll(state)
-            }
-        }
-    }
-
-    fun onButtonClick() {
-        editor.let {
-            if (it.isValid()) {
-                updateCard(it)
-                isSaving = true
-                _buttonClick.value = it
-            }
-        }
-    }
-
     companion object {
         @BindingAdapter("error")
         @JvmStatic
@@ -100,5 +124,15 @@ class EditorViewModel : ViewModel() {
                 editText.onFocusChangeListener = onFocusChangeListener
             }
         }
+    }
+}
+
+class EditorViewModelFactory(private val repository: HabitRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return EditorViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
