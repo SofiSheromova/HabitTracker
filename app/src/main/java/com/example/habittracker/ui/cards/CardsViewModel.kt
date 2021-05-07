@@ -34,12 +34,12 @@ class CardsViewModel(
 
 class CardsViewModelFactory(
     private val repository: HabitRepository,
-    private val filter: DisplayOptions? = null
+    private val options: DisplayOptions? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CardsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CardsViewModel(repository, filter ?: DisplayOptions()) as T
+            return CardsViewModel(repository, options ?: DisplayOptions()) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
