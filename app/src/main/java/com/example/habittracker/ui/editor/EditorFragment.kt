@@ -41,18 +41,14 @@ class EditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         editorViewModel.onSaveButtonClick.observe(viewLifecycleOwner, {
-            if (editorViewModel.isCardSaving) {
-                editorViewModel.isCardSaving = false
-
+            it?.getContentIfNotHandled()?.let {
                 Navigation.findNavController(binding.root).popBackStack()
             }
         })
 
         editorViewModel.onDeleteButtonClick.observe(viewLifecycleOwner, {
-            it?.let {
-                if (it) {
-                    Navigation.findNavController(binding.root).popBackStack()
-                }
+            it?.getContentIfNotHandled()?.let {
+                Navigation.findNavController(binding.root).popBackStack()
             }
         })
     }

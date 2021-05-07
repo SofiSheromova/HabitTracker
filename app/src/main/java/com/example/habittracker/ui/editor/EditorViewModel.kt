@@ -1,9 +1,11 @@
 package com.example.habittracker.ui.editor
 
+import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.*
+import com.example.habittracker.middleware.Event
 import com.example.habittracker.model.Habit
 import com.example.habittracker.model.HabitRepository
 import com.example.habittracker.model.Periodicity
@@ -18,13 +20,13 @@ class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
         get() = original.value != null
 
     val editor: EditorFields = EditorFields()
-    var isCardSaving = false
 
-    private val _onSaveButtonClick: MutableLiveData<EditorFields> = MutableLiveData<EditorFields>()
-    val onSaveButtonClick: LiveData<EditorFields> = _onSaveButtonClick
+    private val _onSaveButtonClick: MutableLiveData<Event<EditorFields>> =
+        MutableLiveData<Event<EditorFields>>()
+    val onSaveButtonClick: LiveData<Event<EditorFields>> = _onSaveButtonClick
 
-    private val _onDeleteButtonClick: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
-    val onDeleteButtonClick: LiveData<Boolean> = _onDeleteButtonClick
+    private val _onDeleteButtonClick: MutableLiveData<Event<Int>> = MutableLiveData<Event<Int>>()
+    val onDeleteButtonClick: LiveData<Event<Int>> = _onDeleteButtonClick
 
     private fun updateOriginal(state: Habit) = viewModelScope.launch {
         original.value?.let { repository.update(it, state) }
@@ -62,20 +64,18 @@ class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
         }
     }
 
-    fun onSave() {
+    fun onSave(view: View) {
         editor.let {
             if (it.isValid()) {
                 updateCard(it)
-                isCardSaving = true
-                _onSaveButtonClick.value = it
+                _onSaveButtonClick.value = Event(it)
             }
         }
     }
 
-    fun onDelete() {
+    fun onDelete(view: View) {
         deleteOriginal()
-        _onDeleteButtonClick.value = true
-        _onDeleteButtonClick.value = false
+        _onDeleteButtonClick.value = Event(view.id)
     }
 
     val onFocusTitle: OnFocusChangeListener = OnFocusChangeListener { view, focused ->
