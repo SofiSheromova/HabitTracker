@@ -5,7 +5,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.habittracker.model.Habit
-import com.example.habittracker.model.HabitRepository
+import com.example.habittracker.HabitRepository
 import com.example.habittracker.ui.home.DisplayOptions
 
 class CardsViewModel(

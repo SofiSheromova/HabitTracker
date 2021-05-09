@@ -6,20 +6,20 @@ import androidx.room.*
 @Dao
 interface HabitDao {
     @Query("SELECT * FROM habit_table")
-    fun getAll(): LiveData<List<Habit>>
+    fun getAll(): LiveData<List<HabitRoomModel>>
 
     @Query("SELECT * FROM habit_table WHERE uid IN (:habitIds)")
-    fun getAllByIds(habitIds: IntArray): LiveData<List<Habit>>
+    fun getAllByIds(habitIds: IntArray): LiveData<List<HabitRoomModel>>
 
     @Query("SELECT * FROM habit_table WHERE title LIKE :title LIMIT 1")
-    fun findByTitle(title: String): LiveData<Habit>
+    fun findByTitle(title: String): LiveData<HabitRoomModel>
 
     @Update
-    suspend fun updateAll(vararg habits: Habit)
+    suspend fun updateAll(vararg habits: HabitRoomModel)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(vararg habits: Habit)
+    suspend fun insertAll(vararg habits: HabitRoomModel)
 
     @Delete
-    suspend fun delete(feed: Habit)
+    suspend fun delete(habit: HabitRoomModel)
 }
