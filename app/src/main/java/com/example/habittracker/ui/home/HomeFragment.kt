@@ -15,16 +15,15 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentHomeBinding
-import com.example.habittracker.ui.cards.CardsViewModelFactory
-import com.example.habittracker.ui.cards.CardsViewModel
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
-    private lateinit var cardsViewModel: CardsViewModel
+    private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
     private lateinit var editorViewModel: EditorViewModel
+
     private lateinit var binding: FragmentHomeBinding
 
     private lateinit var cardCollectionsAdapter: CardCollectionsAdapter
@@ -35,8 +34,8 @@ class HomeFragment : Fragment() {
 
         val repository = (requireActivity().application as HabitTrackerApplication).repository
 
-        cardsViewModel = ViewModelProvider(requireActivity(), CardsViewModelFactory(repository))
-            .get(CardsViewModel::class.java)
+        displayOptionsViewModel = ViewModelProvider(requireActivity())
+            .get(DisplayOptionsViewModel::class.java)
         editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
             .get(EditorViewModel::class.java)
     }
@@ -50,7 +49,7 @@ class HomeFragment : Fragment() {
             inflater, R.layout.fragment_home, container, false
         )
         binding.lifecycleOwner = this
-        binding.viewModel = cardsViewModel
+        binding.viewModel = displayOptionsViewModel
         setupCardCreateButton()
         return binding.root
     }
@@ -74,7 +73,7 @@ class HomeFragment : Fragment() {
         val sortButtonsByTitle = listOf(binding.titleSortButton, binding.titleReverseSortButton)
         setDefaultButtonsState(sortButtonsByTitle)
 
-        cardsViewModel.checkedSortButtonLiveData.observe(viewLifecycleOwner, { btn ->
+        displayOptionsViewModel.checkedButtonLiveData.observe(viewLifecycleOwner, { btn ->
             setDefaultButtonsState(sortButtonsByTitle)
             if (btn == null) return@observe
             sortButtonsByTitle.firstOrNull { it.id == btn.id }?.let { setCheckedButtonState(it) }

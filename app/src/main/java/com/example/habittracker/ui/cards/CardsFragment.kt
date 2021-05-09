@@ -15,12 +15,15 @@ import com.example.habittracker.model.Habit
 import com.example.habittracker.model.Type
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.editor.EditorViewModelFactory
+import com.example.habittracker.ui.home.DisplayOptions
+import com.example.habittracker.ui.home.DisplayOptionsViewModel
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
-    private lateinit var binding: FragmentCardsBinding
-
+    private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
     private lateinit var cardsViewModel: CardsViewModel
     private lateinit var editorViewModel: EditorViewModel
+
+    private lateinit var binding: FragmentCardsBinding
 
     private lateinit var adapter: CardsAdapter
 
@@ -29,21 +32,32 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
 
         val repository = (requireActivity().application as HabitTrackerApplication).repository
 
-        cardsViewModel = ViewModelProvider(requireActivity(), CardsViewModelFactory(repository))
+        val displayOptions = getDisplayOptions(arguments)
+
+        displayOptionsViewModel = ViewModelProvider(requireActivity())
+            .get(DisplayOptionsViewModel::class.java)
+        cardsViewModel = ViewModelProvider(this, CardsViewModelFactory(repository, displayOptions))
             .get(CardsViewModel::class.java)
         editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
             .get(EditorViewModel::class.java)
 
-        var filter: ((Habit) -> Boolean)? = null
-        arguments?.takeIf { it.containsKey(FILTER_NAME) }?.apply {
-            filter = FILTERS[getString(FILTER_NAME)]
-        }
+        adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext())
 
-        adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext(), filter)
-
+        displayOptionsViewModel.optionsLiveData.observe(this, {
+            cardsViewModel.refreshHabits()
+        })
         cardsViewModel.habitsLiveData.observe(this, {
             adapter.notifyDataSetChanged()
         })
+    }
+
+    private fun getDisplayOptions(args: Bundle?): DisplayOptions {
+        var typeFilter: ((Habit) -> Boolean)? = null
+        args?.takeIf { it.containsKey(FILTER_NAME) }?.apply {
+            typeFilter = FILTERS[getString(FILTER_NAME)]
+        }
+
+        return typeFilter?.let { DisplayOptions(it) } ?: DisplayOptions()
     }
 
     override fun onCreateView(
