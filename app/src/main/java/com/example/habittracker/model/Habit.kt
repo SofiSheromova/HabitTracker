@@ -2,29 +2,28 @@ package com.example.habittracker.model
 
 import android.graphics.Color
 import androidx.room.*
+import java.util.*
 import kotlin.random.Random
 
 
 @Entity(tableName = "habit_table")
-@TypeConverters(HabitTypeConverter::class)
+@TypeConverters(HabitTypeConverter::class, HabitPriorityConverter::class, DateConverter::class)
 class Habit(
-    @ColumnInfo var title: String,
-    @ColumnInfo var description: String,
+    var title: String,
+    var description: String,
     @Embedded var periodicity: Periodicity,
-    @ColumnInfo var type: Type,
-    @ColumnInfo var priority: Int,
-    @ColumnInfo var color: String = generateColor()
+    var type: Type,
+    var priority: Priority,
+    var color: Int = generateColor(),
+    @PrimaryKey val uid: String = UUID.randomUUID().toString(),
+    var date: Date = Date()
 ) {
-    @PrimaryKey(autoGenerate = true)
-    // TODO из-за базы данных это var, что печально
-    var id: Long = 0
-
     constructor() : this(
         "",
         "",
         Periodicity(1, 1),
         Type.GOOD,
-        1,
+        Priority.LOW,
     )
 
     fun update(state: Habit) {
@@ -49,8 +48,32 @@ class HabitTypeConverter {
     }
 }
 
-private fun generateColor(): String {
-    return String.format(
+class HabitPriorityConverter {
+    @TypeConverter
+    fun fromPriority(priority: Priority): Int {
+        return priority.value
+    }
+
+    @TypeConverter
+    fun toPriority(data: Int): Priority {
+        return Priority.valueOf(data)
+    }
+}
+
+class DateConverter {
+    @TypeConverter
+    fun fromDate(date: Date): Long {
+        return date.time
+    }
+
+    @TypeConverter
+    fun toDate(data: Long): Date {
+        return Date(data)
+    }
+}
+
+private fun generateColor(): Int {
+    val color = String.format(
         "#%06X", 0xFFFFFF and Color.argb(
             100,
             Random.nextInt(180, 240),
@@ -58,4 +81,5 @@ private fun generateColor(): String {
             Random.nextInt(180, 240)
         )
     )
+    return Color.parseColor(color)
 }

@@ -1,7 +1,6 @@
 package com.example.habittracker.ui.cards
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,14 +68,14 @@ class CardsAdapter(
         var dislike: ImageView = itemView.findViewById<View>(R.id.dislike_icon) as ImageView
 
         var card: CardView = itemView.findViewById<View>(R.id.card) as CardView
-        val setColor = { color: String ->
-            card.setCardBackgroundColor(Color.parseColor(color))
+        val setColor = { color: Int ->
+            card.setCardBackgroundColor(color)
         }
 
         fun bind(habit: Habit, clickListener: OnItemClickListener) {
             title.text = habit.title
             description.text = habit.description
-            priority.text = habit.priority.toString()
+            priority.text = habit.priority.value.toString()
             periodicity.text = formatPeriodicity(habit.periodicity)
 
             if (habit.type == Type.GOOD) {

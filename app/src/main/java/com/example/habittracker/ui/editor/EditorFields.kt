@@ -3,8 +3,8 @@ package com.example.habittracker.ui.editor
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.ObservableField
-import com.example.habittracker.R
 import com.example.habittracker.BR
+import com.example.habittracker.R
 import com.example.habittracker.model.Habit
 import com.example.habittracker.model.Type
 
@@ -74,7 +74,7 @@ class EditorFields : BaseObservable() {
         title = state.title
         description = state.description
         type = state.type
-        priority = state.priority
+        priority = state.priority.value
         _repetitionsNumber = state.periodicity.repetitionsNumber
         _daysNumber = state.periodicity.daysNumber
     }
@@ -114,8 +114,19 @@ class EditorFields : BaseObservable() {
         return false
     }
 
+    private fun noMoreThanOneRepetitionPerDay(): Boolean {
+        if (_daysNumber != null && _repetitionsNumber != null && _repetitionsNumber!! > _daysNumber!!) {
+            repetitionsNumberError.set(R.string.too_many_repetitions)
+            return false
+        }
+        return true
+    }
+
     fun isRepetitionsNumberValid(setMessage: Boolean): Boolean {
-        if (_repetitionsNumber != null && _repetitionsNumber!! > 0) {
+        if (!this.noMoreThanOneRepetitionPerDay()) {
+            return false
+        }
+        if (_repetitionsNumber != null && _repetitionsNumber in 1..999) {
             repetitionsNumberError.set(null)
             return true
         }
@@ -125,7 +136,10 @@ class EditorFields : BaseObservable() {
     }
 
     fun isDaysNumberValid(setMessage: Boolean): Boolean {
-        if (_daysNumber != null && _daysNumber!! > 0) {
+        if (!this.noMoreThanOneRepetitionPerDay()) {
+            return false
+        }
+        if (_daysNumber != null && _daysNumber!! in 1..999) {
             daysNumberError.set(null)
             return true
         }

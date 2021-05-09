@@ -99,8 +99,8 @@
                     android:id="@+id/priority_seek_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:max="5"
-                    android:min="1"
+                    android:max="2"
+                    android:min="0"
                     android:progress="@={viewModel.editor.priority}" />
 
                 <TextView

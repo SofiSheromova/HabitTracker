@@ -8,7 +8,7 @@ interface HabitDao {
     @Query("SELECT * FROM habit_table")
     fun getAll(): LiveData<List<Habit>>
 
-    @Query("SELECT * FROM habit_table WHERE id IN (:habitIds)")
+    @Query("SELECT * FROM habit_table WHERE uid IN (:habitIds)")
     fun getAllByIds(habitIds: IntArray): LiveData<List<Habit>>
 
     @Query("SELECT * FROM habit_table WHERE title LIKE :title LIMIT 1")

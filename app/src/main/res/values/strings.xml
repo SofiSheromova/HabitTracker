@@ -13,6 +13,7 @@
     <string name="empty_field">the field must not be empty</string>
     <string name="maximum_length">maximum insertion length reached</string>
     <string name="invalid_value">Invalid value</string>
+    <string name="too_many_repetitions">Most one repetition per day</string>
     <string name="good">good</string>
     <string name="bad">bad</string>
     <string name="title_activity_main" translatable="false">Main Activity</string>
