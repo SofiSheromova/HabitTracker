@@ -1,10 +1,6 @@
 package com.example.habittracker.model
 
 import android.graphics.Color
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import java.util.*
 import kotlin.random.Random
 

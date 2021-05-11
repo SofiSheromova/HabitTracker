@@ -14,7 +14,8 @@ class HabitRoomModel(
     var priority: Priority,
     var color: Int,
     @PrimaryKey val uid: String,
-    var date: Date
+    var date: Date,
+    @ColumnInfo(name = "server_uid") val serverUid: String? = null
 )
 
 class HabitTypeConverter {
