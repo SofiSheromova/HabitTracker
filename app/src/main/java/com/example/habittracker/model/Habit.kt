@@ -13,7 +13,8 @@ class Habit(
     var priority: Priority,
     var color: Int = generateColor(),
     val uid: String = UUID.randomUUID().toString(),
-    var date: Date = Date()
+    var date: Date = Date(),
+    val doneDate: List<Date> = listOf()
 ) {
     constructor() : this(
         "",
@@ -29,6 +30,7 @@ class Habit(
         this.periodicity = state.periodicity
         this.type = state.type
         this.priority = state.priority
+        this.date = Date()
         // this.color = state.color
     }
 }

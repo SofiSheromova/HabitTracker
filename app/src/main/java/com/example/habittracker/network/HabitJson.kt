@@ -4,17 +4,17 @@ import android.util.Log
 import com.squareup.moshi.Json
 import java.util.*
 
-class HabitProperty(
-    @Json(name = "uid") val uid: String,
-    @Json(name = "title") val title: String,
-    @Json(name = "description") val description: String = "",
-    @Json(name = "priority") val priority: Int = 0,
-    @Json(name = "type") val type: Int = 0,
-    @Json(name = "count") val count: Int = 1,
-    @Json(name = "frequency") val frequency: Int = 1,
-    @Json(name = "color") val color: Int = -1,
-    @Json(name = "date") val date: Long = Date().time,
-    @Json(name = "done_dates") val doneDates: List<Long> = listOf()
+class HabitJson(
+    @Json(name = "uid") var uid: String,
+    @Json(name = "title") var title: String,
+    @Json(name = "description") var description: String = "",
+    @Json(name = "priority") var priority: Int = 0,
+    @Json(name = "type") var type: Int = 0,
+    @Json(name = "count") var count: Int = 1,
+    @Json(name = "frequency") var frequency: Int = 1,
+    @Json(name = "color") var color: Int = -1,
+    @Json(name = "date") var date: Long = Date().time,
+    @Json(name = "done_dates") var doneDates: List<Long> = listOf()
 ) {
     init {
         Log.d("TAG-NETWORK", uid)
@@ -22,7 +22,7 @@ class HabitProperty(
 
     override fun toString(): String {
         val sb = StringBuilder()
-        sb.append(HabitProperty::class.java.getName()).append('@')
+        sb.append(HabitJson::class.java.getName()).append('@')
             .append(Integer.toHexString(System.identityHashCode(this))).append('[')
         sb.append("uid")
         sb.append('=')

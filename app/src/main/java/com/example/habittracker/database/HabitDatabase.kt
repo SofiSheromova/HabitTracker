@@ -1,4 +1,4 @@
-package com.example.habittracker.model
+package com.example.habittracker.database
 
 import android.content.Context
 import androidx.room.Database

@@ -1,11 +1,19 @@
-package com.example.habittracker.model
+package com.example.habittracker.database
 
 import androidx.room.*
+import com.example.habittracker.model.Periodicity
+import com.example.habittracker.model.Priority
+import com.example.habittracker.model.Type
 import java.util.*
 
 
 @Entity(tableName = "habit_table")
-@TypeConverters(HabitTypeConverter::class, HabitPriorityConverter::class, DateConverter::class)
+@TypeConverters(
+    HabitTypeConverter::class,
+    HabitPriorityConverter::class,
+    DateConverter::class,
+    DoneDatesConverter::class
+)
 class HabitRoomModel(
     var title: String,
     var description: String,
@@ -13,9 +21,9 @@ class HabitRoomModel(
     var type: Type,
     var priority: Priority,
     var color: Int,
-    @PrimaryKey val uid: String,
+    @PrimaryKey var uid: String,
     var date: Date,
-    @ColumnInfo(name = "server_uid") val serverUid: String? = null
+    @ColumnInfo(name = "done_dates") var doneDates: List<Date>
 )
 
 class HabitTypeConverter {
@@ -51,5 +59,17 @@ class DateConverter {
     @TypeConverter
     fun toDate(data: Long): Date {
         return Date(data)
+    }
+}
+
+class DoneDatesConverter {
+    @TypeConverter
+    fun fromDateList(dates: List<Date>): String {
+        return dates.map { it.time }.joinToString(",")
+    }
+
+    @TypeConverter
+    fun toDateList(data: String): List<Date> {
+        return data.split(",").filter { it.isNotEmpty() }.map { Date(it.toLong()) }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.habittracker.model
+package com.example.habittracker.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -22,4 +22,7 @@ interface HabitDao {
 
     @Delete
     suspend fun delete(habit: HabitRoomModel)
+
+    @Query("DELETE FROM habit_table")
+    fun deleteAll()
 }
