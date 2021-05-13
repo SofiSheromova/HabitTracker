@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.liveData
 import com.example.habittracker.database.HabitDao
 import com.example.habittracker.database.HabitRoomModel
+import com.example.habittracker.database.RequestDao
 import com.example.habittracker.model.Habit
 import com.example.habittracker.model.Periodicity
 import com.example.habittracker.model.Priority
@@ -14,11 +15,15 @@ import com.example.habittracker.network.HabitApiService
 import com.example.habittracker.network.HabitJson
 import com.example.habittracker.network.HabitUid
 import kotlinx.coroutines.*
+import okhttp3.*
+import java.io.IOException
 import java.util.*
 
 class HabitRepository(
     private val habitDao: HabitDao,
-    private val habitService: HabitApiService
+    private val requestDao: RequestDao,
+    private val habitService: HabitApiService,
+    private val client: OkHttpClient
 ) {
     private val localHabits: LiveData<List<HabitRoomModel>> = habitDao.getAll()
     private val mediator: MediatorLiveData<List<Habit>> = MediatorLiveData<List<Habit>>()
@@ -34,6 +39,33 @@ class HabitRepository(
     val allHabits: LiveData<List<Habit>> = liveData {
         emitSource(mediator)
         CoroutineScope(CoroutineName("GetRemoteHabits")).launch {
+
+            val requests = requestDao.getAll()
+            for (model in requests) {
+
+                val request = try {
+                    Request.Builder()
+                        .url(model.url)
+                        .method(
+                            model.method,
+                            if (model.method == "GET") null else model.body
+                        )
+                        .build()
+                } catch (e: Exception) {
+                    Log.d("NETWORK", "invalid request ${e.message}")
+                    return@launch
+                }
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        Log.d("TAG-NETWORK", "Failure: ${e.message}")
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        Log.d("TAG-NETWORK", "Success: ${response.body}")
+                    }
+                })
+            }
+
             val remoteHabits: List<HabitJson>
             try {
                 remoteHabits = getRemoteHabits()

@@ -24,5 +24,5 @@ interface HabitDao {
     suspend fun delete(habit: HabitRoomModel)
 
     @Query("DELETE FROM habit_table")
-    fun deleteAll()
+    suspend fun deleteAll()
 }

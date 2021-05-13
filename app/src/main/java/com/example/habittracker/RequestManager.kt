@@ -1,13 +1,38 @@
 package com.example.habittracker
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.SystemClock
 import android.util.Log
+import com.example.habittracker.database.HabitDao
+import com.example.habittracker.database.RequestDao
+import com.example.habittracker.database.RequestModel
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
 
 
-class RequestManager {
+class RequestManager(
+    private val requestDao: RequestDao,
+    private val applicationContext: Context
+) {
+    private fun isConnected(): Boolean {
+        val connectivityManager = applicationContext
+            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val capabilities = connectivityManager
+            .getNetworkCapabilities(connectivityManager.activeNetwork)
+
+        return capabilities != null
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    }
+
     private val requestQueue: MutableList<Request> = mutableListOf()
 
     private fun execute(chain: Interceptor.Chain): List<Response> {
@@ -15,10 +40,12 @@ class RequestManager {
 
         val responses: MutableList<Response> = mutableListOf()
         var lastResponse: Response? = null
+        val isOnline = isConnected()
 
-        while (requestQueue.isNotEmpty()) {
+        while (requestQueue.isNotEmpty() && isOnline) {
             lastResponse?.close()
-            lastResponse = chain.proceed(requestQueue[0])
+            val request = requestQueue[0]
+            lastResponse = chain.proceed(request)
             responses.add(lastResponse)
             if (lastResponse.isSuccessful) {
                 Log.d(
@@ -30,7 +57,7 @@ class RequestManager {
                 // TODO это не ui thread, тут нельзя что-то сообщить пользователю :(
                 Log.d(
                     "TAG-NETWORK",
-                    "Client Error: ${lastResponse.code}, ${lastResponse.body}"
+                    "Client Error: ${lastResponse.code}, ${request.method} ${request.body.toString()}"
                 )
                 requestQueue.removeAt(0)
             } else {
@@ -40,6 +67,19 @@ class RequestManager {
                 )
                 break
             }
+        }
+
+        CoroutineScope(CoroutineName("requests_saving")).launch {
+            requestDao.deleteAll()
+            requestDao.insertAll(*requestQueue
+                .filter { it.method != "GET" }
+                .mapIndexed { index, request -> RequestModel(request, index) }
+                .toTypedArray())
+        }
+        Log.d("NETWORK", "REQUESTS COUNT: ${requestDao.getAll().size}")
+
+        if (!isOnline) {
+            throw IOException("no internet connection")
         }
 
         return responses

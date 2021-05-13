@@ -5,10 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [HabitRoomModel::class], version = 1, exportSchema = false)
+@Database(
+    entities = [HabitRoomModel::class, RequestModel::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class HabitDatabase : RoomDatabase() {
 
     abstract fun habitDao(): HabitDao
+    abstract fun requestDao(): RequestDao
 
     companion object {
         @Volatile
