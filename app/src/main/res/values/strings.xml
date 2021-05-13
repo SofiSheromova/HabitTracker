@@ -33,4 +33,5 @@
     <string name="arrow_up">arrow_up</string>
     <string name="sort_by_title">Sort by title</string>
     <string name="delete">delete</string>
+    <string name="check_connection">check your internet connection</string>
 </resources>

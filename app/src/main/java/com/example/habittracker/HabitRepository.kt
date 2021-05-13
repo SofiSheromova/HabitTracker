@@ -40,23 +40,27 @@ class HabitRepository(
 
         // TODO нормально ли создавать здеть scope? или это делается как-то иначе?
         CoroutineScope(CoroutineName("GetRemoteHabits")).launch {
-
-            val requestModels = requestDao.getAll()
-            for (model in requestModels) {
-                val request = model.toRequest()
-                if (request != null) newCall(request)
-            }
-
-            val remoteHabits: List<HabitJson>
-            try {
-                remoteHabits = getRemoteHabits()
-            } catch (e: Exception) {
-                Log.d("TAG-NETWORK", "Failure: ${e.message}")
-                return@launch
-            }
-
-            updateLocalHabits(remoteHabits)
+            refresh()
         }
+    }
+
+    suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
+        val requestModels = requestDao.getAll()
+        for (model in requestModels) {
+            val request = model.toRequest()
+            if (request != null) newCall(request)
+        }
+
+        val remoteHabits: List<HabitJson>
+        try {
+            remoteHabits = getRemoteHabits()
+        } catch (e: Exception) {
+            Log.d("TAG-NETWORK", "Failure: ${e.message}")
+            return@withContext false
+        }
+
+        updateLocalHabits(remoteHabits)
+        return@withContext true
     }
 
     private suspend fun getRemoteHabits(): List<HabitJson> = withContext(Dispatchers.IO) {

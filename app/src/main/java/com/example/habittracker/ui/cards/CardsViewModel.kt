@@ -1,12 +1,11 @@
 package com.example.habittracker.ui.cards
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.habittracker.model.Habit
+import androidx.lifecycle.*
 import com.example.habittracker.HabitRepository
+import com.example.habittracker.middleware.Event
+import com.example.habittracker.model.Habit
 import com.example.habittracker.ui.home.DisplayOptions
+import kotlinx.coroutines.launch
 
 class CardsViewModel(
     private val repository: HabitRepository,
@@ -15,12 +14,28 @@ class CardsViewModel(
     private val _habitsLiveData: MediatorLiveData<List<Habit>> = createHabitsMediator()
     val habitsLiveData: LiveData<List<Habit>> = _habitsLiveData
 
+    private val _refreshLiveData: MutableLiveData<Event<Boolean>> = MutableLiveData(Event(false))
+    val refreshLiveData: LiveData<Event<Boolean>> = _refreshLiveData
+
+    private val _networkError: MutableLiveData<Event<Boolean>> = MutableLiveData(Event(false))
+    val networkError: LiveData<Event<Boolean>> = _networkError
+
     private fun getHabits(): List<Habit> {
         return displayOptions.filter(repository.allHabits.value)
     }
 
     fun refreshHabits() {
         _habitsLiveData.value = getHabits()
+    }
+
+    fun refresh() = viewModelScope.launch {
+        _refreshLiveData.value = Event(true)
+        try {
+            if (!repository.refresh()) _networkError.value = Event(true)
+        } catch (e: Exception) {
+            _networkError.value = Event(true)
+        }
+        _refreshLiveData.value = Event(false)
     }
 
     private fun createHabitsMediator(): MediatorLiveData<List<Habit>> {
