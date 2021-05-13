@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -14,6 +15,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
@@ -35,6 +38,14 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        val header = navView.inflateHeaderView(R.layout.nav_header_main)
+        val avatarView: ImageView = header.findViewById(R.id.headerImageView)
+        Glide.with(this)
+            .load("https://data.whicdn.com/images/327972713/original.jpg")
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.error)
+            .transform(CircleCrop())
+            .into(avatarView)
     }
 
     override fun onDestroy() {
