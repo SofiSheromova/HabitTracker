@@ -16,14 +16,13 @@ import com.example.habittracker.network.HabitJson
 import com.example.habittracker.network.HabitUid
 import kotlinx.coroutines.*
 import okhttp3.*
-import java.io.IOException
 import java.util.*
 
 class HabitRepository(
     private val habitDao: HabitDao,
     private val requestDao: RequestDao,
-    private val habitService: HabitApiService,
-    private val client: OkHttpClient
+    private val habitApi: HabitApiService,
+    private val newCall: (Request) -> Unit
 ) {
     private val localHabits: LiveData<List<HabitRoomModel>> = habitDao.getAll()
     private val mediator: MediatorLiveData<List<Habit>> = MediatorLiveData<List<Habit>>()
@@ -38,32 +37,14 @@ class HabitRepository(
 
     val allHabits: LiveData<List<Habit>> = liveData {
         emitSource(mediator)
+
+        // TODO нормально ли создавать здеть scope? или это делается как-то иначе?
         CoroutineScope(CoroutineName("GetRemoteHabits")).launch {
 
-            val requests = requestDao.getAll()
-            for (model in requests) {
-
-                val request = try {
-                    Request.Builder()
-                        .url(model.url)
-                        .method(
-                            model.method,
-                            if (model.method == "GET") null else model.body
-                        )
-                        .build()
-                } catch (e: Exception) {
-                    Log.d("NETWORK", "invalid request ${e.message}")
-                    return@launch
-                }
-                client.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        Log.d("TAG-NETWORK", "Failure: ${e.message}")
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        Log.d("TAG-NETWORK", "Success: ${response.body}")
-                    }
-                })
+            val requestModels = requestDao.getAll()
+            for (model in requestModels) {
+                val request = model.toRequest()
+                if (request != null) newCall(request)
             }
 
             val remoteHabits: List<HabitJson>
@@ -79,7 +60,7 @@ class HabitRepository(
     }
 
     private suspend fun getRemoteHabits(): List<HabitJson> = withContext(Dispatchers.IO) {
-        habitService.getHabits()
+        habitApi.getHabits()
     }
 
     private suspend fun updateLocalHabits(newHabits: List<HabitJson>) =
@@ -95,7 +76,7 @@ class HabitRepository(
 
         val serverUid: String
         try {
-            serverUid = habitService.updateHabit(habit.toJson(includeUid = false)).uid
+            serverUid = habitApi.updateHabit(habit.toJson(includeUid = false)).uid
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
             return@withContext
@@ -111,7 +92,7 @@ class HabitRepository(
         habitDao.updateAll(original.toRoomModel())
 
         try {
-            habitService.updateHabit(original.toJson())
+            habitApi.updateHabit(original.toJson())
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
         }
@@ -121,7 +102,7 @@ class HabitRepository(
         habitDao.delete(habit.toRoomModel())
 
         try {
-            habitService.deleteHabit(HabitUid(habit.uid))
+            habitApi.deleteHabit(HabitUid(habit.uid))
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
         }

@@ -1,6 +1,5 @@
 package com.example.habittracker.network
 
-import android.util.Log
 import com.squareup.moshi.Json
 import java.util.*
 
@@ -16,10 +15,6 @@ class HabitJson(
     @Json(name = "date") var date: Long = Date().time,
     @Json(name = "done_dates") var doneDates: List<Long> = listOf()
 ) {
-    init {
-        Log.d("TAG-NETWORK", uid)
-    }
-
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append(HabitJson::class.java.getName()).append('@')

@@ -1,5 +1,6 @@
 package com.example.habittracker.database
 
+import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
@@ -26,6 +27,21 @@ class RequestModel(
         request.body,
         index
     )
+
+    fun toRequest(): Request? {
+        return try {
+            Request.Builder()
+                .url(this.url)
+                .method(
+                    this.method,
+                    if (this.method == "GET") null else this.body
+                )
+                .build()
+        } catch (e: Exception) {
+            Log.d("TAG-NETWORK", "Cast exception RequestModel to Request")
+            null
+        }
+    }
 }
 
 class BodyConverter {

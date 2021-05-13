@@ -1,11 +1,7 @@
 package com.example.habittracker
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.SystemClock
 import android.util.Log
-import com.example.habittracker.database.HabitDao
 import com.example.habittracker.database.RequestDao
 import com.example.habittracker.database.RequestModel
 import kotlinx.coroutines.CoroutineName
@@ -15,56 +11,36 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.util.*
 
 
 class RequestManager(
     private val requestDao: RequestDao,
-    private val applicationContext: Context
+    private val isConnected: () -> Boolean
 ) {
-    private fun isConnected(): Boolean {
-        val connectivityManager = applicationContext
-            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        val capabilities = connectivityManager
-            .getNetworkCapabilities(connectivityManager.activeNetwork)
-
-        return capabilities != null
-                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-    }
-
-    private val requestQueue: MutableList<Request> = mutableListOf()
+    private val requestQueue: Queue<Request> = LinkedList()
 
     private fun execute(chain: Interceptor.Chain): List<Response> {
-        Log.d("TAG-NETWORK", "size: ${requestQueue.size}")
-
         val responses: MutableList<Response> = mutableListOf()
         var lastResponse: Response? = null
         val isOnline = isConnected()
 
         while (requestQueue.isNotEmpty() && isOnline) {
             lastResponse?.close()
-            val request = requestQueue[0]
+            val request = requestQueue.element()
             lastResponse = chain.proceed(request)
             responses.add(lastResponse)
+
             if (lastResponse.isSuccessful) {
-                Log.d(
-                    "TAG-NETWORK",
-                    "Success: ${lastResponse.code}, ${lastResponse.message}"
-                )
-                requestQueue.removeAt(0)
+                Log.d("TAG-NETWORK", "Success: ${lastResponse.code}, ${lastResponse.message}")
+                requestQueue.poll()
             } else if (lastResponse.isClientError()) {
                 // TODO это не ui thread, тут нельзя что-то сообщить пользователю :(
-                Log.d(
-                    "TAG-NETWORK",
-                    "Client Error: ${lastResponse.code}, ${request.method} ${request.body.toString()}"
-                )
-                requestQueue.removeAt(0)
+                Log.d("TAG-NETWORK", "Client Error: ${request.method} ${lastResponse.code}")
+                requestQueue.poll()
             } else {
-                Log.d(
-                    "TAG-NETWORK",
-                    "Error: ${lastResponse.code}, ${lastResponse.message}"
-                )
+                Log.d("TAG-NETWORK", "Error: ${lastResponse.code}, ${lastResponse.message}")
                 break
             }
         }
@@ -76,10 +52,9 @@ class RequestManager(
                 .mapIndexed { index, request -> RequestModel(request, index) }
                 .toTypedArray())
         }
-        Log.d("NETWORK", "REQUESTS COUNT: ${requestDao.getAll().size}")
 
         if (!isOnline) {
-            throw IOException("no internet connection")
+            throw IOException("No internet connection")
         }
 
         return responses
@@ -97,7 +72,7 @@ class RequestManager(
             } catch (e: Exception) {
                 Log.d(
                     "TAG-NETWORK",
-                    "Request is not successful  №$attemptsCount"
+                    "Interceptor: request is not successful  №$attemptsCount"
                 )
             } finally {
                 attemptsCount++
