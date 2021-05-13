@@ -29,6 +29,7 @@ class RequestManager(
         while (requestQueue.isNotEmpty() && isOnline) {
             lastResponse?.close()
             val request = requestQueue.element()
+            // TODO кажется, что так делать неправильно и лучше отправлять запосы иначе
             lastResponse = chain.proceed(request)
             responses.add(lastResponse)
 
