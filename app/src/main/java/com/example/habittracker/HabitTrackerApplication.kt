@@ -9,6 +9,8 @@ import com.example.habittracker.database.HabitDatabase
 import com.example.habittracker.network.HabitApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -17,42 +19,25 @@ import java.io.IOException
 
 
 class HabitTrackerApplication : Application() {
-    lateinit var database: HabitDatabase
-        private set
-    lateinit var repository: HabitRepository
-        private set
-
-    override fun onCreate() {
-        super.onCreate()
-        database = HabitDatabase.getDatabase(this)
-        val habitApi: HabitApiService by lazy {
-            retrofit.create(HabitApiService::class.java)
-        }
-        repository = HabitRepository(
-            database.habitDao(),
-            database.requestDao(),
-            habitApi,
-            ::newCall
-        )
+    val database: HabitDatabase by lazy {
+        HabitDatabase.getDatabase(this)
     }
 
-    private fun isConnected(): Boolean {
-        val connectivityManager = applicationContext
-            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val repository: HabitRepository by lazy {
+        val habitApi = retrofit.create(HabitApiService::class.java)
 
-        val capabilities = connectivityManager
-            .getNetworkCapabilities(connectivityManager.activeNetwork)
-
-        return capabilities != null
-                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        HabitRepository(database.habitDao(), database.requestDao(), habitApi, ::newCall)
     }
 
-    private val requestManager: RequestManager by lazy {
-        RequestManager(database.requestDao(), ::isConnected)
+    private val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(clientWithSavingFailedRequests)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
     }
 
-    private val client: OkHttpClient by lazy {
+    private val simpleClient: OkHttpClient by lazy {
         val authorizationInterceptor = Interceptor { chain ->
             val originalRequest = chain.request()
             val builder = originalRequest.newBuilder()
@@ -75,13 +60,34 @@ class HabitTrackerApplication : Application() {
         OkHttpClient.Builder()
             .addInterceptor(authorizationInterceptor)
             .addInterceptor(loggingInterceptor)
-            .addInterceptor(requestManager.interceptor)
             .dispatcher(dispatcher)
             .build()
     }
 
+    private val requestManager: RequestManager by lazy {
+        RequestManager(database.requestDao(), ::isConnected, simpleClient)
+    }
+
+    private val clientWithSavingFailedRequests: OkHttpClient by lazy {
+        simpleClient.newBuilder()
+            .addInterceptor(requestManager.interceptor)
+            .build()
+    }
+
+    private fun isConnected(): Boolean {
+        val connectivityManager = applicationContext
+            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val capabilities = connectivityManager
+            .getNetworkCapabilities(connectivityManager.activeNetwork)
+
+        return capabilities != null
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+    }
+
     private fun newCall(request: Request) {
-        client.newCall(request).enqueue(object : Callback {
+        clientWithSavingFailedRequests.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.d("TAG-NETWORK", "newCall() Failure: ${e.message}")
             }
@@ -92,12 +98,9 @@ class HabitTrackerApplication : Application() {
         })
     }
 
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(client)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
+    suspend fun saveRequests() = withContext(Dispatchers.IO) {
+        requestManager.saveState()
+        Log.d("TAG-SAVE", "state saving")
     }
 
     companion object {

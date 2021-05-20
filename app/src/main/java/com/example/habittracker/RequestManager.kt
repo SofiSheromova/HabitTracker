@@ -1,13 +1,12 @@
 package com.example.habittracker
 
 import android.os.SystemClock
-import android.util.Log
 import com.example.habittracker.database.RequestDao
 import com.example.habittracker.database.RequestModel
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
@@ -16,76 +15,74 @@ import java.util.*
 
 class RequestManager(
     private val requestDao: RequestDao,
-    private val isConnected: () -> Boolean
+    private val isConnected: () -> Boolean,
+    private val client: OkHttpClient
 ) {
-
     private val requestQueue: Queue<Request> = LinkedList()
 
-    private fun execute(chain: Interceptor.Chain): List<Response> {
+    val interceptor: Interceptor = Interceptor { chain ->
+        tryToExecuteRequest(chain)
+    }
+
+    private fun tryToExecuteRequest(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+
+        if (!isConnected()) {
+            requestQueue.offer(request)
+            throw IOException("Oops, no internet connection")
+        }
+
+        if (requestQueue.size != 0) {
+            executeRequestQueue()
+
+            if (requestQueue.size != 0)
+                throw IOException("Oops, request queue is not empty")
+        }
+
+        val response: Response = chain.proceed(request)
+
+        if (response.isServerError())
+            requestQueue.offer(request)
+
+        return response
+    }
+
+    private fun executeRequestQueue(): List<Response> {
+        SystemClock.sleep(4000L)
+        if (!isConnected()) {
+            throw IOException("No internet connection")
+        }
+
         val responses: MutableList<Response> = mutableListOf()
-        var lastResponse: Response? = null
-        val isOnline = isConnected()
 
-        while (requestQueue.isNotEmpty() && isOnline) {
-            lastResponse?.close()
+        while (requestQueue.isNotEmpty()) {
             val request = requestQueue.element()
-            // TODO кажется, что так делать неправильно и лучше отправлять запосы иначе
-            lastResponse = chain.proceed(request)
-            responses.add(lastResponse)
+            val response = client.newCall(request).execute()
+            responses.add(response)
 
-            if (lastResponse.isSuccessful) {
-                Log.d("TAG-NETWORK", "Success: ${lastResponse.code}, ${lastResponse.message}")
+            if (response.isSuccessful) {
                 requestQueue.poll()
-            } else if (lastResponse.isClientError()) {
-                // TODO это не ui thread, тут нельзя что-то сообщить пользователю :(
-                Log.d("TAG-NETWORK", "Client Error: ${request.method} ${lastResponse.code}")
+            } else if (response.isClientError()) {
                 requestQueue.poll()
             } else {
-                Log.d("TAG-NETWORK", "Error: ${lastResponse.code}, ${lastResponse.message}")
                 break
             }
-        }
-
-        CoroutineScope(CoroutineName("requests_saving")).launch {
-            requestDao.deleteAll()
-            requestDao.insertAll(*requestQueue
-                .filter { it.method != "GET" }
-                .mapIndexed { index, request -> RequestModel(request, index) }
-                .toTypedArray())
-        }
-
-        if (!isOnline) {
-            throw IOException("No internet connection")
         }
 
         return responses
     }
 
-    val interceptor: Interceptor = Interceptor { chain ->
-        requestQueue.add(chain.request())
-        var lastResponse = execute(chain).last()
+    suspend fun saveState() = withContext(Dispatchers.IO) {
+        val requests = requestQueue
+            .filter { it.method != "GET" }
+            .mapIndexed { index, request -> RequestModel(request, index) }
+            .toTypedArray()
 
-        var attemptsCount = 0
-
-        while (lastResponse.isServerError() && attemptsCount < MAX_ATTEMPTS_COUNT) {
-            try {
-                lastResponse = execute(chain).last()
-            } catch (e: Exception) {
-                Log.d(
-                    "TAG-NETWORK",
-                    "Interceptor: request is not successful  №$attemptsCount"
-                )
-            } finally {
-                attemptsCount++
-                SystemClock.sleep(DELAY_BETWEEN_ATTEMPTS)
-            }
-        }
-        lastResponse
-    }
-
-    companion object {
-        private const val MAX_ATTEMPTS_COUNT: Int = 3
-        private const val DELAY_BETWEEN_ATTEMPTS: Long = 1000
+        // TODO вообще говоря плохо удалять все запросы, круто было бы их предобрабатывать
+        //  чтобы если привычку создали, а потом поменяли, то был бы один запрос
+        //  если создали, а потом удалили их бы не было
+        requestDao.deleteAll()
+        requestDao.insertAll(*requests)
     }
 }
 
@@ -95,8 +92,4 @@ private fun Response.isClientError(): Boolean {
 
 private fun Response.isServerError(): Boolean {
     return this.code >= 500
-}
-
-private fun <T> List<T>.last(): T {
-    return this[this.lastIndex]
 }
