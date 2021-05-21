@@ -93,58 +93,62 @@ class EditorFields : BaseObservable() {
     }
 
     fun isTitleValid(setMessage: Boolean): Boolean {
-        if (title.length in TITLE_MIN_LENGTH..TITLE_MAX_LENGTH) {
+        if (title.trim().length in TITLE_MIN_LENGTH..TITLE_MAX_LENGTH) {
             titleError.set(null)
             return true
         }
-        if (setMessage && title.length < TITLE_MIN_LENGTH)
+        if (setMessage && title.trim().length < TITLE_MIN_LENGTH)
             titleError.set(R.string.error_too_short)
-        if (setMessage && title.length > TITLE_MAX_LENGTH)
+        else if (setMessage)
             titleError.set(R.string.error_too_long)
         return false
     }
 
     fun isDescriptionValid(setMessage: Boolean): Boolean {
-        if (description.length <= DESCRIPTION_MAX_LENGTH) {
+        if (description.trim().length in DESCRIPTION_MIN_LENGTH..DESCRIPTION_MAX_LENGTH) {
             titleError.set(null)
             return true
         }
-        if (setMessage)
+        if (setMessage && description.trim().length < DESCRIPTION_MIN_LENGTH)
+            titleError.set(R.string.error_too_short)
+        else if (setMessage)
             titleError.set(R.string.error_too_long)
         return false
     }
 
-    private fun noMoreThanOneRepetitionPerDay(): Boolean {
-        if (_daysNumber != null && _repetitionsNumber != null && _repetitionsNumber!! > _daysNumber!!) {
-            repetitionsNumberError.set(R.string.too_many_repetitions)
-            return false
-        }
-        return true
+    private fun correctRepetitionsPerDay(): Boolean {
+        return _daysNumber != null && _repetitionsNumber != null &&
+                _repetitionsNumber!! <= _daysNumber!!
     }
 
     fun isRepetitionsNumberValid(setMessage: Boolean): Boolean {
-        if (!this.noMoreThanOneRepetitionPerDay()) {
-            return false
-        }
-        if (_repetitionsNumber != null && _repetitionsNumber in 1..999) {
+        if (_repetitionsNumber != null && _repetitionsNumber in 1..999 && this.correctRepetitionsPerDay()) {
             repetitionsNumberError.set(null)
             return true
         }
-        if (setMessage)
-            repetitionsNumberError.set(R.string.invalid_value)
+
+        if (setMessage) {
+            if (!this.correctRepetitionsPerDay())
+                repetitionsNumberError.set(R.string.too_many_repetitions)
+            else
+                repetitionsNumberError.set(R.string.invalid_value)
+        }
         return false
     }
 
     fun isDaysNumberValid(setMessage: Boolean): Boolean {
-        if (!this.noMoreThanOneRepetitionPerDay()) {
-            return false
-        }
-        if (_daysNumber != null && _daysNumber!! in 1..999) {
+        if (_daysNumber != null && _daysNumber!! in 1..999 && this.correctRepetitionsPerDay()) {
             daysNumberError.set(null)
             return true
         }
-        if (setMessage)
-            daysNumberError.set(R.string.invalid_value)
+
+        if (setMessage) {
+            if (!this.correctRepetitionsPerDay())
+                repetitionsNumberError.set(R.string.too_many_repetitions)
+            else
+                daysNumberError.set(R.string.invalid_value)
+        }
+
         return false
     }
 
@@ -152,6 +156,7 @@ class EditorFields : BaseObservable() {
         private const val TITLE_MIN_LENGTH: Int = 5
         private const val TITLE_MAX_LENGTH: Int = 50
 
+        private const val DESCRIPTION_MIN_LENGTH: Int = 1
         private const val DESCRIPTION_MAX_LENGTH: Int = 140
     }
 }
