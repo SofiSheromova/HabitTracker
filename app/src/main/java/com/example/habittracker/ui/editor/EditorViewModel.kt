@@ -7,8 +7,9 @@ import androidx.databinding.BindingAdapter
 import androidx.lifecycle.*
 import com.example.habittracker.middleware.Event
 import com.example.habittracker.model.Habit
-import com.example.habittracker.model.HabitRepository
+import com.example.habittracker.HabitRepository
 import com.example.habittracker.model.Periodicity
+import com.example.habittracker.model.Priority
 import kotlinx.coroutines.launch
 
 class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
@@ -33,7 +34,7 @@ class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
     }
 
     private fun insertNew(state: Habit) = viewModelScope.launch {
-        repository.insertAll(state)
+        repository.insert(state)
     }
 
     private fun deleteOriginal() = viewModelScope.launch {
@@ -54,7 +55,13 @@ class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
 
     private fun updateCard(editor: EditorFields) {
         val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
-        val state = Habit(editor.title, editor.description, period, editor.type, editor.priority)
+        val state = Habit(
+            editor.title,
+            editor.description,
+            period,
+            editor.type,
+            Priority.valueOf(editor.priority)
+        )
         original.value.let {
             if (it != null) {
                 updateOriginal(state)
