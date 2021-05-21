@@ -3,7 +3,6 @@ package com.example.habittracker
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.liveData
 import com.example.habittracker.database.HabitDao
 import com.example.habittracker.database.HabitRoomModel
 import com.example.habittracker.database.RequestDao
@@ -35,20 +34,14 @@ class HabitRepository(
         }
     }
 
-    val allHabits: LiveData<List<Habit>> = liveData {
-        emitSource(mediator)
+    val allHabits: LiveData<List<Habit>> = mediator
 
-        // TODO нормально ли создавать здеть scope? или это делается как-то иначе?
-        CoroutineScope(CoroutineName("GetRemoteHabits")).launch {
-            refresh()
-        }
-    }
-
-    suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
+    suspend fun refreshHabits(): Boolean = withContext(Dispatchers.IO) {
         val requestModels = requestDao.getAll()
         for (model in requestModels) {
             val request = model.toRequest()
-            if (request != null) newCall(request)
+            if (request != null)
+                newCall(request)
         }
 
         val remoteHabits: List<HabitJson>

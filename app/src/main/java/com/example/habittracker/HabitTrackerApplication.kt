@@ -89,18 +89,16 @@ class HabitTrackerApplication : Application() {
     private fun newCall(request: Request) {
         clientWithSavingFailedRequests.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.d("TAG-NETWORK", "newCall() Failure: ${e.message}")
+                Log.d("TAG-NETWORK", "Failure: ${e.message}")
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                Log.d("TAG-NETWORK", "newCall() Success: ${response.code}")
-            }
+            override fun onResponse(call: Call, response: Response) {}
         })
     }
 
     suspend fun saveRequests() = withContext(Dispatchers.IO) {
         requestManager.saveState()
-        Log.d("TAG-SAVE", "state saving")
+        Log.d("TAG-NETWORK", "Requests saved")
     }
 
     companion object {

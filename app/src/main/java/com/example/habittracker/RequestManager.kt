@@ -1,6 +1,5 @@
 package com.example.habittracker
 
-import android.os.SystemClock
 import com.example.habittracker.database.RequestDao
 import com.example.habittracker.database.RequestModel
 import kotlinx.coroutines.Dispatchers
@@ -29,14 +28,14 @@ class RequestManager(
 
         if (!isConnected()) {
             requestQueue.offer(request)
-            throw IOException("Oops, no internet connection")
+            throw IOException("No internet connection")
         }
 
         if (requestQueue.size != 0) {
             executeRequestQueue()
 
             if (requestQueue.size != 0)
-                throw IOException("Oops, request queue is not empty")
+                throw IOException("It is impossible to send a new request until the request queue is empty")
         }
 
         val response: Response = chain.proceed(request)
@@ -48,7 +47,6 @@ class RequestManager(
     }
 
     private fun executeRequestQueue(): List<Response> {
-        SystemClock.sleep(4000L)
         if (!isConnected()) {
             throw IOException("No internet connection")
         }

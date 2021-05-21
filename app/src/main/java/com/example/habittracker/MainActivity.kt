@@ -48,6 +48,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             .error(R.drawable.error)
             .transform(CircleCrop())
             .into(avatarView)
+
+        lifecycleScope.launch {
+            (application as HabitTrackerApplication).repository.refreshHabits()
+        }
     }
 
     override fun onDestroy() {

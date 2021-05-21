@@ -31,7 +31,7 @@ class CardsViewModel(
     fun refresh() = viewModelScope.launch {
         _refreshLiveData.value = Event(true)
         try {
-            if (!repository.refresh()) _networkError.value = Event(true)
+            if (!repository.refreshHabits()) _networkError.value = Event(true)
         } catch (e: Exception) {
             _networkError.value = Event(true)
         }
