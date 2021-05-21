@@ -34,4 +34,5 @@
     <string name="sort_by_title">Sort by title</string>
     <string name="delete">delete</string>
     <string name="failed_update">Failed update</string>
+    <string name="required_field" translatable="false">*</string>
 </resources>
