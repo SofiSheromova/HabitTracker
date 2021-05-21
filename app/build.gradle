@@ -8,6 +8,11 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
+    // Load values from keystore.properties file
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def keystoreProperties = new Properties()
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
     defaultConfig {
         applicationId "com.example.habittracker"
         minSdkVersion 26
@@ -16,6 +21,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "AUTHORIZATION_TOKEN", keystoreProperties["AUTHORIZATION_TOKEN"]
     }
 
     android.buildFeatures.dataBinding = true

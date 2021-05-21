@@ -43,7 +43,7 @@ class HabitTrackerApplication : Application() {
             val builder = originalRequest.newBuilder()
                 .header(
                     "Authorization",
-                    AUTHORIZATION_TOKEN
+                    BuildConfig.AUTHORIZATION_TOKEN
                 )
             val newRequest = builder.build()
             chain.proceed(newRequest)
@@ -105,7 +105,6 @@ class HabitTrackerApplication : Application() {
 
     companion object {
         private const val BASE_URL = "https://droid-test-server.doubletapp.ru/api/"
-        private const val AUTHORIZATION_TOKEN = "6395dfd0-b640-487a-99b7-1cfc567ca457"
 
         private val moshi: Moshi by lazy {
             Moshi.Builder()
