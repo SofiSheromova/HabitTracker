@@ -87,7 +87,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
                 if (it)
                     Toast.makeText(
                         requireContext().applicationContext,
-                        resources.getString(R.string.check_connection),
+                        resources.getString(R.string.failed_update),
                         Toast.LENGTH_SHORT
                     ).show()
             }
