@@ -79,8 +79,12 @@ class HabitRepository(
             return@withContext
         }
 
+        updateUid(habitModel, serverUid)
+    }
+
+    private suspend fun updateUid(habitModel: HabitRoomModel, uid: String) {
         habitDao.delete(habitModel)
-        habitModel.uid = serverUid
+        habitModel.uid = uid
         habitDao.insertAll(habitModel)
     }
 
