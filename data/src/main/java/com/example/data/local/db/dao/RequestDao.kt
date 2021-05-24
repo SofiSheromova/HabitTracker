@@ -1,0 +1,22 @@
+package com.example.data.local.db.dao
+
+import androidx.room.*
+import com.example.data.model.RequestEntity
+
+@Dao
+interface RequestDao {
+    @Query("SELECT * FROM request_table")
+    fun getAll(): List<RequestEntity>
+
+    @Update
+    suspend fun updateAll(vararg requests: RequestEntity)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(vararg requests: RequestEntity)
+
+    @Delete
+    suspend fun delete(request: RequestEntity)
+
+    @Query("DELETE FROM request_table")
+    suspend fun deleteAll()
+}
