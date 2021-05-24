@@ -1,16 +1,18 @@
 package com.example.habittracker.ui.cards
 
 import androidx.lifecycle.*
-import com.example.data.HabitRepositoryImpl
 import com.example.domain.model.Habit
+import com.example.domain.repository.HabitRepository
 import com.example.habittracker.middleware.Event
 import com.example.habittracker.ui.home.DisplayOptions
 import kotlinx.coroutines.launch
 
 class CardsViewModel(
-    private val repository: HabitRepositoryImpl,
+    private val repository: HabitRepository,
     private val displayOptions: DisplayOptions
 ) : ViewModel() {
+    private val _allHabitsLiveData: LiveData<List<Habit>> = repository.allHabits.asLiveData()
+
     private val _habitsLiveData: MediatorLiveData<List<Habit>> = createHabitsMediator()
     val habitsLiveData: LiveData<List<Habit>> = _habitsLiveData
 
@@ -21,7 +23,7 @@ class CardsViewModel(
     val networkError: LiveData<Event<Boolean>> = _networkError
 
     private fun getHabits(): List<Habit> {
-        return displayOptions.filter(repository.allHabits.value)
+        return displayOptions.filter(_allHabitsLiveData.value)
     }
 
     fun refreshHabits() {
@@ -40,7 +42,7 @@ class CardsViewModel(
 
     private fun createHabitsMediator(): MediatorLiveData<List<Habit>> {
         val mediator = MediatorLiveData<List<Habit>>()
-        mediator.addSource(repository.allHabits) {
+        mediator.addSource(_allHabitsLiveData) {
             mediator.value = getHabits()
         }
         return mediator
@@ -48,7 +50,7 @@ class CardsViewModel(
 }
 
 class CardsViewModelFactory(
-    private val repository: HabitRepositoryImpl,
+    private val repository: HabitRepository,
     private val options: DisplayOptions? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

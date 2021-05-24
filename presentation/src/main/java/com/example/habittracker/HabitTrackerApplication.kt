@@ -8,6 +8,7 @@ import android.util.Log
 import com.example.data.HabitRepositoryImpl
 import com.example.data.local.db.HabitDatabase
 import com.example.data.remote.api.HabitApi
+import com.example.domain.repository.HabitRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,7 @@ class HabitTrackerApplication : Application() {
         HabitDatabase.getDatabase(this)
     }
 
-    val repository: HabitRepositoryImpl by lazy {
+    val repository: HabitRepository by lazy {
         val habitApi = retrofit.create(HabitApi::class.java)
 
         HabitRepositoryImpl(database.habitDao(), database.requestDao(), habitApi, ::newCall)

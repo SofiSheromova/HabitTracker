@@ -4,7 +4,7 @@ import com.example.domain.model.Habit
 import kotlinx.coroutines.flow.Flow
 
 interface HabitRepository {
-//    val allHabits: Flow<List<Habit>>
+    val allHabits: Flow<List<Habit>>
 
     suspend fun refreshHabits(): Boolean
     suspend fun insert(habit: Habit)

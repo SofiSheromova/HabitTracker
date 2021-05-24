@@ -1,19 +1,19 @@
 package com.example.data.local.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.data.model.HabitEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HabitDao {
     @Query("SELECT * FROM habit_table")
-    fun getAll(): LiveData<List<HabitEntity>>
+    fun getAll(): Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM habit_table WHERE uid IN (:habitIds)")
-    fun getAllByIds(habitIds: IntArray): LiveData<List<HabitEntity>>
+    fun getAllByIds(habitIds: IntArray): Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM habit_table WHERE title LIKE :title LIMIT 1")
-    fun findByTitle(title: String): LiveData<HabitEntity>
+    fun findByTitle(title: String): Flow<HabitEntity>
 
     @Update
     suspend fun updateAll(vararg habits: HabitEntity)

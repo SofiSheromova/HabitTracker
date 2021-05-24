@@ -5,14 +5,14 @@ import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.*
-import com.example.data.HabitRepositoryImpl
 import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
+import com.example.domain.repository.HabitRepository
 import com.example.habittracker.middleware.Event
 import kotlinx.coroutines.launch
 
-class EditorViewModel(private val repository: HabitRepositoryImpl) : ViewModel() {
+class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
     private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
         .apply {
             value = null
@@ -134,7 +134,7 @@ class EditorViewModel(private val repository: HabitRepositoryImpl) : ViewModel()
     }
 }
 
-class EditorViewModelFactory(private val repository: HabitRepositoryImpl) : ViewModelProvider.Factory {
+class EditorViewModelFactory(private val repository: HabitRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

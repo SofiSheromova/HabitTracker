@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.data.Constants
 import com.example.data.HabitRepositoryImpl
 import com.example.data.local.db.HabitDatabase
+import com.example.domain.repository.HabitRepository
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -27,7 +28,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideHabitRepository(repository: HabitRepositoryImpl): HabitRepositoryImpl {
+    fun provideHabitRepository(repository: HabitRepositoryImpl): HabitRepository {
         return repository
     }
 }

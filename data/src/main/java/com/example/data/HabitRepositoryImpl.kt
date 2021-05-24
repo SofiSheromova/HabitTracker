@@ -1,8 +1,6 @@
 package com.example.data
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import com.example.data.local.db.dao.HabitDao
 import com.example.data.local.db.dao.RequestDao
 import com.example.data.model.HabitEntity
@@ -13,7 +11,10 @@ import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
 import com.example.domain.model.Type
+import com.example.domain.repository.HabitRepository
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import okhttp3.*
 import java.util.*
 
@@ -22,21 +23,14 @@ class HabitRepositoryImpl(
     private val requestDao: RequestDao,
     private val habitApi: HabitApi,
     private val newCall: (Request) -> Unit
-) {
-    private val localHabits: LiveData<List<HabitEntity>> = habitDao.getAll()
-    private val mediator: MediatorLiveData<List<Habit>> = MediatorLiveData<List<Habit>>()
+) : HabitRepository {
+    override val allHabits: Flow<List<Habit>> = habitDao.getAll().map { converter(it) }
 
-    init {
-        mediator.addSource(localHabits) { result ->
-            result?.let {
-                mediator.value = it.map { habitRoomModel -> habitRoomModel.toHabit() }
-            }
-        }
+    private fun converter(habitEntities: List<HabitEntity>): List<Habit> {
+        return habitEntities.map { habitRoomModel -> habitRoomModel.toHabit() }
     }
 
-    val allHabits: LiveData<List<Habit>> = mediator
-
-    suspend fun refreshHabits(): Boolean = withContext(Dispatchers.IO) {
+    override suspend fun refreshHabits(): Boolean = withContext(Dispatchers.IO) {
         val requestModels = requestDao.getAll()
         for (model in requestModels) {
             val request = model.toRequest()
@@ -67,7 +61,7 @@ class HabitRepositoryImpl(
             habitDao.insertAll(*habits)
         }
 
-    suspend fun insert(habit: Habit) = withContext(Dispatchers.IO) {
+    override suspend fun insert(habit: Habit) = withContext(Dispatchers.IO) {
         val habitModel = habit.toRoomModel()
         habitDao.insertAll(habitModel)
 
@@ -88,7 +82,7 @@ class HabitRepositoryImpl(
         habitDao.insertAll(habitModel)
     }
 
-    suspend fun update(original: Habit, newState: Habit) = withContext(Dispatchers.IO) {
+    override suspend fun update(original: Habit, newState: Habit) = withContext(Dispatchers.IO) {
         original.update(newState)
         habitDao.updateAll(original.toRoomModel())
 
@@ -97,9 +91,11 @@ class HabitRepositoryImpl(
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
         }
+
+        return@withContext
     }
 
-    suspend fun delete(habit: Habit) = withContext(Dispatchers.IO) {
+    override suspend fun delete(habit: Habit) = withContext(Dispatchers.IO) {
         habitDao.delete(habit.toRoomModel())
 
         try {
@@ -107,6 +103,8 @@ class HabitRepositoryImpl(
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
         }
+
+        return@withContext
     }
 
     private fun Habit.toRoomModel(): HabitEntity {

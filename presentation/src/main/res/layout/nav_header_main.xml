@@ -14,6 +14,6 @@
         android:id="@+id/headerImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="avatar"
+        android:contentDescription="@string/avatar"
         android:paddingTop="@dimen/nav_header_vertical_spacing" />
 </LinearLayout>
