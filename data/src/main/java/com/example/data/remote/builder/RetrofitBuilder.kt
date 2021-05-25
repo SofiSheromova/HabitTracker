@@ -1,15 +1,16 @@
 package com.example.data.remote.builder
 
-import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RetrofitBuilder {
+@Singleton
+class RetrofitBuilder @Inject constructor() {
     private var okHttpClientBuilder: OkHttpClient.Builder? = null
     private var interceptors = mutableListOf<Interceptor>()
 
@@ -44,13 +45,13 @@ class RetrofitBuilder {
 
     fun build(): Retrofit {
         val clientBuilder = (okHttpClientBuilder ?: OkHttpClient.Builder()).apply {
-            if (logEnable) {
-                addInterceptor(
-                    HttpLoggingInterceptor { message -> Log.d("TAG-NETWORK", message) }.apply {
-                        level = HttpLoggingInterceptor.Level.BODY
-                    }
-                )
-            }
+//            if (logEnable) {
+//                addInterceptor(
+//                    HttpLoggingInterceptor { message -> Log.d("TAG-NETWORK", message) }.apply {
+//                        level = HttpLoggingInterceptor.Level.BODY
+//                    }
+//                )
+//            }
 
             interceptors.forEach { addInterceptor(it) }
         }

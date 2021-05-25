@@ -1,17 +1,21 @@
 package com.example.data.di.module
 
 import android.content.Context
-import androidx.room.Room
+import android.util.Log
 import com.example.data.Constants
 import com.example.data.HabitRepositoryImpl
 import com.example.data.di.interfaces.DatabaseInfo
+import com.example.data.di.interfaces.StorageRequestsOkHttpClient
 import com.example.data.local.db.HabitDatabase
+import com.example.data.remote.api.HabitApi
 import com.example.domain.repository.HabitRepository
 import dagger.Module
 import dagger.Provides
+import okhttp3.*
+import java.io.IOException
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [NetworkModule::class])
 class RepositoryModule {
     @Provides
     @DatabaseInfo
@@ -22,14 +26,32 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun provideHabitDatabase(@DatabaseInfo dbName: String, context: Context): HabitDatabase {
-        return Room.databaseBuilder(context, HabitDatabase::class.java, dbName)
-            .fallbackToDestructiveMigration()
-            .build()
+        return HabitDatabase.getDatabase(context)
     }
 
     @Provides
     @Singleton
-    fun provideHabitRepository(repository: HabitRepositoryImpl): HabitRepository {
-        return repository
+    fun provideHabitRepository(
+        habitApi: HabitApi,
+        @StorageRequestsOkHttpClient client: OkHttpClient,
+        habitDatabase: HabitDatabase
+    ): HabitRepository {
+
+        fun newCall(request: Request) {
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.d("TAG-NETWORK", "Failure: ${e.message}")
+                }
+
+                override fun onResponse(call: Call, response: Response) {}
+            })
+        }
+
+        return HabitRepositoryImpl(
+            habitDatabase.habitDao(),
+            habitDatabase.requestDao(),
+            habitApi,
+            ::newCall
+        )
     }
 }

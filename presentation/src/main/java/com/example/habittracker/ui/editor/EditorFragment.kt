@@ -8,18 +8,23 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.example.domain.repository.HabitRepository
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentEditorBinding
+import javax.inject.Inject
 
 class EditorFragment : Fragment() {
     private lateinit var editorViewModel: EditorViewModel
     private lateinit var binding: FragmentEditorBinding
 
+    @Inject
+    lateinit var repository: HabitRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = (requireActivity().application as HabitTrackerApplication).repository
+        (requireActivity().application as HabitTrackerApplication).appComponent.inject(this)
 
         editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
             .get(EditorViewModel::class.java)

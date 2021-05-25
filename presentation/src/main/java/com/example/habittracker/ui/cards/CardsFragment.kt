@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
+import com.example.domain.repository.HabitRepository
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
+import javax.inject.Inject
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
@@ -28,10 +30,13 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
 
     private lateinit var adapter: CardsAdapter
 
+    @Inject
+    lateinit var repository: HabitRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = (requireActivity().application as HabitTrackerApplication).repository
+        (requireActivity().application as HabitTrackerApplication).appComponent.inject(this)
 
         val displayOptions = getDisplayOptions(arguments)
 

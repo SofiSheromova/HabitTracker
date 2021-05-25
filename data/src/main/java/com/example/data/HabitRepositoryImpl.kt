@@ -24,6 +24,7 @@ class HabitRepositoryImpl(
     private val habitApi: HabitApi,
     private val newCall: (Request) -> Unit
 ) : HabitRepository {
+
     override val allHabits: Flow<List<Habit>> = habitDao.getAll().map { converter(it) }
 
     private fun converter(habitEntities: List<HabitEntity>): List<Habit> {

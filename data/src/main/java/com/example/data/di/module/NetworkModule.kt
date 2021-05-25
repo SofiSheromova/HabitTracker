@@ -1,7 +1,11 @@
 package com.example.data.di.module
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.data.di.interfaces.SimpleOkHttpClient
+import com.example.data.di.interfaces.StorageRequestsOkHttpClient
 import com.example.data.local.db.HabitDatabase
 import com.example.data.remote.RequestManager
 import com.example.data.remote.api.HabitApi
@@ -22,9 +26,10 @@ class NetworkModule {
     @Provides
     fun provideRetrofit(
         retrofitBuilder: RetrofitBuilder,
-        headerInterceptor: HeaderInterceptor
+        @StorageRequestsOkHttpClient client: OkHttpClient
     ): Retrofit = retrofitBuilder
-        .addInterceptors(headerInterceptor)
+        .setOkHttpClientBuilder(client.newBuilder())
+//        .addInterceptors(headerInterceptor)
         .build()
 
     @Singleton
@@ -48,23 +53,50 @@ class NetworkModule {
             .build()
     }
 
+    @Singleton
     @Provides
     fun provideHeaderInterceptor(): HeaderInterceptor {
         return HeaderInterceptor()
     }
 
+    @Singleton
     @Provides
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor { message -> Log.d("TAG-NETWORK", message) }
             .apply { level = HttpLoggingInterceptor.Level.BODY }
     }
 
+    @Singleton
     @Provides
     fun provideRequestManager(
         habitDatabase: HabitDatabase,
-        client: OkHttpClient
+        @SimpleOkHttpClient client: OkHttpClient,
+        context: Context
     ): RequestManager {
-        // TODO тут пока заглушка
-        return RequestManager(habitDatabase.requestDao(), { true }, client)
+        fun isConnected(): Boolean {
+            val connectivityManager = context
+                .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+            val capabilities = connectivityManager
+                .getNetworkCapabilities(connectivityManager.activeNetwork)
+
+            return capabilities != null
+                    && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        }
+
+        return RequestManager(habitDatabase.requestDao(), ::isConnected, client)
+    }
+
+    @StorageRequestsOkHttpClient
+    @Singleton
+    @Provides
+    fun provideStorageRequestsClient(
+        @SimpleOkHttpClient simpleClient: OkHttpClient,
+        requestManager: RequestManager
+    ): OkHttpClient {
+        return simpleClient.newBuilder()
+            .addInterceptor(requestManager.interceptor)
+            .build()
     }
 }

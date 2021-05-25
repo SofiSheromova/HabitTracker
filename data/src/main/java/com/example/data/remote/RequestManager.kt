@@ -1,5 +1,6 @@
 package com.example.data.remote
 
+import android.util.Log
 import com.example.data.local.db.dao.RequestDao
 import com.example.data.model.RequestEntity
 import kotlinx.coroutines.Dispatchers
@@ -75,6 +76,8 @@ class RequestManager(
             .filter { it.method != "GET" }
             .mapIndexed { index, request -> RequestEntity(request, index) }
             .toTypedArray()
+
+        Log.d("TAG-NETWORK", "Requests count = ${requests.size}")
 
         // TODO вообще говоря плохо удалять все запросы, круто было бы их предобрабатывать
         //  чтобы если привычку создали, а потом поменяли, то был бы один запрос

@@ -2,6 +2,7 @@ package com.example.habittracker
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
@@ -17,17 +18,28 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.example.data.remote.RequestManager
+import com.example.domain.repository.HabitRepository
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    @Inject
+    lateinit var repository: HabitRepository
+
+    @Inject
+    lateinit var requestManager: RequestManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        (application as HabitTrackerApplication).appComponent.inject(this)
+
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -43,7 +55,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         navView.setupWithNavController(navController)
         val header = navView.inflateHeaderView(R.layout.nav_header_main)
         val avatarView: ImageView = header.findViewById(R.id.headerImageView)
-        val a: RequestManager = Glide.with(this)
         Glide.with(this)
             .load("https://data.whicdn.com/images/327972713/original.jpg")
             .placeholder(R.drawable.placeholder)
@@ -52,7 +63,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             .into(avatarView)
 
         lifecycleScope.launch {
-            (application as HabitTrackerApplication).repository.refresh()
+            Log.d("TAG-ARCHITECTURE", repository.toString())
+            repository.refresh()
         }
     }
 
@@ -84,7 +96,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     //  что данные сохранятся
     override fun onPause() {
         lifecycleScope.launch {
-            (application as HabitTrackerApplication).saveRequests()
+            requestManager.saveState()
         }
 
         super.onPause()

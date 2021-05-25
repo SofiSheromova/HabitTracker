@@ -10,7 +10,7 @@ class HeaderInterceptor : Interceptor {
 
         var request = chain.request()
         request = request.newBuilder()
-            .addHeader(
+            .header(
                 "Authorization",
                 BuildConfig.AUTHORIZATION_TOKEN
             )
