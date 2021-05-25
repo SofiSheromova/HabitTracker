@@ -12,7 +12,7 @@ class Habit(
     val uid: String = UUID.randomUUID().toString(),
     var date: Date = Date(),
     val doneDate: List<Date> = listOf()
-) {
+) : Model() {
     constructor() : this(
         "",
         "",

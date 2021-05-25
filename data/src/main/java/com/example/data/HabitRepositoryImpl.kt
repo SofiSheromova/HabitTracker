@@ -30,7 +30,7 @@ class HabitRepositoryImpl(
         return habitEntities.map { habitRoomModel -> habitRoomModel.toHabit() }
     }
 
-    override suspend fun refreshHabits(): Boolean = withContext(Dispatchers.IO) {
+    override suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
         val requestModels = requestDao.getAll()
         for (model in requestModels) {
             val request = model.toRequest()

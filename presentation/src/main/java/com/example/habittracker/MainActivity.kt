@@ -17,6 +17,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         navView.setupWithNavController(navController)
         val header = navView.inflateHeaderView(R.layout.nav_header_main)
         val avatarView: ImageView = header.findViewById(R.id.headerImageView)
+        val a: RequestManager = Glide.with(this)
         Glide.with(this)
             .load("https://data.whicdn.com/images/327972713/original.jpg")
             .placeholder(R.drawable.placeholder)
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             .into(avatarView)
 
         lifecycleScope.launch {
-            (application as HabitTrackerApplication).repository.refreshHabits()
+            (application as HabitTrackerApplication).repository.refresh()
         }
     }
 

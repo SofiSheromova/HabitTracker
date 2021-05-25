@@ -1,10 +1,10 @@
 package com.example.habittracker.ui.cards
 
 import androidx.lifecycle.*
+import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.repository.HabitRepository
 import com.example.habittracker.middleware.Event
-import com.example.habittracker.ui.home.DisplayOptions
 import kotlinx.coroutines.launch
 
 class CardsViewModel(
@@ -33,7 +33,7 @@ class CardsViewModel(
     fun refresh() = viewModelScope.launch {
         _refreshLiveData.value = Event(true)
         try {
-            if (!repository.refreshHabits()) _networkError.value = Event(true)
+            if (!repository.refresh()) _networkError.value = Event(true)
         } catch (e: Exception) {
             _networkError.value = Event(true)
         }

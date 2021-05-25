@@ -1,4 +1,4 @@
-package com.example.data.remote.api.builder
+package com.example.data.remote.builder
 
 import android.util.Log
 import com.squareup.moshi.Moshi

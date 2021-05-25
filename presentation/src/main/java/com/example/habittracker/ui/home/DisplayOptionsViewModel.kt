@@ -6,6 +6,7 @@ import android.widget.ImageButton
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.domain.model.DisplayOptions
 
 class DisplayOptionsViewModel : ViewModel() {
     private val _checkedButtonLiveData: MutableLiveData<ImageButton> =

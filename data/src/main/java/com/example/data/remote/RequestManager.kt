@@ -1,4 +1,4 @@
-package com.example.habittracker
+package com.example.data.remote
 
 import com.example.data.local.db.dao.RequestDao
 import com.example.data.model.RequestEntity

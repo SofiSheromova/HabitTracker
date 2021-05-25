@@ -1,6 +1,9 @@
 package com.example.data.model
 
 import androidx.room.*
+import com.example.data.base.EntityMapper
+import com.example.data.base.ModelEntity
+import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
 import com.example.domain.model.Type
@@ -24,7 +27,7 @@ class HabitEntity(
     @PrimaryKey var uid: String,
     var date: Date,
     @ColumnInfo(name = "done_dates") var doneDates: List<Date>
-)
+) : ModelEntity()
 
 class HabitTypeConverter {
     @TypeConverter
@@ -72,4 +75,30 @@ class DoneDatesConverter {
     fun toDateList(data: String): List<Date> {
         return data.split(",").filter { it.isNotEmpty() }.map { Date(it.toLong()) }
     }
+}
+
+class HabitEntityMapper : EntityMapper<Habit, HabitEntity> {
+    override fun mapToDomain(entity: HabitEntity): Habit = Habit(
+        entity.title,
+        entity.description,
+        entity.periodicity,
+        entity.type,
+        entity.priority,
+        entity.color,
+        entity.uid,
+        entity.date,
+        entity.doneDates
+    )
+
+    override fun mapToEntity(model: Habit): HabitEntity = HabitEntity(
+        model.title,
+        model.description,
+        model.periodicity,
+        model.type,
+        model.priority,
+        model.color,
+        model.uid,
+        model.date,
+        model.doneDate
+    )
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
 import com.example.habittracker.HabitTrackerApplication
@@ -16,7 +17,6 @@ import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.editor.EditorViewModelFactory
-import com.example.habittracker.ui.home.DisplayOptions
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {

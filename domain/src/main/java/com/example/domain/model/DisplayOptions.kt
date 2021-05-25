@@ -1,6 +1,7 @@
-package com.example.habittracker.ui.home
+package com.example.domain.model
 
-import com.example.domain.model.Habit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 
 class DisplayOptions(
@@ -10,6 +11,10 @@ class DisplayOptions(
 
     fun filter(habits: List<Habit>?): List<Habit> {
         return (habits ?: listOf()).sort().searchBarFilter().localFilter()
+    }
+
+    fun filter(habits: Flow<List<Habit>>): Flow<List<Habit>> {
+        return habits.map { it.sort().searchBarFilter().localFilter() }
     }
 
     private fun List<Habit>.localFilter(): List<Habit> {

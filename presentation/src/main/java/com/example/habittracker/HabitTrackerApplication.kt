@@ -7,8 +7,12 @@ import android.net.NetworkCapabilities
 import android.util.Log
 import com.example.data.HabitRepositoryImpl
 import com.example.data.local.db.HabitDatabase
+import com.example.data.remote.RequestManager
 import com.example.data.remote.api.HabitApi
 import com.example.domain.repository.HabitRepository
+import com.example.habittracker.di.component.AppComponent
+import com.example.habittracker.di.component.DaggerAppComponent
+import com.example.habittracker.di.module.AppModule
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +25,15 @@ import java.io.IOException
 
 
 class HabitTrackerApplication : Application() {
+    lateinit var appComponent: AppComponent
+
+    override fun onCreate() {
+        super.onCreate()
+        appComponent = DaggerAppComponent.builder()
+            .appModule(AppModule(this))
+            .build()
+    }
+
     val database: HabitDatabase by lazy {
         HabitDatabase.getDatabase(this)
     }

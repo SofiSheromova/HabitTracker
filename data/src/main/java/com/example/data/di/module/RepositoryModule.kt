@@ -1,9 +1,10 @@
-package com.example.data.di
+package com.example.data.di.module
 
 import android.content.Context
 import androidx.room.Room
 import com.example.data.Constants
 import com.example.data.HabitRepositoryImpl
+import com.example.data.di.interfaces.DatabaseInfo
 import com.example.data.local.db.HabitDatabase
 import com.example.domain.repository.HabitRepository
 import dagger.Module
@@ -14,13 +15,13 @@ import javax.inject.Singleton
 class RepositoryModule {
     @Provides
     @DatabaseInfo
-    fun providerDatabaseName(): String {
+    fun provideDatabaseName(): String {
         return Constants.DATABASE_NAME
     }
 
     @Provides
     @Singleton
-    fun provideAppDatabase(@DatabaseInfo dbName: String, context: Context): HabitDatabase {
+    fun provideHabitDatabase(@DatabaseInfo dbName: String, context: Context): HabitDatabase {
         return Room.databaseBuilder(context, HabitDatabase::class.java, dbName)
             .fallbackToDestructiveMigration()
             .build()

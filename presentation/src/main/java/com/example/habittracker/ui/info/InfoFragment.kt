@@ -4,21 +4,39 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.habittracker.R
+import androidx.lifecycle.ViewModelProvider
+import com.example.habittracker.HabitTrackerApplication
+import com.example.habittracker.databinding.FragmentInfoBinding
+import javax.inject.Inject
 
 class InfoFragment : Fragment() {
+
+    private lateinit var binding: FragmentInfoBinding
+
+    private lateinit var infoViewModel: InfoViewModel
+
+    @Inject
+    lateinit var name: String
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        (requireActivity().application as HabitTrackerApplication).appComponent.inject(this)
+
+        infoViewModel = ViewModelProvider(requireActivity())
+            .get(InfoViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.fragment_info, container, false)
-        val textView: TextView = root.findViewById(R.id.text_info)
-        textView.text = resources.getString(R.string.info)
+    ): View {
+        binding = FragmentInfoBinding.inflate(inflater, container, false)
 
-        return root
+        binding.textInfo.text = "${infoViewModel.text.value}\n Application name: $name"
+
+        return binding.root
     }
 }

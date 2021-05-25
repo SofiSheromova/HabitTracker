@@ -1,4 +1,4 @@
-package com.example.data.interceptor
+package com.example.data.remote.interceptor
 
 import com.example.data.BuildConfig
 import okhttp3.Interceptor
