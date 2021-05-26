@@ -8,75 +8,86 @@ import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
 import com.example.domain.model.Type
+import com.squareup.moshi.Json
 import java.util.*
 import javax.inject.Inject
 
-
-// TODO можно было бы совместить класс для бд и сервера, чтобы лишний раз не гонять данные
 @Entity(tableName = HABIT_TABLE_NAME)
-@TypeConverters(
-    HabitTypeConverter::class,
-    HabitPriorityConverter::class,
-    DateConverter::class,
-    DoneDatesConverter::class
-)
+@TypeConverters(DoneDatesConverter::class)
 class HabitEntity(
-    var title: String,
-    var description: String,
-    @Embedded var periodicity: Periodicity,
-    var type: Type,
-    var priority: Priority,
-    var color: Int,
-    @PrimaryKey var uid: String,
-    var date: Date,
-    @ColumnInfo(name = "done_dates") var doneDates: List<Date>
-) : ModelEntity()
-
-class HabitTypeConverter {
-    @TypeConverter
-    fun fromType(type: Type): Int {
-        return type.value
-    }
-
-    @TypeConverter
-    fun toType(data: Int): Type {
-        return Type.valueOf(data)
-    }
-}
-
-class HabitPriorityConverter {
-    @TypeConverter
-    fun fromPriority(priority: Priority): Int {
-        return priority.value
-    }
-
-    @TypeConverter
-    fun toPriority(data: Int): Priority {
-        return Priority.valueOf(data)
-    }
-}
-
-class DateConverter {
-    @TypeConverter
-    fun fromDate(date: Date): Long {
-        return date.time
-    }
-
-    @TypeConverter
-    fun toDate(data: Long): Date {
-        return Date(data)
+    @Json(name = "uid") @PrimaryKey var uid: String,
+    @Json(name = "title") var title: String,
+    @Json(name = "description") var description: String = "",
+    @Json(name = "priority") var priority: Int = 0,
+    @Json(name = "type") var type: Int = 0,
+    @Json(name = "count") var count: Int = 1,
+    @Json(name = "frequency") var frequency: Int = 1,
+    @Json(name = "color") var color: Int = -1,
+    @Json(name = "date") var date: Long = Date().time,
+    @Json(name = "done_dates") @ColumnInfo(name = "done_dates") var doneDates: List<Long> = listOf()
+) : ModelEntity() {
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append(HabitEntity::class.java.getName()).append('@')
+            .append(Integer.toHexString(System.identityHashCode(this))).append('[')
+        sb.append("uid")
+        sb.append('=')
+        sb.append(uid)
+        sb.append(',')
+        sb.append("title")
+        sb.append('=')
+        sb.append(title)
+        sb.append(',')
+        sb.append("description")
+        sb.append('=')
+        sb.append(description)
+        sb.append(',')
+        sb.append("priority")
+        sb.append('=')
+        sb.append(priority)
+        sb.append(',')
+        sb.append("type")
+        sb.append('=')
+        sb.append(type)
+        sb.append(',')
+        sb.append("count")
+        sb.append('=')
+        sb.append(count)
+        sb.append(',')
+        sb.append("frequency")
+        sb.append('=')
+        sb.append(frequency)
+        sb.append(',')
+        sb.append("color")
+        sb.append('=')
+        sb.append(color)
+        sb.append(',')
+        sb.append("date")
+        sb.append('=')
+        sb.append(date)
+        sb.append(',')
+        sb.append("doneDates")
+        sb.append('=')
+        sb.append(doneDates)
+        sb.append(',')
+        if (sb[sb.length - 1] == ',') {
+            sb.setCharAt(sb.length - 1, ']')
+        } else {
+            sb.append(']')
+        }
+        return sb.toString()
     }
 }
 
 class DoneDatesConverter {
     @TypeConverter
-    fun fromDateList(dates: List<Date>): String {
-        return dates.map { it.time }.joinToString(",")
+    fun fromDateList(dates: List<Long>): String {
+        return dates.joinToString(",")
     }
 
     @TypeConverter
-    fun toDateList(data: String): List<Date> {
-        return data.split(",").filter { it.isNotEmpty() }.map { Date(it.toLong()) }
+    fun toDateList(data: String): List<Long> {
+        return data.split(",").filter { it.isNotEmpty() }.map { it.toLong() }
     }
 }
 
@@ -84,24 +95,24 @@ class HabitEntityMapper @Inject constructor() : EntityMapper<Habit, HabitEntity>
     override fun mapToDomain(entity: HabitEntity): Habit = Habit(
         entity.title,
         entity.description,
-        entity.periodicity,
-        entity.type,
-        entity.priority,
+        Periodicity(entity.count, entity.frequency),
+        Type.valueOf(entity.type),
+        Priority.valueOf(entity.priority),
         entity.color,
         entity.uid,
-        entity.date,
-        entity.doneDates
+        Date(entity.date),
+        entity.doneDates.map { Date(it) },
     )
 
     override fun mapToEntity(model: Habit): HabitEntity = HabitEntity(
+        model.uid,
         model.title,
         model.description,
-        model.periodicity,
-        model.type,
-        model.priority,
+        model.priority.value,
+        model.type.value,
+        model.periodicity.repetitionsNumber,
+        model.periodicity.daysNumber,
         model.color,
-        model.uid,
-        model.date,
-        model.doneDate
+        model.date.time,
     )
 }

@@ -5,13 +5,9 @@ import com.example.data.local.db.dao.HabitDao
 import com.example.data.local.db.dao.RequestDao
 import com.example.data.model.HabitEntity
 import com.example.data.model.HabitEntityMapper
-import com.example.data.model.HabitJson
 import com.example.data.model.HabitUid
 import com.example.data.remote.api.HabitApi
 import com.example.domain.model.Habit
-import com.example.domain.model.Periodicity
-import com.example.domain.model.Priority
-import com.example.domain.model.Type
 import com.example.domain.repository.HabitRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +37,7 @@ class HabitRepositoryImpl(
                 newCall(request)
         }
 
-        val remoteHabits: List<HabitJson>
+        val remoteHabits: List<HabitEntity>
         try {
             remoteHabits = getRemoteHabits()
         } catch (e: Exception) {
@@ -53,16 +49,14 @@ class HabitRepositoryImpl(
         return@withContext true
     }
 
-    private suspend fun getRemoteHabits(): List<HabitJson> = withContext(Dispatchers.IO) {
+    private suspend fun getRemoteHabits(): List<HabitEntity> = withContext(Dispatchers.IO) {
         habitApi.getHabits()
     }
 
-    private suspend fun updateLocalHabits(newHabits: List<HabitJson>) =
+    private suspend fun updateLocalHabits(newHabits: List<HabitEntity>) =
         withContext(Dispatchers.IO) {
             habitDao.deleteAll()
-            val habits = newHabits
-                .map { habitEntityMapper.mapToEntity(it.toHabit()) }
-                .toTypedArray()
+            val habits = newHabits.toTypedArray()
             habitDao.insertAll(*habits)
         }
 
@@ -72,7 +66,10 @@ class HabitRepositoryImpl(
 
         val serverUid: String
         try {
-            serverUid = habitApi.updateHabit(habit.toJson(includeUid = false)).uid
+            val habitUid = habitApi.updateHabit(
+                habitEntityMapper.mapToEntity(habit).apply { uid = "" }
+            )
+            serverUid = habitUid.uid
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
             return@withContext
@@ -92,7 +89,7 @@ class HabitRepositoryImpl(
         habitDao.updateAll(habitEntityMapper.mapToEntity(Habit()))
 
         try {
-            habitApi.updateHabit(original.toJson())
+            habitApi.updateHabit(habitEntityMapper.mapToEntity(original))
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
         }
@@ -110,33 +107,5 @@ class HabitRepositoryImpl(
         }
 
         return@withContext
-    }
-
-    private fun HabitJson.toHabit(): Habit {
-        return Habit(
-            this.title,
-            this.description,
-            Periodicity(this.count, this.frequency),
-            Type.valueOf(this.type),
-            Priority.valueOf(this.priority),
-            this.color,
-            this.uid,
-            Date(this.date),
-            this.doneDates.map { Date(it) },
-        )
-    }
-
-    private fun Habit.toJson(includeUid: Boolean = true): HabitJson {
-        return HabitJson(
-            if (includeUid) this.uid else "",
-            this.title,
-            this.description,
-            this.priority.value,
-            this.type.value,
-            this.periodicity.repetitionsNumber,
-            this.periodicity.daysNumber,
-            this.color,
-            this.date.time,
-        )
     }
 }
