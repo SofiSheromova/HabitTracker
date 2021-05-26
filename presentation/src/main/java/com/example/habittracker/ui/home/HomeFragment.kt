@@ -12,13 +12,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
-import com.example.domain.repository.HabitRepository
+import com.example.domain.usecase.DeleteHabitUseCase
+import com.example.domain.usecase.InsertHabitUseCase
+import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentHomeBinding
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.editor.EditorViewModelFactory
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
@@ -32,7 +33,13 @@ class HomeFragment : Fragment() {
     private lateinit var viewPager: ViewPager2
 
     @Inject
-    lateinit var repository: HabitRepository
+    lateinit var insertHabitUseCase: InsertHabitUseCase
+
+    @Inject
+    lateinit var updateHabitUseCase: UpdateHabitUseCase
+
+    @Inject
+    lateinit var deleteHabitUseCase: DeleteHabitUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +48,10 @@ class HomeFragment : Fragment() {
 
         displayOptionsViewModel = ViewModelProvider(requireActivity())
             .get(DisplayOptionsViewModel::class.java)
-        editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
+        editorViewModel = ViewModelProvider(
+            requireActivity(),
+            EditorViewModelFactory(insertHabitUseCase, updateHabitUseCase, deleteHabitUseCase)
+        )
             .get(EditorViewModel::class.java)
     }
 
@@ -63,10 +73,10 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         cardCollectionsAdapter = CardCollectionsAdapter(this)
 
-        viewPager = view.findViewById(R.id.cardCollectionsViewPager)
+        viewPager = binding.cardCollectionsViewPager
         viewPager.adapter = cardCollectionsAdapter
 
-        val tabLayout = view.findViewById(R.id.cardCollectionsTabLayout) as TabLayout
+        val tabLayout = binding.cardCollectionsTabLayout
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> resources.getString(R.string.all_habits)

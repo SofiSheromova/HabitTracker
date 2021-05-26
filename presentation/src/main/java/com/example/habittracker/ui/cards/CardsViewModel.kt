@@ -3,15 +3,18 @@ package com.example.habittracker.ui.cards
 import androidx.lifecycle.*
 import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit
-import com.example.domain.repository.HabitRepository
-import com.example.habittracker.middleware.Event
+import com.example.domain.usecase.GetAllHabitsUseCase
+import com.example.domain.usecase.RefreshHabitsUseCase
+import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
 
 class CardsViewModel(
-    private val repository: HabitRepository,
+    private val getAllHabitsUseCase: GetAllHabitsUseCase,
+    private val refreshHabitsUseCase: RefreshHabitsUseCase,
     private val displayOptions: DisplayOptions
 ) : ViewModel() {
-    private val _allHabitsLiveData: LiveData<List<Habit>> = repository.allHabits.asLiveData()
+    private val _allHabitsLiveData: LiveData<List<Habit>> =
+        getAllHabitsUseCase.getAll().asLiveData()
 
     private val _habitsLiveData: MediatorLiveData<List<Habit>> = createHabitsMediator()
     val habitsLiveData: LiveData<List<Habit>> = _habitsLiveData
@@ -24,6 +27,7 @@ class CardsViewModel(
 
     private fun getHabits(): List<Habit> {
         return displayOptions.filter(_allHabitsLiveData.value)
+//        return getAllHabitsUseCase.getAll(displayOptions).asLiveData().value
     }
 
     fun refreshHabits() {
@@ -33,7 +37,7 @@ class CardsViewModel(
     fun refresh() = viewModelScope.launch {
         _refreshLiveData.value = Event(true)
         try {
-            if (!repository.refresh()) _networkError.value = Event(true)
+            if (!refreshHabitsUseCase.refresh()) _networkError.value = Event(true)
         } catch (e: Exception) {
             _networkError.value = Event(true)
         }
@@ -50,13 +54,18 @@ class CardsViewModel(
 }
 
 class CardsViewModelFactory(
-    private val repository: HabitRepository,
+    private val getAllHabitsUseCase: GetAllHabitsUseCase,
+    private val refreshHabitsUseCase: RefreshHabitsUseCase,
     private val options: DisplayOptions? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CardsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CardsViewModel(repository, options ?: DisplayOptions()) as T
+            return CardsViewModel(
+                getAllHabitsUseCase,
+                refreshHabitsUseCase,
+                options ?: DisplayOptions()
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

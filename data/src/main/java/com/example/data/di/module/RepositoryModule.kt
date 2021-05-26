@@ -7,6 +7,7 @@ import com.example.data.HabitRepositoryImpl
 import com.example.data.di.interfaces.DatabaseInfo
 import com.example.data.di.interfaces.StorageRequestsOkHttpClient
 import com.example.data.local.db.HabitDatabase
+import com.example.data.model.HabitEntityMapper
 import com.example.data.remote.api.HabitApi
 import com.example.domain.repository.HabitRepository
 import dagger.Module
@@ -25,7 +26,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideHabitDatabase(@DatabaseInfo dbName: String, context: Context): HabitDatabase {
+    fun provideHabitDatabase(context: Context): HabitDatabase {
         return HabitDatabase.getDatabase(context)
     }
 
@@ -34,7 +35,8 @@ class RepositoryModule {
     fun provideHabitRepository(
         habitApi: HabitApi,
         @StorageRequestsOkHttpClient client: OkHttpClient,
-        habitDatabase: HabitDatabase
+        habitDatabase: HabitDatabase,
+        habitEntityMapper: HabitEntityMapper
     ): HabitRepository {
 
         fun newCall(request: Request) {
@@ -51,7 +53,8 @@ class RepositoryModule {
             habitDatabase.habitDao(),
             habitDatabase.requestDao(),
             habitApi,
-            ::newCall
+            ::newCall,
+            habitEntityMapper
         )
     }
 }

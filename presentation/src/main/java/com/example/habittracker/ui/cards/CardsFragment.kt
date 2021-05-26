@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
-import com.example.domain.repository.HabitRepository
+import com.example.domain.usecase.*
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
@@ -31,7 +31,19 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var adapter: CardsAdapter
 
     @Inject
-    lateinit var repository: HabitRepository
+    lateinit var getAllHabitsUseCase: GetAllHabitsUseCase
+
+    @Inject
+    lateinit var refreshHabitsUseCase: RefreshHabitsUseCase
+
+    @Inject
+    lateinit var insertHabitUseCase: InsertHabitUseCase
+
+    @Inject
+    lateinit var updateHabitUseCase: UpdateHabitUseCase
+
+    @Inject
+    lateinit var deleteHabitUseCase: DeleteHabitUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +54,15 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
 
         displayOptionsViewModel = ViewModelProvider(requireActivity())
             .get(DisplayOptionsViewModel::class.java)
-        cardsViewModel = ViewModelProvider(this, CardsViewModelFactory(repository, displayOptions))
+        cardsViewModel = ViewModelProvider(
+            this,
+            CardsViewModelFactory(getAllHabitsUseCase, refreshHabitsUseCase, displayOptions)
+        )
             .get(CardsViewModel::class.java)
-        editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
+        editorViewModel = ViewModelProvider(
+            requireActivity(),
+            EditorViewModelFactory(insertHabitUseCase, updateHabitUseCase, deleteHabitUseCase)
+        )
             .get(EditorViewModel::class.java)
 
         adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext())

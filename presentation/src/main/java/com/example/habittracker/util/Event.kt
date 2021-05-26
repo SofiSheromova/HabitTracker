@@ -1,4 +1,4 @@
-package com.example.habittracker.middleware
+package com.example.habittracker.util
 
 open class Event<out T>(private val content: T) {
 

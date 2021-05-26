@@ -1,5 +1,6 @@
 package com.example.domain.model
 
+import com.example.domain.base.Model
 import java.util.*
 
 class Habit(

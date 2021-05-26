@@ -14,7 +14,6 @@ import com.example.domain.model.Periodicity
 import com.example.domain.model.Type
 import com.example.habittracker.R
 
-// TODO нормально ли передавать контекст в адаптер? И как в реальном мире борятся со склонением слов?))
 class CardsAdapter(
     private val cardsLiveData: LiveData<List<Habit>>,
     private val onItemClickListener: OnItemClickListener,

@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.data.local.db.dao.HabitDao
 import com.example.data.local.db.dao.RequestDao
 import com.example.data.model.HabitEntity
+import com.example.data.model.HabitEntityMapper
 import com.example.data.model.HabitJson
 import com.example.data.model.HabitUid
 import com.example.data.remote.api.HabitApi
@@ -22,13 +23,14 @@ class HabitRepositoryImpl(
     private val habitDao: HabitDao,
     private val requestDao: RequestDao,
     private val habitApi: HabitApi,
-    private val newCall: (Request) -> Unit
+    private val newCall: (Request) -> Unit,
+    private val habitEntityMapper: HabitEntityMapper
 ) : HabitRepository {
 
     override val allHabits: Flow<List<Habit>> = habitDao.getAll().map { converter(it) }
 
     private fun converter(habitEntities: List<HabitEntity>): List<Habit> {
-        return habitEntities.map { habitRoomModel -> habitRoomModel.toHabit() }
+        return habitEntities.map { habitEntityMapper.mapToDomain(it) }
     }
 
     override suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
@@ -58,12 +60,14 @@ class HabitRepositoryImpl(
     private suspend fun updateLocalHabits(newHabits: List<HabitJson>) =
         withContext(Dispatchers.IO) {
             habitDao.deleteAll()
-            val habits = newHabits.map { it.toHabit().toRoomModel() }.toTypedArray()
+            val habits = newHabits
+                .map { habitEntityMapper.mapToEntity(it.toHabit()) }
+                .toTypedArray()
             habitDao.insertAll(*habits)
         }
 
     override suspend fun insert(habit: Habit) = withContext(Dispatchers.IO) {
-        val habitModel = habit.toRoomModel()
+        val habitModel = habitEntityMapper.mapToEntity(habit)
         habitDao.insertAll(habitModel)
 
         val serverUid: String
@@ -85,7 +89,7 @@ class HabitRepositoryImpl(
 
     override suspend fun update(original: Habit, newState: Habit) = withContext(Dispatchers.IO) {
         original.update(newState)
-        habitDao.updateAll(original.toRoomModel())
+        habitDao.updateAll(habitEntityMapper.mapToEntity(Habit()))
 
         try {
             habitApi.updateHabit(original.toJson())
@@ -97,7 +101,7 @@ class HabitRepositoryImpl(
     }
 
     override suspend fun delete(habit: Habit) = withContext(Dispatchers.IO) {
-        habitDao.delete(habit.toRoomModel())
+        habitDao.delete(habitEntityMapper.mapToEntity(habit))
 
         try {
             habitApi.deleteHabit(HabitUid(habit.uid))
@@ -106,34 +110,6 @@ class HabitRepositoryImpl(
         }
 
         return@withContext
-    }
-
-    private fun Habit.toRoomModel(): HabitEntity {
-        return HabitEntity(
-            this.title,
-            this.description,
-            this.periodicity,
-            this.type,
-            this.priority,
-            this.color,
-            this.uid,
-            this.date,
-            this.doneDate
-        )
-    }
-
-    private fun HabitEntity.toHabit(): Habit {
-        return Habit(
-            this.title,
-            this.description,
-            this.periodicity,
-            this.type,
-            this.priority,
-            this.color,
-            this.uid,
-            this.date,
-            this.doneDates
-        )
     }
 
     private fun HabitJson.toHabit(): Habit {

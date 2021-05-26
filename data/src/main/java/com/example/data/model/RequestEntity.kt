@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.data.Constants.REQUEST_TABLE_NAME
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -12,7 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.util.*
 
-@Entity(tableName = "request_table")
+@Entity(tableName = REQUEST_TABLE_NAME)
 @TypeConverters(BodyConverter::class)
 class RequestEntity(
     var url: String,

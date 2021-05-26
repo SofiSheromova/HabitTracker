@@ -8,7 +8,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import com.example.domain.repository.HabitRepository
+import com.example.domain.usecase.DeleteHabitUseCase
+import com.example.domain.usecase.InsertHabitUseCase
+import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentEditorBinding
@@ -19,14 +21,23 @@ class EditorFragment : Fragment() {
     private lateinit var binding: FragmentEditorBinding
 
     @Inject
-    lateinit var repository: HabitRepository
+    lateinit var insertHabitUseCase: InsertHabitUseCase
+
+    @Inject
+    lateinit var updateHabitUseCase: UpdateHabitUseCase
+
+    @Inject
+    lateinit var deleteHabitUseCase: DeleteHabitUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         (requireActivity().application as HabitTrackerApplication).appComponent.inject(this)
 
-        editorViewModel = ViewModelProvider(requireActivity(), EditorViewModelFactory(repository))
+        editorViewModel = ViewModelProvider(
+            requireActivity(),
+            EditorViewModelFactory(insertHabitUseCase, updateHabitUseCase, deleteHabitUseCase)
+        )
             .get(EditorViewModel::class.java)
     }
 

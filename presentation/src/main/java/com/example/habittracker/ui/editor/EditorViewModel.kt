@@ -8,11 +8,17 @@ import androidx.lifecycle.*
 import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
-import com.example.domain.repository.HabitRepository
-import com.example.habittracker.middleware.Event
+import com.example.domain.usecase.DeleteHabitUseCase
+import com.example.domain.usecase.InsertHabitUseCase
+import com.example.domain.usecase.UpdateHabitUseCase
+import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
 
-class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
+class EditorViewModel(
+    private val insertHabitUseCase: InsertHabitUseCase,
+    private val updateHabitUseCase: UpdateHabitUseCase,
+    private val deleteHabitUseCase: DeleteHabitUseCase
+) : ViewModel() {
     private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
         .apply {
             value = null
@@ -30,17 +36,15 @@ class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
     val onDeleteButtonClick: LiveData<Event<Int>> = _onDeleteButtonClick
 
     private fun updateOriginal(state: Habit) = viewModelScope.launch {
-        original.value?.let { repository.update(it, state) }
+        original.value?.let { updateHabitUseCase.update(it, state) }
     }
 
     private fun insertNew(state: Habit) = viewModelScope.launch {
-        repository.insert(state)
+        insertHabitUseCase.insert(state)
     }
 
     private fun deleteOriginal() = viewModelScope.launch {
-        original.value?.let {
-            repository.delete(it)
-        }
+        original.value?.let { deleteHabitUseCase.delete(it) }
     }
 
     fun setCard(habit: Habit) {
@@ -134,11 +138,19 @@ class EditorViewModel(private val repository: HabitRepository) : ViewModel() {
     }
 }
 
-class EditorViewModelFactory(private val repository: HabitRepository) : ViewModelProvider.Factory {
+class EditorViewModelFactory(
+    private val insertHabitUseCase: InsertHabitUseCase,
+    private val updateHabitUseCase: UpdateHabitUseCase,
+    private val deleteHabitUseCase: DeleteHabitUseCase
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return EditorViewModel(repository) as T
+            return EditorViewModel(
+                insertHabitUseCase,
+                updateHabitUseCase,
+                deleteHabitUseCase
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

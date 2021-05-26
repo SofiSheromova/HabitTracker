@@ -13,13 +13,12 @@ import javax.inject.Singleton
 @Component(modules = [AppModule::class])
 interface AppComponent {
 
+    // Activity
     fun inject(mainActivity: MainActivity)
 
+    // Fragments
     fun inject(infoFragment: InfoFragment)
-
     fun inject(homeFragment: HomeFragment)
-
     fun inject(cardsFragment: CardsFragment)
-
     fun inject(editorFragment: EditorFragment)
 }

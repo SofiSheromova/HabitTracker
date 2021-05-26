@@ -16,11 +16,4 @@ class AppModule(private val application: HabitTrackerApplication) {
     fun provideContext(): Context {
         return application.applicationContext
     }
-
-    // TODO: это тестовое, потом убрать
-    @Singleton
-    @Provides
-    fun provideAppName(): String {
-        return application.applicationContext.javaClass.simpleName
-    }
 }

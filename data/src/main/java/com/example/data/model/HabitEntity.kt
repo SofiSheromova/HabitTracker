@@ -1,6 +1,7 @@
 package com.example.data.model
 
 import androidx.room.*
+import com.example.data.Constants.HABIT_TABLE_NAME
 import com.example.data.base.EntityMapper
 import com.example.data.base.ModelEntity
 import com.example.domain.model.Habit
@@ -8,9 +9,11 @@ import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
 import com.example.domain.model.Type
 import java.util.*
+import javax.inject.Inject
 
 
-@Entity(tableName = "habit_table")
+// TODO можно было бы совместить класс для бд и сервера, чтобы лишний раз не гонять данные
+@Entity(tableName = HABIT_TABLE_NAME)
 @TypeConverters(
     HabitTypeConverter::class,
     HabitPriorityConverter::class,
@@ -77,7 +80,7 @@ class DoneDatesConverter {
     }
 }
 
-class HabitEntityMapper : EntityMapper<Habit, HabitEntity> {
+class HabitEntityMapper @Inject constructor() : EntityMapper<Habit, HabitEntity> {
     override fun mapToDomain(entity: HabitEntity): Habit = Habit(
         entity.title,
         entity.description,

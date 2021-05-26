@@ -25,6 +25,7 @@ class DisplayOptions(
         return newValue
     }
 
+    // TODO сказали, что не очень прикольно иметь статические поля и лучше это куда-то в даггер день
     companion object {
         var searchBarData: String? = null
         var sortedFunction: ((List<Habit>) -> List<Habit>)? = null
