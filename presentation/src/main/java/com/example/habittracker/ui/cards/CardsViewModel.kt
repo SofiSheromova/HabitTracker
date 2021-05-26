@@ -27,7 +27,6 @@ class CardsViewModel(
 
     private fun getHabits(): List<Habit> {
         return displayOptions.filter(_allHabitsLiveData.value)
-//        return getAllHabitsUseCase.getAll(displayOptions).asLiveData().value
     }
 
     fun refreshHabits() {

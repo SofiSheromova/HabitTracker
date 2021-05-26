@@ -116,37 +116,26 @@ class EditorFields : BaseObservable() {
         return false
     }
 
-    private fun correctRepetitionsPerDay(): Boolean {
-        return _daysNumber != null && _repetitionsNumber != null &&
-                _repetitionsNumber!! <= _daysNumber!!
-    }
-
     fun isRepetitionsNumberValid(setMessage: Boolean): Boolean {
-        if (_repetitionsNumber != null && _repetitionsNumber in 1..999 && this.correctRepetitionsPerDay()) {
+        if (_repetitionsNumber != null && _repetitionsNumber in 1..999) {
             repetitionsNumberError.set(null)
             return true
         }
 
         if (setMessage) {
-            if (!this.correctRepetitionsPerDay())
-                repetitionsNumberError.set(R.string.too_many_repetitions)
-            else
-                repetitionsNumberError.set(R.string.invalid_value)
+            repetitionsNumberError.set(R.string.invalid_value)
         }
         return false
     }
 
     fun isDaysNumberValid(setMessage: Boolean): Boolean {
-        if (_daysNumber != null && _daysNumber!! in 1..999 && this.correctRepetitionsPerDay()) {
+        if (_daysNumber != null && _daysNumber!! in 1..999) {
             daysNumberError.set(null)
             return true
         }
 
         if (setMessage) {
-            if (!this.correctRepetitionsPerDay())
-                repetitionsNumberError.set(R.string.too_many_repetitions)
-            else
-                daysNumberError.set(R.string.invalid_value)
+            daysNumberError.set(R.string.invalid_value)
         }
 
         return false
