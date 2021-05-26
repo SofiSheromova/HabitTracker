@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -29,6 +30,7 @@ class CardsAdapter(
 
     interface OnItemClickListener {
         fun onItemClicked(habit: Habit)
+        fun onDoneButtonClicked(habit: Habit)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
@@ -65,6 +67,7 @@ class CardsAdapter(
         var periodicity: TextView = itemView.findViewById<View>(R.id.card_periodicity) as TextView
         var like: ImageView = itemView.findViewById<View>(R.id.like_icon) as ImageView
         var dislike: ImageView = itemView.findViewById<View>(R.id.dislike_icon) as ImageView
+        var doneButton: Button = itemView.findViewById<View>(R.id.done_button) as Button
 
         var card: CardView = itemView.findViewById<View>(R.id.card) as CardView
         val setColor = { color: Int ->
@@ -89,6 +92,9 @@ class CardsAdapter(
 
             itemView.setOnClickListener {
                 clickListener.onItemClicked(habit)
+            }
+            doneButton.setOnClickListener {
+                clickListener.onDoneButtonClicked(habit)
             }
         }
 

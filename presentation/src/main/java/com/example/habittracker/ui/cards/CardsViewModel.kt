@@ -1,16 +1,20 @@
 package com.example.habittracker.ui.cards
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.usecase.GetAllHabitsUseCase
+import com.example.domain.usecase.MarkHabitDoneUseCase
 import com.example.domain.usecase.RefreshHabitsUseCase
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
+import java.time.Period
 
 class CardsViewModel(
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val refreshHabitsUseCase: RefreshHabitsUseCase,
+    private val markHabitDoneUseCase: MarkHabitDoneUseCase,
     private val displayOptions: DisplayOptions
 ) : ViewModel() {
     private val _allHabitsLiveData: LiveData<List<Habit>> =
@@ -43,6 +47,13 @@ class CardsViewModel(
         _refreshLiveData.value = Event(false)
     }
 
+    fun markDone(habit: Habit) = viewModelScope.launch {
+        Log.d("TAG-DONE", habit.title)
+        markHabitDoneUseCase.markDone(habit)
+        val dates = habit.getRecentRepetitions(Period.ofDays(habit.periodicity.daysNumber))
+        Log.d("TAG-DONE", "recently dates: $dates")
+    }
+
     private fun createHabitsMediator(): MediatorLiveData<List<Habit>> {
         val mediator = MediatorLiveData<List<Habit>>()
         mediator.addSource(_allHabitsLiveData) {
@@ -55,6 +66,7 @@ class CardsViewModel(
 class CardsViewModelFactory(
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val refreshHabitsUseCase: RefreshHabitsUseCase,
+    private val markHabitDoneUseCase: MarkHabitDoneUseCase,
     private val options: DisplayOptions? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -63,6 +75,7 @@ class CardsViewModelFactory(
             return CardsViewModel(
                 getAllHabitsUseCase,
                 refreshHabitsUseCase,
+                markHabitDoneUseCase,
                 options ?: DisplayOptions()
             ) as T
         }

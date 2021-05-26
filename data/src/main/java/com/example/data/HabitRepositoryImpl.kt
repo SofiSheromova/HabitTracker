@@ -3,6 +3,7 @@ package com.example.data
 import android.util.Log
 import com.example.data.local.db.dao.HabitDao
 import com.example.data.local.db.dao.RequestDao
+import com.example.data.model.HabitDone
 import com.example.data.model.HabitEntity
 import com.example.data.model.HabitEntityMapper
 import com.example.data.model.HabitUid
@@ -102,6 +103,21 @@ class HabitRepositoryImpl(
 
         try {
             habitApi.deleteHabit(HabitUid(habit.uid))
+        } catch (e: Exception) {
+            Log.d("TAG-NETWORK", "Failure: ${e.message}")
+        }
+
+        return@withContext
+    }
+
+    override suspend fun markDone(habit: Habit) = withContext(Dispatchers.IO) {
+        val time = habit.markDone().time
+        Log.d("TAG-DONE", habit.doneDates.toString())
+
+        habitDao.updateAll(habitEntityMapper.mapToEntity(habit))
+
+        try {
+            habitApi.markHabitDone(HabitDone(habit.uid, time))
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
         }

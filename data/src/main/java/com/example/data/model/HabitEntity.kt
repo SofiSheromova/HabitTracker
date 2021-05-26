@@ -24,7 +24,8 @@ class HabitEntity(
     @Json(name = "frequency") var frequency: Int = 1,
     @Json(name = "color") var color: Int = -1,
     @Json(name = "date") var date: Long = Date().time,
-    @Json(name = "done_dates") @ColumnInfo(name = "done_dates") var doneDates: List<Long> = listOf()
+    @Json(name = "done_dates") @ColumnInfo(name = "done_dates")
+    var doneDates: MutableList<Long> = mutableListOf()
 ) : ModelEntity() {
     override fun toString(): String {
         val sb = StringBuilder()
@@ -81,13 +82,17 @@ class HabitEntity(
 
 class DoneDatesConverter {
     @TypeConverter
-    fun fromDateList(dates: List<Long>): String {
+    fun fromDateList(dates: MutableList<Long>): String {
         return dates.joinToString(",")
     }
 
     @TypeConverter
-    fun toDateList(data: String): List<Long> {
-        return data.split(",").filter { it.isNotEmpty() }.map { it.toLong() }
+    fun toDateList(data: String): MutableList<Long> {
+        return data
+            .split(",")
+            .filter { it.isNotEmpty() }
+            .map { it.toLong() }
+            .toMutableList()
     }
 }
 
@@ -114,5 +119,6 @@ class HabitEntityMapper @Inject constructor() : EntityMapper<Habit, HabitEntity>
         model.periodicity.daysNumber,
         model.color,
         model.date.time,
+        model.doneDates.map { it.time }.toMutableList()
     )
 }

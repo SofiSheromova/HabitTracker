@@ -1,6 +1,7 @@
 package com.example.domain.model
 
 import com.example.domain.base.Model
+import java.time.Period
 import java.util.*
 
 class Habit(
@@ -12,8 +13,11 @@ class Habit(
     var color: Int = -1,
     val uid: String = UUID.randomUUID().toString(),
     var date: Date = Date(),
-    val doneDate: List<Date> = listOf()
+    doneDates: List<Date> = listOf()
 ) : Model() {
+    private val _doneDates = doneDates.toMutableList()
+    val doneDates: List<Date> = _doneDates
+
     constructor() : this(
         "",
         "",
@@ -30,5 +34,16 @@ class Habit(
         this.priority = state.priority
         this.date = Date()
         // this.color = state.color
+    }
+
+    fun markDone(): Date {
+        val date = Date()
+        _doneDates.add(date)
+        return date
+    }
+
+    fun getRecentRepetitions(period: Period): List<Date> {
+        val startDate = Date(Date().time - period.days * 86400000)
+        return doneDates.filter { it.after(startDate) }
     }
 }

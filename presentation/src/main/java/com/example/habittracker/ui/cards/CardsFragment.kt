@@ -45,6 +45,9 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     @Inject
     lateinit var deleteHabitUseCase: DeleteHabitUseCase
 
+    @Inject
+    lateinit var markHabitDoneUseCase: MarkHabitDoneUseCase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,7 +59,12 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
             .get(DisplayOptionsViewModel::class.java)
         cardsViewModel = ViewModelProvider(
             this,
-            CardsViewModelFactory(getAllHabitsUseCase, refreshHabitsUseCase, displayOptions)
+            CardsViewModelFactory(
+                getAllHabitsUseCase,
+                refreshHabitsUseCase,
+                markHabitDoneUseCase,
+                displayOptions
+            )
         )
             .get(CardsViewModel::class.java)
         editorViewModel = ViewModelProvider(
@@ -134,5 +142,9 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     override fun onItemClicked(habit: Habit) {
         editorViewModel.setCard(habit)
         Navigation.findNavController(binding.root).navigate(R.id.action_nav_home_to_nav_editor)
+    }
+
+    override fun onDoneButtonClicked(habit: Habit) {
+        cardsViewModel.markDone(habit)
     }
 }

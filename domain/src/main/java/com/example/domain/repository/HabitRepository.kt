@@ -13,4 +13,6 @@ interface HabitRepository {
     suspend fun update(original: Habit, newState: Habit)
 
     suspend fun delete(habit: Habit)
+
+    suspend fun markDone(habit: Habit)
 }

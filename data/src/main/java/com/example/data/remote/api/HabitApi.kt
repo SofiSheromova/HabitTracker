@@ -16,5 +16,5 @@ interface HabitApi {
     suspend fun deleteHabit(@Body habitUid: HabitUid)
 
     @POST("habit_done")
-    suspend fun habitDone(@Body habitDone: HabitDone)
+    suspend fun markHabitDone(@Body habitDone: HabitDone)
 }
