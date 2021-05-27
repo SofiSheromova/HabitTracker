@@ -1,6 +1,7 @@
 package com.example.habittracker.ui.editor
 
 import android.app.Application
+import android.graphics.Color
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
@@ -20,6 +21,7 @@ import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
 class EditorViewModel @Inject constructor(
@@ -80,7 +82,8 @@ class EditorViewModel @Inject constructor(
             editor.description,
             period,
             editor.type,
-            Priority.valueOf(editor.priority)
+            Priority.valueOf(editor.priority),
+            generateColor()
         )
         original.value.let {
             if (it != null) {
@@ -131,6 +134,18 @@ class EditorViewModel @Inject constructor(
         if (et.text.isNotEmpty() && !focused) {
             editor.isDaysNumberValid(true)
         }
+    }
+
+    private fun generateColor(): Int {
+        val color = String.format(
+            "#%06X", 0xFFFFFF and Color.argb(
+                100,
+                Random.nextInt(180, 240),
+                Random.nextInt(180, 240),
+                Random.nextInt(180, 240)
+            )
+        )
+        return Color.parseColor(color)
     }
 
     companion object {
