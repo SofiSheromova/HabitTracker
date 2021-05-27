@@ -36,4 +36,12 @@
     <string name="required_field" translatable="false">*</string>
     <string name="avatar">avatar</string>
     <string name="done_button">done</string>
+    <plurals name="still_need_to_be_done">
+        <item quantity="other">Need to be done %1$d more times</item>
+    </plurals>
+    <string name="breathtaking">You are breathtaking!</string>
+    <string name="stop_it">Stop doing it!</string>
+    <plurals name="can_be_done">
+        <item quantity="other">Can be done %1$d more times</item>
+    </plurals>
 </resources>

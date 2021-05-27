@@ -60,6 +60,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         cardsViewModel = ViewModelProvider(
             this,
             CardsViewModelFactory(
+                requireActivity().application,
                 getAllHabitsUseCase,
                 refreshHabitsUseCase,
                 markHabitDoneUseCase,
@@ -121,6 +122,11 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
                         resources.getString(R.string.failed_update),
                         Toast.LENGTH_SHORT
                     ).show()
+            }
+        })
+        cardsViewModel.habitFulfillmentReport.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+                Toast.makeText(requireContext().applicationContext, it, Toast.LENGTH_SHORT).show()
             }
         })
 

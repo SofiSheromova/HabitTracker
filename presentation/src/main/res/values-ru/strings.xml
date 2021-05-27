@@ -34,4 +34,18 @@
     <string name="failed_update">Произошла ошибка при обновлении</string>
     <string name="avatar">аватар</string>
     <string name="done_button">выполнено</string>
+    <plurals name="still_need_to_be_done">
+        <item quantity="one">Стоит выполнить еще %1$d раз</item>
+        <item quantity="few">Стоит выполнить еще %1$d раза</item>
+        <item quantity="many">Стоит выполнить еще %1$d раз</item>
+        <item quantity="other">Стоит выполнить еще %1$d раз</item>
+    </plurals>
+    <string name="breathtaking">Вы великолепны!</string>
+    <string name="stop_it">Хватит делать это!</string>
+    <plurals name="can_be_done">
+        <item quantity="one">Можно выполнить еще %1$d раз</item>
+        <item quantity="few">Можно выполнить еще %1$d раза</item>
+        <item quantity="many">Можно выполнить еще %1$d раз</item>
+        <item quantity="other">Можно выполнить еще %1$d раз</item>
+    </plurals>
 </resources>
