@@ -60,7 +60,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         cardsViewModel = ViewModelProvider(
             this,
             CardsViewModelFactory(
-                requireActivity().application,
+                requireActivity().application as HabitTrackerApplication,
                 getAllHabitsUseCase,
                 refreshHabitsUseCase,
                 markHabitDoneUseCase,

@@ -8,18 +8,19 @@ import com.example.domain.model.Type
 import com.example.domain.usecase.GetAllHabitsUseCase
 import com.example.domain.usecase.MarkHabitDoneUseCase
 import com.example.domain.usecase.RefreshHabitsUseCase
+import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
 import java.time.Period
 
 class CardsViewModel(
-    private val application: Application,
+    application: HabitTrackerApplication,
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val refreshHabitsUseCase: RefreshHabitsUseCase,
     private val markHabitDoneUseCase: MarkHabitDoneUseCase,
     private val displayOptions: DisplayOptions,
-) : ViewModel() {
+) : AndroidViewModel(application) {
     private val _allHabitsLiveData: LiveData<List<Habit>> =
         getAllHabitsUseCase.getAll().asLiveData()
 
@@ -63,7 +64,7 @@ class CardsViewModel(
     private fun getHabitFulfillmentReport(habit: Habit): String {
         val dates = habit.getRecentRepetitions(Period.ofDays(habit.periodicity.daysNumber))
         val difference = habit.periodicity.repetitionsNumber - dates.size
-        val context = application.applicationContext
+        val context = getApplication<HabitTrackerApplication>().applicationContext
         return when {
             habit.type == Type.GOOD && difference <= 0 ->
                 context.resources.getString(R.string.breathtaking)
@@ -93,7 +94,7 @@ class CardsViewModel(
 }
 
 class CardsViewModelFactory(
-    private val application: Application,
+    private val application: HabitTrackerApplication,
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val refreshHabitsUseCase: RefreshHabitsUseCase,
     private val markHabitDoneUseCase: MarkHabitDoneUseCase,
