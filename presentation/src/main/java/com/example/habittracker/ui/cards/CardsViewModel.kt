@@ -1,6 +1,5 @@
 package com.example.habittracker.ui.cards
 
-import android.app.Application
 import androidx.lifecycle.*
 import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit

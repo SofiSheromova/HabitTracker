@@ -1,9 +1,5 @@
 package com.example.domain.model
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-
-
 class DisplayOptions(
     vararg localFilters: (Habit) -> Boolean
 ) {
@@ -11,10 +7,6 @@ class DisplayOptions(
 
     fun filter(habits: List<Habit>?): List<Habit> {
         return (habits ?: listOf()).sort().searchBarFilter().localFilter()
-    }
-
-    fun filter(habits: Flow<List<Habit>>): Flow<List<Habit>> {
-        return habits.map { it.sort().searchBarFilter().localFilter() }
     }
 
     private fun List<Habit>.localFilter(): List<Habit> {
@@ -25,7 +17,6 @@ class DisplayOptions(
         return newValue
     }
 
-    // TODO сказали, что не очень прикольно иметь статические поля и лучше это куда-то в даггер день
     companion object {
         var searchBarData: String? = null
         var sortedFunction: ((List<Habit>) -> List<Habit>)? = null

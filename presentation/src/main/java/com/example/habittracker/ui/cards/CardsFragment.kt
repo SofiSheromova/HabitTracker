@@ -23,10 +23,12 @@ import com.example.habittracker.ui.home.DisplayOptionsViewModel
 import javax.inject.Inject
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
-    private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
-    private lateinit var cardsViewModel: CardsViewModel
-
     private lateinit var binding: FragmentCardsBinding
+
+    @Inject
+    lateinit var displayOptionsViewModel: DisplayOptionsViewModel
+
+    private lateinit var cardsViewModel: CardsViewModel
 
     private lateinit var adapter: CardsAdapter
 
@@ -51,8 +53,6 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
 
         val displayOptions = getDisplayOptions(arguments)
 
-        displayOptionsViewModel = ViewModelProvider(requireActivity())
-            .get(DisplayOptionsViewModel::class.java)
         cardsViewModel = ViewModelProvider(
             this,
             CardsViewModelFactory(

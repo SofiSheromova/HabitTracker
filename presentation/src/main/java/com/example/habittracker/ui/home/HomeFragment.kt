@@ -9,7 +9,6 @@ import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
 import com.example.habittracker.HabitTrackerApplication
@@ -24,7 +23,9 @@ class HomeFragment : Fragment() {
 
     @Inject
     lateinit var editorViewModel: EditorViewModel
-    private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
+
+    @Inject
+    lateinit var displayOptionsViewModel: DisplayOptionsViewModel
 
     private lateinit var cardCollectionsAdapter: CardCollectionsAdapter
     private lateinit var viewPager: ViewPager2
@@ -35,9 +36,6 @@ class HomeFragment : Fragment() {
         val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
         appComponent.fragmentSubComponentBuilder().with(this).build()
         appComponent.inject(this)
-
-        displayOptionsViewModel = ViewModelProvider(requireActivity())
-            .get(DisplayOptionsViewModel::class.java)
     }
 
     override fun onCreateView(
