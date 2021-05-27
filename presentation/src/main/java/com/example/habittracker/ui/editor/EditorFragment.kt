@@ -6,31 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import com.example.domain.usecase.DeleteHabitUseCase
-import com.example.domain.usecase.InsertHabitUseCase
-import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentEditorBinding
 import javax.inject.Inject
 
 class EditorFragment : Fragment() {
-    private lateinit var editorViewModel: EditorViewModel
     private lateinit var binding: FragmentEditorBinding
 
     @Inject
-    lateinit var insertHabitUseCase: InsertHabitUseCase
-
-    @Inject
-    lateinit var updateHabitUseCase: UpdateHabitUseCase
-
-    @Inject
-    lateinit var deleteHabitUseCase: DeleteHabitUseCase
-
-    @Inject
-    lateinit var simpleViewModel: SimpleViewModel
+    lateinit var editorViewModel: EditorViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +24,6 @@ class EditorFragment : Fragment() {
         val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
         appComponent.fragmentSubComponentBuilder().with(this).build()
         appComponent.inject(this)
-
-        editorViewModel = ViewModelProvider(
-            requireActivity(),
-            EditorViewModelFactory(insertHabitUseCase, updateHabitUseCase, deleteHabitUseCase)
-        )
-            .get(EditorViewModel::class.java)
     }
 
     override fun onCreateView(

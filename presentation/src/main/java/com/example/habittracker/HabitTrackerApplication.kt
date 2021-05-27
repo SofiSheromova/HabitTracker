@@ -3,7 +3,7 @@ package com.example.habittracker
 import android.app.Application
 import com.example.habittracker.di.component.AppComponent
 import com.example.habittracker.di.component.DaggerAppComponent
-import com.example.habittracker.di.module.ViewModelSubComponent
+import com.example.habittracker.di.component.ViewModelSubComponent
 
 
 class HabitTrackerApplication : Application() {

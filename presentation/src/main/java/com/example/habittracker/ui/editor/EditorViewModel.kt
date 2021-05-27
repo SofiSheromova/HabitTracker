@@ -1,24 +1,40 @@
 package com.example.habittracker.ui.editor
 
+import android.app.Application
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
 import com.example.domain.usecase.DeleteHabitUseCase
 import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
+import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class EditorViewModel(
+@Singleton
+class EditorViewModel @Inject constructor(
+    application: Application,
     private val insertHabitUseCase: InsertHabitUseCase,
     private val updateHabitUseCase: UpdateHabitUseCase,
     private val deleteHabitUseCase: DeleteHabitUseCase
 ) : ViewModel() {
+
+    init {
+        (application as HabitTrackerApplication)
+            .viewModelSubComponent
+            .inject(this)
+    }
+
     private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
         .apply {
             value = null
@@ -135,23 +151,5 @@ class EditorViewModel(
                 editText.onFocusChangeListener = onFocusChangeListener
             }
         }
-    }
-}
-
-class EditorViewModelFactory(
-    private val insertHabitUseCase: InsertHabitUseCase,
-    private val updateHabitUseCase: UpdateHabitUseCase,
-    private val deleteHabitUseCase: DeleteHabitUseCase
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return EditorViewModel(
-                insertHabitUseCase,
-                updateHabitUseCase,
-                deleteHabitUseCase
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

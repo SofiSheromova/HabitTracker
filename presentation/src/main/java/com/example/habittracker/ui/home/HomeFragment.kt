@@ -12,47 +12,32 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
-import com.example.domain.usecase.DeleteHabitUseCase
-import com.example.domain.usecase.InsertHabitUseCase
-import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentHomeBinding
 import com.example.habittracker.ui.editor.EditorViewModel
-import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
 class HomeFragment : Fragment() {
-    private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
-    private lateinit var editorViewModel: EditorViewModel
-
     private lateinit var binding: FragmentHomeBinding
+
+    @Inject
+    lateinit var editorViewModel: EditorViewModel
+    private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
 
     private lateinit var cardCollectionsAdapter: CardCollectionsAdapter
     private lateinit var viewPager: ViewPager2
 
-    @Inject
-    lateinit var insertHabitUseCase: InsertHabitUseCase
-
-    @Inject
-    lateinit var updateHabitUseCase: UpdateHabitUseCase
-
-    @Inject
-    lateinit var deleteHabitUseCase: DeleteHabitUseCase
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (requireActivity().application as HabitTrackerApplication).appComponent.inject(this)
+        val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
+        appComponent.fragmentSubComponentBuilder().with(this).build()
+        appComponent.inject(this)
 
         displayOptionsViewModel = ViewModelProvider(requireActivity())
             .get(DisplayOptionsViewModel::class.java)
-        editorViewModel = ViewModelProvider(
-            requireActivity(),
-            EditorViewModelFactory(insertHabitUseCase, updateHabitUseCase, deleteHabitUseCase)
-        )
-            .get(EditorViewModel::class.java)
     }
 
     override fun onCreateView(

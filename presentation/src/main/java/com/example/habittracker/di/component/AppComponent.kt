@@ -3,8 +3,6 @@ package com.example.habittracker.di.component
 import android.app.Application
 import com.example.habittracker.MainActivity
 import com.example.habittracker.di.module.AppModule
-import com.example.habittracker.di.module.FragmentSubComponent
-import com.example.habittracker.di.module.ViewModelSubComponent
 import com.example.habittracker.ui.cards.CardsFragment
 import com.example.habittracker.ui.editor.EditorFragment
 import com.example.habittracker.ui.home.HomeFragment

@@ -12,19 +12,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.domain.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
-import com.example.domain.usecase.*
+import com.example.domain.usecase.GetAllHabitsUseCase
+import com.example.domain.usecase.MarkHabitDoneUseCase
+import com.example.domain.usecase.RefreshHabitsUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.ui.editor.EditorViewModel
-import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
 import javax.inject.Inject
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
     private lateinit var cardsViewModel: CardsViewModel
-    private lateinit var editorViewModel: EditorViewModel
 
     private lateinit var binding: FragmentCardsBinding
 
@@ -37,21 +37,17 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     lateinit var refreshHabitsUseCase: RefreshHabitsUseCase
 
     @Inject
-    lateinit var insertHabitUseCase: InsertHabitUseCase
-
-    @Inject
-    lateinit var updateHabitUseCase: UpdateHabitUseCase
-
-    @Inject
-    lateinit var deleteHabitUseCase: DeleteHabitUseCase
-
-    @Inject
     lateinit var markHabitDoneUseCase: MarkHabitDoneUseCase
+
+    @Inject
+    lateinit var editorViewModel: EditorViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (requireActivity().application as HabitTrackerApplication).appComponent.inject(this)
+        val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
+        appComponent.fragmentSubComponentBuilder().with(this).build()
+        appComponent.inject(this)
 
         val displayOptions = getDisplayOptions(arguments)
 
@@ -68,11 +64,6 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
             )
         )
             .get(CardsViewModel::class.java)
-        editorViewModel = ViewModelProvider(
-            requireActivity(),
-            EditorViewModelFactory(insertHabitUseCase, updateHabitUseCase, deleteHabitUseCase)
-        )
-            .get(EditorViewModel::class.java)
 
         adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext())
 

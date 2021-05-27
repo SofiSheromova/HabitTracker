@@ -30,7 +30,4 @@ class HabitsModule {
     fun provideUpdateHabitUseCase(habitRepository: HabitRepository): UpdateHabitUseCase {
         return UpdateHabitUseCase(habitRepository)
     }
-
-//    @Provides
-//    fun provide
 }
