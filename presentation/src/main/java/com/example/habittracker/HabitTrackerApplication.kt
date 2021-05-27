@@ -3,7 +3,6 @@ package com.example.habittracker
 import android.app.Application
 import com.example.habittracker.di.component.AppComponent
 import com.example.habittracker.di.component.DaggerAppComponent
-import com.example.habittracker.di.module.AppModule
 
 
 class HabitTrackerApplication : Application() {
@@ -12,7 +11,7 @@ class HabitTrackerApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         appComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(this))
+            .setApplication(this)
             .build()
     }
 }
