@@ -92,8 +92,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    // TODO создать сервис для сохранения данных. Потому что сейчас нет гарантий,
-    //  что данные сохранятся
+    // TODO сейчас нет гарантий, что данные сохранятся
+    //  Первый вариант решения: создать сервис для сохранения данных
+    //  Второй вариант: сделать обсервер
     override fun onPause() {
         lifecycleScope.launch {
             requestManager.saveState()
