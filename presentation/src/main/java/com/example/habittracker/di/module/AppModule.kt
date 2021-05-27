@@ -13,7 +13,14 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideContext(app: Application): Context {
-        return app.applicationContext
+    fun provideContext(application: Application): Context {
+        return application.applicationContext
+    }
+
+    // TODO: это тестовое, потом убрать
+    @Singleton
+    @Provides
+    fun provideAppName(application: Application): String {
+        return application.applicationContext.javaClass.simpleName
     }
 }

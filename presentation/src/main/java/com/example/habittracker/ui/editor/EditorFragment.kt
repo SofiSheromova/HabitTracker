@@ -29,10 +29,15 @@ class EditorFragment : Fragment() {
     @Inject
     lateinit var deleteHabitUseCase: DeleteHabitUseCase
 
+    @Inject
+    lateinit var simpleViewModel: SimpleViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        (requireActivity().application as HabitTrackerApplication).appComponent.inject(this)
+        val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
+        appComponent.fragmentSubComponentBuilder().with(this).build()
+        appComponent.inject(this)
 
         editorViewModel = ViewModelProvider(
             requireActivity(),
