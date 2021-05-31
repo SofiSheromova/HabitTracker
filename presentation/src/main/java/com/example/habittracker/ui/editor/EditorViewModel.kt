@@ -1,6 +1,5 @@
 package com.example.habittracker.ui.editor
 
-import android.app.Application
 import android.graphics.Color
 import android.view.View
 import android.view.View.OnFocusChangeListener
@@ -15,12 +14,9 @@ import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.random.Random
 
-@Singleton
-class EditorViewModel @Inject constructor(
+class EditorViewModel constructor(
     private val insertHabitUseCase: InsertHabitUseCase,
     private val updateHabitUseCase: UpdateHabitUseCase,
     private val deleteHabitUseCase: DeleteHabitUseCase
@@ -156,6 +152,7 @@ class EditorViewModel @Inject constructor(
             }
         }
     }
+
+    interface Factory : ViewModelProvider.Factory
 }
 
-interface EditorViewModelFactory : ViewModelProvider.Factory

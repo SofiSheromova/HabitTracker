@@ -9,11 +9,8 @@ import com.example.domain.usecase.*
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.model.DisplayOptions
 import com.example.habittracker.ui.cards.CardsViewModel
-import com.example.habittracker.ui.cards.CardsViewModelFactory
 import com.example.habittracker.ui.editor.EditorViewModel
-import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
-import com.example.habittracker.ui.home.DisplayOptionsViewModelFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -35,8 +32,10 @@ class AppModule {
         refreshHabitsUseCase: RefreshHabitsUseCase,
         markHabitDoneUseCase: MarkHabitDoneUseCase,
         latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase
-    ): CardsViewModelFactory {
-        return object : CardsViewModelFactory {
+    ): CardsViewModel.Factory {
+        return object : CardsViewModel.Factory {
+            override var displayOptions: DisplayOptions = DisplayOptions()
+
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(CardsViewModel::class.java)) {
                     @Suppress("UNCHECKED_CAST")
@@ -46,7 +45,7 @@ class AppModule {
                         refreshHabitsUseCase,
                         markHabitDoneUseCase,
                         latestDoneDatesHabitUseCase,
-                        DisplayOptions()
+                        displayOptions
                     ) as T
                 }
                 throw IllegalArgumentException("Unknown ViewModel class")
@@ -60,8 +59,8 @@ class AppModule {
         insertHabitUseCase: InsertHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
         deleteHabitUseCase: DeleteHabitUseCase
-    ): EditorViewModelFactory {
-        return object : EditorViewModelFactory {
+    ): EditorViewModel.Factory {
+        return object : EditorViewModel.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
                     @Suppress("UNCHECKED_CAST")
@@ -78,8 +77,8 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideDisplayOptionsViewModelFactory(): DisplayOptionsViewModelFactory {
-        return object : DisplayOptionsViewModelFactory {
+    fun provideDisplayOptionsViewModelFactory(): DisplayOptionsViewModel.Factory {
+        return object : DisplayOptionsViewModel.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(DisplayOptionsViewModel::class.java)) {
                     @Suppress("UNCHECKED_CAST")

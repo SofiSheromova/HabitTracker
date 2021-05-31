@@ -16,9 +16,7 @@ import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.model.DisplayOptions
 import com.example.habittracker.ui.editor.EditorViewModel
-import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
-import com.example.habittracker.ui.home.DisplayOptionsViewModelFactory
 import javax.inject.Inject
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
@@ -33,13 +31,13 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var adapter: CardsAdapter
 
     @Inject
-    lateinit var cardsViewModelFactory: CardsViewModelFactory
+    lateinit var cardsViewModelFactory: CardsViewModel.Factory
 
     @Inject
-    lateinit var editorViewModelFactory: EditorViewModelFactory
+    lateinit var editorViewModelFactory: EditorViewModel.Factory
 
     @Inject
-    lateinit var displayOptionsViewModelFactory: DisplayOptionsViewModelFactory
+    lateinit var displayOptionsViewModelFactory: DisplayOptionsViewModel.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +55,10 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
 
         val displayOptions = getDisplayOptions(arguments)
 
-        cardsViewModel = ViewModelProvider(this, cardsViewModelFactory)
-            .get(CardsViewModel::class.java)
+        cardsViewModel = ViewModelProvider(
+            this,
+            cardsViewModelFactory.setDisplayOptions(displayOptions)
+        ).get(CardsViewModel::class.java)
 
         adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext())
 

@@ -8,12 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.habittracker.model.DisplayOptions
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class DisplayOptionsViewModel @Inject constructor() :
-    ViewModel() {
+class DisplayOptionsViewModel : ViewModel() {
 
     private val _checkedButtonLiveData: MutableLiveData<ImageButton> =
         MutableLiveData<ImageButton>()
@@ -46,6 +42,7 @@ class DisplayOptionsViewModel @Inject constructor() :
         this.optionsRefresh()
         _checkedButtonLiveData.value = view as ImageButton
     }
+
+    interface Factory : ViewModelProvider.Factory
 }
 
-interface DisplayOptionsViewModelFactory : ViewModelProvider.Factory

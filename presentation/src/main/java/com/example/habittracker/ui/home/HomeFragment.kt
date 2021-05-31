@@ -16,7 +16,6 @@ import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentHomeBinding
 import com.example.habittracker.ui.editor.EditorViewModel
-import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
@@ -28,10 +27,10 @@ class HomeFragment : Fragment() {
     lateinit var displayOptionsViewModel: DisplayOptionsViewModel
 
     @Inject
-    lateinit var editorViewModelFactory: EditorViewModelFactory
+    lateinit var editorViewModelFactory: EditorViewModel.Factory
 
     @Inject
-    lateinit var displayOptionsViewModelFactory: DisplayOptionsViewModelFactory
+    lateinit var displayOptionsViewModelFactory: DisplayOptionsViewModel.Factory
 
     private lateinit var cardCollectionsAdapter: CardCollectionsAdapter
     private lateinit var viewPager: ViewPager2

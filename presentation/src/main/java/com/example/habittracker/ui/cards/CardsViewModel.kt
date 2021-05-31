@@ -92,6 +92,13 @@ class CardsViewModel(
         }
         return mediator
     }
-}
 
-interface CardsViewModelFactory : ViewModelProvider.Factory
+    interface Factory : ViewModelProvider.Factory {
+        var displayOptions: DisplayOptions
+
+        fun setDisplayOptions(displayOptions: DisplayOptions): Factory {
+            this.displayOptions = displayOptions
+            return this
+        }
+    }
+}

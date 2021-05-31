@@ -16,10 +16,10 @@ import javax.inject.Inject
 class EditorFragment : Fragment() {
     private lateinit var binding: FragmentEditorBinding
 
-    lateinit var editorViewModel: EditorViewModel
+    private lateinit var editorViewModel: EditorViewModel
 
     @Inject
-    lateinit var editorViewModelFactory: EditorViewModelFactory
+    lateinit var editorViewModelFactory: EditorViewModel.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
