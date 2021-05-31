@@ -26,16 +26,6 @@ class Habit(
         Priority.LOW,
     )
 
-    fun update(state: Habit) {
-        this.title = state.title
-        this.description = state.description
-        this.periodicity = state.periodicity
-        this.type = state.type
-        this.priority = state.priority
-        this.date = Date()
-        // this.color = state.color
-    }
-
     fun markDone(): Date {
         val date = Date()
         _doneDates.add(date)

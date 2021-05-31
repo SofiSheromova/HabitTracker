@@ -86,11 +86,24 @@ class HabitRepositoryImpl(
     }
 
     override suspend fun update(original: Habit, newState: Habit) = withContext(Dispatchers.IO) {
-        original.update(newState)
-        habitDao.updateAll(habitEntityMapper.mapToEntity(Habit()))
+        val habit = Habit(
+            newState.title,
+            newState.description,
+            newState.periodicity,
+            newState.type,
+            newState.priority,
+            // newState.color,
+            original.color,
+            original.uid,
+            Date(),
+            doneDates = newState.doneDates
+        )
+        val entity = habitEntityMapper.mapToEntity(habit)
+
+        habitDao.updateAll(entity)
 
         try {
-            habitApi.updateHabit(habitEntityMapper.mapToEntity(original))
+            habitApi.updateHabit(entity)
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
         }
