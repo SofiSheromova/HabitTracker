@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         lifecycleScope.launch {
             Log.d("TAG-ARCHITECTURE", repository.toString())
-            repository.refresh()
+            repository.start()
         }
     }
 

@@ -29,6 +29,17 @@ class HabitRepositoryImpl(
     }
 
     override suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            habitApi.getHabits()
+        } catch (e: Exception) {
+            Log.d("TAG-NETWORK", "Failure: ${e.message}")
+            return@withContext false
+        }
+
+        return@withContext true
+    }
+
+    override suspend fun start() = withContext(Dispatchers.IO) {
         val entities = requestDao.getAll()
         for (entity in entities) {
             val request = try {
@@ -45,11 +56,11 @@ class HabitRepositoryImpl(
             remoteHabits = getRemoteHabits()
         } catch (e: Exception) {
             Log.d("TAG-NETWORK", "Failure: ${e.message}")
-            return@withContext false
+            return@withContext
         }
 
         updateLocalHabits(remoteHabits)
-        return@withContext true
+        return@withContext
     }
 
     private suspend fun getRemoteHabits(): List<HabitEntity> = withContext(Dispatchers.IO) {

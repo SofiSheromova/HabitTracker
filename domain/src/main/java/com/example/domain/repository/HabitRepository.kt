@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface HabitRepository {
     val allHabits: Flow<List<Habit>>
 
+    suspend fun start()
+
     suspend fun refresh(): Boolean
 
     suspend fun insert(habit: Habit)
