@@ -1,4 +1,6 @@
-package com.example.domain.model
+package com.example.habittracker.model
+
+import com.example.domain.model.Habit
 
 class DisplayOptions(
     vararg localFilters: (Habit) -> Boolean

@@ -7,7 +7,7 @@ import android.widget.ImageButton
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.domain.model.DisplayOptions
+import com.example.habittracker.model.DisplayOptions
 import com.example.habittracker.HabitTrackerApplication
 import javax.inject.Inject
 import javax.inject.Singleton

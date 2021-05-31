@@ -105,9 +105,10 @@ class HabitEntityMapper @Inject constructor() : EntityMapper<Habit, HabitEntity>
         Priority.valueOf(entity.priority),
         entity.color,
         entity.uid,
-        Date(entity.date),
-        entity.doneDates.map { Date(it) },
-    )
+        Date(entity.date)
+    ).apply {
+        this.markDone(*entity.doneDates.map { Date(it) }.toTypedArray())
+    }
 
     override fun mapToEntity(model: Habit): HabitEntity = HabitEntity(
         model.uid,

@@ -54,16 +54,16 @@ class HabitRepositoryImpl(
         habitApi.getHabits()
     }
 
-    private suspend fun updateLocalHabits(newHabits: List<HabitEntity>) =
-        withContext(Dispatchers.IO) {
-            habitDao.deleteAll()
-            val habits = newHabits.toTypedArray()
-            habitDao.insertAll(*habits)
-        }
+    private suspend fun updateLocalHabits(
+        newHabits: List<HabitEntity>
+    ) = withContext(Dispatchers.IO) {
+        habitDao.deleteAll()
+        habitDao.insertAll(*newHabits.toTypedArray())
+    }
 
     override suspend fun insert(habit: Habit) = withContext(Dispatchers.IO) {
-        val habitModel = habitEntityMapper.mapToEntity(habit)
-        habitDao.insertAll(habitModel)
+        val entity = habitEntityMapper.mapToEntity(habit)
+        habitDao.insertAll(entity)
 
         val serverUid: String
         try {
@@ -76,7 +76,7 @@ class HabitRepositoryImpl(
             return@withContext
         }
 
-        updateUid(habitModel, serverUid)
+        updateUid(entity, serverUid)
     }
 
     private suspend fun updateUid(habitModel: HabitEntity, uid: String) {
@@ -85,19 +85,7 @@ class HabitRepositoryImpl(
         habitDao.insertAll(habitModel)
     }
 
-    override suspend fun update(original: Habit, newState: Habit) = withContext(Dispatchers.IO) {
-        val habit = Habit(
-            newState.title,
-            newState.description,
-            newState.periodicity,
-            newState.type,
-            newState.priority,
-            // newState.color,
-            original.color,
-            original.uid,
-            Date(),
-            doneDates = newState.doneDates
-        )
+    override suspend fun update(habit: Habit) = withContext(Dispatchers.IO) {
         val entity = habitEntityMapper.mapToEntity(habit)
 
         habitDao.updateAll(entity)
@@ -123,10 +111,7 @@ class HabitRepositoryImpl(
         return@withContext
     }
 
-    override suspend fun markDone(habit: Habit) = withContext(Dispatchers.IO) {
-        val time = habit.markDone().time
-        Log.d("TAG-DONE", habit.doneDates.toString())
-
+    override suspend fun markDone(habit: Habit, time: Long) = withContext(Dispatchers.IO) {
         habitDao.updateAll(habitEntityMapper.mapToEntity(habit))
 
         try {

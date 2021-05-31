@@ -9,10 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.domain.model.DisplayOptions
+import com.example.habittracker.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
 import com.example.domain.usecase.GetAllHabitsUseCase
+import com.example.domain.usecase.LatestDoneDatesHabitUseCase
 import com.example.domain.usecase.MarkHabitDoneUseCase
 import com.example.domain.usecase.RefreshHabitsUseCase
 import com.example.habittracker.HabitTrackerApplication
@@ -44,6 +45,9 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     @Inject
     lateinit var editorViewModel: EditorViewModel
 
+    @Inject
+    lateinit var latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,6 +64,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
                 getAllHabitsUseCase,
                 refreshHabitsUseCase,
                 markHabitDoneUseCase,
+                latestDoneDatesHabitUseCase,
                 displayOptions
             )
         )

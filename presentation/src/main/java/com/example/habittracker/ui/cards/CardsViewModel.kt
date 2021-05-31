@@ -1,23 +1,24 @@
 package com.example.habittracker.ui.cards
 
 import androidx.lifecycle.*
-import com.example.domain.model.DisplayOptions
+import com.example.habittracker.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
 import com.example.domain.usecase.GetAllHabitsUseCase
+import com.example.domain.usecase.LatestDoneDatesHabitUseCase
 import com.example.domain.usecase.MarkHabitDoneUseCase
 import com.example.domain.usecase.RefreshHabitsUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
-import java.time.Period
 
 class CardsViewModel(
     application: HabitTrackerApplication,
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val refreshHabitsUseCase: RefreshHabitsUseCase,
     private val markHabitDoneUseCase: MarkHabitDoneUseCase,
+    private val latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase,
     private val displayOptions: DisplayOptions,
 ) : AndroidViewModel(application) {
     private val _allHabitsLiveData: LiveData<List<Habit>> =
@@ -61,7 +62,8 @@ class CardsViewModel(
     }
 
     private fun getHabitFulfillmentReport(habit: Habit): String {
-        val dates = habit.getRecentRepetitions(Period.ofDays(habit.periodicity.daysNumber))
+        val dates = latestDoneDatesHabitUseCase
+            .getDoneDatesForLastDays(habit, habit.periodicity.daysNumber)
         val difference = habit.periodicity.repetitionsNumber - dates.size
         val context = getApplication<HabitTrackerApplication>().applicationContext
         return when {
@@ -97,6 +99,7 @@ class CardsViewModelFactory(
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val refreshHabitsUseCase: RefreshHabitsUseCase,
     private val markHabitDoneUseCase: MarkHabitDoneUseCase,
+    private val latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase,
     private val options: DisplayOptions? = null
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -107,6 +110,7 @@ class CardsViewModelFactory(
                 getAllHabitsUseCase,
                 refreshHabitsUseCase,
                 markHabitDoneUseCase,
+                latestDoneDatesHabitUseCase,
                 options ?: DisplayOptions()
             ) as T
         }
