@@ -2,25 +2,20 @@ package com.example.habittracker.ui.cards
 
 import androidx.lifecycle.*
 import com.example.domain.model.Habit
-import com.example.domain.model.Type
-import com.example.domain.usecase.GetAllHabitsUseCase
-import com.example.domain.usecase.LatestDoneDatesHabitUseCase
-import com.example.domain.usecase.MarkHabitDoneUseCase
-import com.example.domain.usecase.RefreshHabitsUseCase
-import com.example.habittracker.HabitTrackerApplication
-import com.example.habittracker.R
+import com.example.domain.usecase.*
 import com.example.habittracker.model.DisplayOptions
+import com.example.habittracker.model.HabitFulfillmentReportFormatter
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
 
 class CardsViewModel(
-    application: HabitTrackerApplication,
+    private val displayOptions: DisplayOptions,
     private val getAllHabitsUseCase: GetAllHabitsUseCase,
     private val refreshHabitsUseCase: RefreshHabitsUseCase,
     private val markHabitDoneUseCase: MarkHabitDoneUseCase,
-    private val latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase,
-    private val displayOptions: DisplayOptions,
-) : AndroidViewModel(application) {
+    private val reportUseCase: HabitFulfillmentReportUseCase,
+    private val reportFormatter: HabitFulfillmentReportFormatter
+) : ViewModel() {
     private val _allHabitsLiveData: LiveData<List<Habit>> =
         getAllHabitsUseCase.getAll().asLiveData()
 
@@ -62,27 +57,8 @@ class CardsViewModel(
     }
 
     private fun getHabitFulfillmentReport(habit: Habit): String {
-        val dates = latestDoneDatesHabitUseCase
-            .getDoneDatesForLastDays(habit, habit.periodicity.daysNumber)
-        val difference = habit.periodicity.repetitionsNumber - dates.size
-        val context = getApplication<HabitTrackerApplication>().applicationContext
-        return when {
-            habit.type == Type.GOOD && difference <= 0 ->
-                context.resources.getString(R.string.breathtaking)
-            habit.type == Type.GOOD ->
-                context.resources.getQuantityString(
-                    R.plurals.still_need_to_be_done,
-                    difference,
-                    difference
-                )
-            habit.type == Type.BAD && difference <= 0 ->
-                context.resources.getString(R.string.stop_it)
-            else -> context.resources.getQuantityString(
-                R.plurals.can_be_done,
-                difference,
-                difference
-            )
-        }
+        val report = reportUseCase.getHabitFulfillmentReport(habit)
+        return reportFormatter.reportToString(report)
     }
 
     private fun createHabitsMediator(): MediatorLiveData<List<Habit>> {

@@ -19,7 +19,7 @@ class UpdateHabitUseCase @Inject constructor(
             original.uid,
             Date()
         ).apply {
-            this.markDone(*newState.doneDates.toTypedArray())
+            this.markDone(*original.doneDates.toTypedArray())
         }
 
         repository.update(habit)
