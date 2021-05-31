@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
@@ -15,15 +16,19 @@ import javax.inject.Inject
 class EditorFragment : Fragment() {
     private lateinit var binding: FragmentEditorBinding
 
-    @Inject
     lateinit var editorViewModel: EditorViewModel
+
+    @Inject
+    lateinit var editorViewModelFactory: EditorViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
-        appComponent.fragmentSubComponentBuilder().with(this).build()
-        appComponent.inject(this)
+        (requireActivity().application as HabitTrackerApplication).appComponent
+            .inject(this)
+
+        editorViewModel = ViewModelProvider(requireActivity(), editorViewModelFactory)
+            .get(EditorViewModel::class.java)
     }
 
     override fun onCreateView(

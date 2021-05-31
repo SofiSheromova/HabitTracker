@@ -6,17 +6,13 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
 import com.example.domain.usecase.DeleteHabitUseCase
 import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
-import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,17 +21,10 @@ import kotlin.random.Random
 
 @Singleton
 class EditorViewModel @Inject constructor(
-    application: Application,
     private val insertHabitUseCase: InsertHabitUseCase,
     private val updateHabitUseCase: UpdateHabitUseCase,
     private val deleteHabitUseCase: DeleteHabitUseCase
 ) : ViewModel() {
-
-    init {
-        (application as HabitTrackerApplication)
-            .viewModelSubComponent
-            .inject(this)
-    }
 
     private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
         .apply {
@@ -168,3 +157,5 @@ class EditorViewModel @Inject constructor(
         }
     }
 }
+
+interface EditorViewModelFactory : ViewModelProvider.Factory

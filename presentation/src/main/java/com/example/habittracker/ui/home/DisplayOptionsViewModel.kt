@@ -1,25 +1,19 @@
 package com.example.habittracker.ui.home
 
-import android.app.Application
 import android.text.Editable
 import android.view.View
 import android.widget.ImageButton
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.habittracker.model.DisplayOptions
-import com.example.habittracker.HabitTrackerApplication
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DisplayOptionsViewModel @Inject constructor(application: Application) :
+class DisplayOptionsViewModel @Inject constructor() :
     ViewModel() {
-    init {
-        (application as HabitTrackerApplication)
-            .viewModelSubComponent
-            .inject(this)
-    }
 
     private val _checkedButtonLiveData: MutableLiveData<ImageButton> =
         MutableLiveData<ImageButton>()
@@ -53,3 +47,5 @@ class DisplayOptionsViewModel @Inject constructor(application: Application) :
         _checkedButtonLiveData.value = view as ImageButton
     }
 }
+
+interface DisplayOptionsViewModelFactory : ViewModelProvider.Factory

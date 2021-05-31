@@ -31,7 +31,4 @@ interface AppComponent {
         @BindsInstance
         fun setApplication(application: Application): Builder
     }
-
-    fun viewModelSubComponentBuilder(): ViewModelSubComponent.Builder
-    fun fragmentSubComponentBuilder(): FragmentSubComponent.Builder
 }

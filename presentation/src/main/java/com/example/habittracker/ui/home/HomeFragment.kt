@@ -9,23 +9,29 @@ import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.viewpager2.widget.ViewPager2
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentHomeBinding
 import com.example.habittracker.ui.editor.EditorViewModel
+import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
 
-    @Inject
     lateinit var editorViewModel: EditorViewModel
 
-    @Inject
     lateinit var displayOptionsViewModel: DisplayOptionsViewModel
+
+    @Inject
+    lateinit var editorViewModelFactory: EditorViewModelFactory
+
+    @Inject
+    lateinit var displayOptionsViewModelFactory: DisplayOptionsViewModelFactory
 
     private lateinit var cardCollectionsAdapter: CardCollectionsAdapter
     private lateinit var viewPager: ViewPager2
@@ -33,9 +39,15 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
-        appComponent.fragmentSubComponentBuilder().with(this).build()
-        appComponent.inject(this)
+        (requireActivity().application as HabitTrackerApplication).appComponent
+            .inject(this)
+
+        editorViewModel = ViewModelProvider(requireActivity(), editorViewModelFactory)
+            .get(EditorViewModel::class.java)
+        displayOptionsViewModel = ViewModelProvider(
+            requireActivity(), displayOptionsViewModelFactory
+        )
+            .get(DisplayOptionsViewModel::class.java)
     }
 
     override fun onCreateView(

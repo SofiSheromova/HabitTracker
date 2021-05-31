@@ -5,14 +5,15 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.example.data.di.module.NetworkModule
 import com.example.data.di.module.RepositoryModule
-import com.example.domain.usecase.GetAllHabitsUseCase
-import com.example.domain.usecase.LatestDoneDatesHabitUseCase
-import com.example.domain.usecase.MarkHabitDoneUseCase
-import com.example.domain.usecase.RefreshHabitsUseCase
+import com.example.domain.usecase.*
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.model.DisplayOptions
-import com.example.habittracker.ui.cards.CardsViewModelFactory
 import com.example.habittracker.ui.cards.CardsViewModel
+import com.example.habittracker.ui.cards.CardsViewModelFactory
+import com.example.habittracker.ui.editor.EditorViewModel
+import com.example.habittracker.ui.editor.EditorViewModelFactory
+import com.example.habittracker.ui.home.DisplayOptionsViewModel
+import com.example.habittracker.ui.home.DisplayOptionsViewModelFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -47,6 +48,42 @@ class AppModule {
                         latestDoneDatesHabitUseCase,
                         DisplayOptions()
                     ) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditorViewModelFactory(
+        insertHabitUseCase: InsertHabitUseCase,
+        updateHabitUseCase: UpdateHabitUseCase,
+        deleteHabitUseCase: DeleteHabitUseCase
+    ): EditorViewModelFactory {
+        return object : EditorViewModelFactory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(EditorViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return EditorViewModel(
+                        insertHabitUseCase,
+                        updateHabitUseCase,
+                        deleteHabitUseCase
+                    ) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+    }
+
+    @Singleton
+    @Provides
+    fun provideDisplayOptionsViewModelFactory(): DisplayOptionsViewModelFactory {
+        return object : DisplayOptionsViewModelFactory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(DisplayOptionsViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return DisplayOptionsViewModel() as T
                 }
                 throw IllegalArgumentException("Unknown ViewModel class")
             }

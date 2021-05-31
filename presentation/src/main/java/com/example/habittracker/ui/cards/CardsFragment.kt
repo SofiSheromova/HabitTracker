@@ -11,52 +11,49 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
-import com.example.domain.usecase.GetAllHabitsUseCase
-import com.example.domain.usecase.LatestDoneDatesHabitUseCase
-import com.example.domain.usecase.MarkHabitDoneUseCase
-import com.example.domain.usecase.RefreshHabitsUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.model.DisplayOptions
 import com.example.habittracker.ui.editor.EditorViewModel
+import com.example.habittracker.ui.editor.EditorViewModelFactory
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
+import com.example.habittracker.ui.home.DisplayOptionsViewModelFactory
 import javax.inject.Inject
 
 class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     private lateinit var binding: FragmentCardsBinding
 
-    @Inject
-    lateinit var displayOptionsViewModel: DisplayOptionsViewModel
-
     private lateinit var cardsViewModel: CardsViewModel
+
+    private lateinit var editorViewModel: EditorViewModel
+
+    private lateinit var displayOptionsViewModel: DisplayOptionsViewModel
 
     private lateinit var adapter: CardsAdapter
 
     @Inject
-    lateinit var getAllHabitsUseCase: GetAllHabitsUseCase
-
-    @Inject
-    lateinit var refreshHabitsUseCase: RefreshHabitsUseCase
-
-    @Inject
-    lateinit var markHabitDoneUseCase: MarkHabitDoneUseCase
-
-    @Inject
-    lateinit var editorViewModel: EditorViewModel
-
-    @Inject
-    lateinit var latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase
-
-    @Inject
     lateinit var cardsViewModelFactory: CardsViewModelFactory
+
+    @Inject
+    lateinit var editorViewModelFactory: EditorViewModelFactory
+
+    @Inject
+    lateinit var displayOptionsViewModelFactory: DisplayOptionsViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appComponent = (requireActivity().application as HabitTrackerApplication).appComponent
-        appComponent.fragmentSubComponentBuilder().with(this).build()
-        appComponent.inject(this)
+        (requireActivity().application as HabitTrackerApplication).appComponent
+            .inject(this)
+
+        editorViewModel = ViewModelProvider(requireActivity(), editorViewModelFactory)
+            .get(EditorViewModel::class.java)
+
+        displayOptionsViewModel = ViewModelProvider(
+            requireActivity(), displayOptionsViewModelFactory
+        )
+            .get(DisplayOptionsViewModel::class.java)
 
         val displayOptions = getDisplayOptions(arguments)
 
