@@ -1,7 +1,6 @@
 package com.example.habittracker.ui.cards
 
 import androidx.lifecycle.*
-import com.example.habittracker.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
 import com.example.domain.usecase.GetAllHabitsUseCase
@@ -10,6 +9,7 @@ import com.example.domain.usecase.MarkHabitDoneUseCase
 import com.example.domain.usecase.RefreshHabitsUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
+import com.example.habittracker.model.DisplayOptions
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
 
@@ -94,26 +94,4 @@ class CardsViewModel(
     }
 }
 
-class CardsViewModelFactory(
-    private val application: HabitTrackerApplication,
-    private val getAllHabitsUseCase: GetAllHabitsUseCase,
-    private val refreshHabitsUseCase: RefreshHabitsUseCase,
-    private val markHabitDoneUseCase: MarkHabitDoneUseCase,
-    private val latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase,
-    private val options: DisplayOptions? = null
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CardsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return CardsViewModel(
-                application,
-                getAllHabitsUseCase,
-                refreshHabitsUseCase,
-                markHabitDoneUseCase,
-                latestDoneDatesHabitUseCase,
-                options ?: DisplayOptions()
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+interface CardsViewModelFactory : ViewModelProvider.Factory

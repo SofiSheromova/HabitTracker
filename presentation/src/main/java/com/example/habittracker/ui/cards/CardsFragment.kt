@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.habittracker.model.DisplayOptions
 import com.example.domain.model.Habit
 import com.example.domain.model.Type
 import com.example.domain.usecase.GetAllHabitsUseCase
@@ -19,6 +18,7 @@ import com.example.domain.usecase.RefreshHabitsUseCase
 import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
+import com.example.habittracker.model.DisplayOptions
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
 import javax.inject.Inject
@@ -48,6 +48,9 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     @Inject
     lateinit var latestDoneDatesHabitUseCase: LatestDoneDatesHabitUseCase
 
+    @Inject
+    lateinit var cardsViewModelFactory: CardsViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,17 +60,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
 
         val displayOptions = getDisplayOptions(arguments)
 
-        cardsViewModel = ViewModelProvider(
-            this,
-            CardsViewModelFactory(
-                requireActivity().application as HabitTrackerApplication,
-                getAllHabitsUseCase,
-                refreshHabitsUseCase,
-                markHabitDoneUseCase,
-                latestDoneDatesHabitUseCase,
-                displayOptions
-            )
-        )
+        cardsViewModel = ViewModelProvider(this, cardsViewModelFactory)
             .get(CardsViewModel::class.java)
 
         adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext())
@@ -75,9 +68,9 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
         displayOptionsViewModel.optionsLiveData.observe(this, {
             cardsViewModel.refreshHabits()
         })
-        cardsViewModel.habitsLiveData.observe(this, {
+        cardsViewModel.habitsLiveData.observe(this) {
             adapter.notifyDataSetChanged()
-        })
+        }
     }
 
     private fun getDisplayOptions(args: Bundle?): DisplayOptions {
