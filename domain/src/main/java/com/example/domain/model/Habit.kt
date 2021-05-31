@@ -1,6 +1,5 @@
 package com.example.domain.model
 
-import com.example.domain.base.Model
 import java.util.*
 
 data class Habit(
@@ -12,7 +11,7 @@ data class Habit(
     var color: Int = -1,
     val uid: String = UUID.randomUUID().toString(),
     var date: Date = Date(),
-) : Model() {
+) {
     private val _doneDates: MutableList<Date> = mutableListOf()
     val doneDates: List<Date> = _doneDates
 

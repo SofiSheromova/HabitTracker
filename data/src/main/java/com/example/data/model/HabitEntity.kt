@@ -11,6 +11,7 @@ import com.example.domain.model.Type
 import com.squareup.moshi.Json
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @Entity(tableName = HABIT_TABLE_NAME)
 @TypeConverters(DoneDatesConverter::class)
@@ -26,7 +27,7 @@ class HabitEntity(
     @Json(name = "date") var date: Long = Date().time,
     @Json(name = "done_dates") @ColumnInfo(name = "done_dates")
     var doneDates: MutableList<Long> = mutableListOf()
-) : ModelEntity() {
+) : ModelEntity {
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append(HabitEntity::class.java.getName()).append('@')
@@ -96,6 +97,7 @@ class DoneDatesConverter {
     }
 }
 
+@Singleton
 class HabitEntityMapper @Inject constructor() : EntityMapper<Habit, HabitEntity> {
     override fun mapToDomain(entity: HabitEntity): Habit = Habit(
         entity.title,

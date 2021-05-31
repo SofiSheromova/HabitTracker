@@ -1,17 +1,20 @@
 package com.example.data.model
 
-import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.example.data.Constants.REQUEST_TABLE_NAME
+import com.example.data.base.EntityMapper
+import com.example.data.base.ModelEntity
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Entity(tableName = REQUEST_TABLE_NAME)
 @TypeConverters(BodyConverter::class)
@@ -19,31 +22,8 @@ class RequestEntity(
     var url: String,
     var method: String,
     var body: RequestBody?,
-    var index: Int,
     @PrimaryKey var id: String = UUID.randomUUID().toString(),
-) {
-    constructor(request: Request, index: Int) : this(
-        request.url.toString(),
-        request.method,
-        request.body,
-        index
-    )
-
-    fun toRequest(): Request? {
-        return try {
-            Request.Builder()
-                .url(this.url)
-                .method(
-                    this.method,
-                    if (this.method == "GET") null else this.body
-                )
-                .build()
-        } catch (e: Exception) {
-            Log.d("TAG-NETWORK", "Cast exception RequestModel to Request")
-            null
-        }
-    }
-}
+) : ModelEntity
 
 class BodyConverter {
     @TypeConverter
@@ -56,5 +36,22 @@ class BodyConverter {
     @TypeConverter
     fun toRequestBody(json: String): RequestBody {
         return json.toRequestBody("application/json".toMediaTypeOrNull())
+    }
+}
+
+@Singleton
+class RequestEntityMapper @Inject constructor() : EntityMapper<Request, RequestEntity> {
+    override fun mapToDomain(entity: RequestEntity): Request {
+        return Request.Builder()
+            .url(entity.url)
+            .method(
+                entity.method,
+                if (entity.method == "GET") null else entity.body
+            )
+            .build()
+    }
+
+    override fun mapToEntity(model: Request): RequestEntity {
+        return RequestEntity(model.url.toString(), model.method, model.body)
     }
 }

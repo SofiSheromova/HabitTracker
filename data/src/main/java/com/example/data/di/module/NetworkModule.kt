@@ -7,6 +7,7 @@ import android.util.Log
 import com.example.data.di.interfaces.SimpleOkHttpClient
 import com.example.data.di.interfaces.StorageRequestsOkHttpClient
 import com.example.data.local.db.HabitDatabase
+import com.example.data.model.RequestEntityMapper
 import com.example.data.remote.RequestManager
 import com.example.data.remote.api.HabitApi
 import com.example.data.remote.builder.RetrofitBuilder
@@ -29,7 +30,6 @@ class NetworkModule {
         @StorageRequestsOkHttpClient client: OkHttpClient
     ): Retrofit = retrofitBuilder
         .setOkHttpClientBuilder(client.newBuilder())
-//        .addInterceptors(headerInterceptor)
         .build()
 
     @Singleton
@@ -71,7 +71,8 @@ class NetworkModule {
     fun provideRequestManager(
         habitDatabase: HabitDatabase,
         @SimpleOkHttpClient client: OkHttpClient,
-        context: Context
+        context: Context,
+        requestEntityMapper: RequestEntityMapper
     ): RequestManager {
         fun isConnected(): Boolean {
             val connectivityManager = context
@@ -85,7 +86,12 @@ class NetworkModule {
                     && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         }
 
-        return RequestManager(habitDatabase.requestDao(), ::isConnected, client)
+        return RequestManager(
+            habitDatabase.requestDao(),
+            ::isConnected,
+            client,
+            requestEntityMapper
+        )
     }
 
     @StorageRequestsOkHttpClient

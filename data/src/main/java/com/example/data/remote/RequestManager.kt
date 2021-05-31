@@ -2,7 +2,7 @@ package com.example.data.remote
 
 import android.util.Log
 import com.example.data.local.db.dao.RequestDao
-import com.example.data.model.RequestEntity
+import com.example.data.model.RequestEntityMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
@@ -16,7 +16,8 @@ import java.util.*
 class RequestManager(
     private val requestDao: RequestDao,
     private val isConnected: () -> Boolean,
-    private val client: OkHttpClient
+    private val client: OkHttpClient,
+    private val requestEntityMapper: RequestEntityMapper,
 ) {
     private val requestQueue: Queue<Request> = LinkedList()
 
@@ -74,7 +75,7 @@ class RequestManager(
     suspend fun saveState() = withContext(Dispatchers.IO) {
         val requests = requestQueue
             .filter { it.method != "GET" }
-            .mapIndexed { index, request -> RequestEntity(request, index) }
+            .map { request -> requestEntityMapper.mapToEntity(request) }
             .toTypedArray()
 
         Log.d("TAG-NETWORK", "Requests count = ${requests.size}")

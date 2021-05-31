@@ -1,8 +1,6 @@
 package com.example.data.base
 
-import com.example.domain.base.Model
-
-interface EntityMapper<M : Model, ME : ModelEntity> {
+interface EntityMapper<M, ME : ModelEntity> {
     fun mapToDomain(entity: ME): M
 
     fun mapToEntity(model: M): ME
