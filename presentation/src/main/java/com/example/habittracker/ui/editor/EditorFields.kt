@@ -4,6 +4,7 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.ObservableField
 import com.example.domain.model.Habit
+import com.example.domain.model.Priority
 import com.example.domain.model.Type
 import com.example.habittracker.BR
 import com.example.habittracker.R
@@ -36,7 +37,7 @@ class EditorFields : BaseObservable() {
         type = Type.BAD
     }
 
-    var priority: Int = 1
+    var priority: Priority = Priority.LOW
         set(value) {
             field = value
             notifyPropertyChanged(BR.valid)
@@ -74,7 +75,7 @@ class EditorFields : BaseObservable() {
         title = state.title
         description = state.description
         type = state.type
-        priority = state.priority.value
+        priority = state.priority
         _repetitionsNumber = state.periodicity.repetitionsNumber
         _daysNumber = state.periodicity.daysNumber
     }
@@ -142,7 +143,7 @@ class EditorFields : BaseObservable() {
     }
 
     companion object {
-        private const val TITLE_MIN_LENGTH: Int = 5
+        private const val TITLE_MIN_LENGTH: Int = 1
         private const val TITLE_MAX_LENGTH: Int = 50
 
         private const val DESCRIPTION_MIN_LENGTH: Int = 1

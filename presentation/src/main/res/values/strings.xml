@@ -13,8 +13,8 @@
     <string name="empty_field">the field must not be empty</string>
     <string name="maximum_length">maximum insertion length reached</string>
     <string name="invalid_value">Invalid value</string>
-    <string name="good">good</string>
-    <string name="bad">bad</string>
+    <string name="good">Good</string>
+    <string name="bad">Bad</string>
     <string name="title_activity_main" translatable="false">Main Activity</string>
     <string name="menu_home">Home</string>
     <string name="menu_info">Info</string>
@@ -33,7 +33,7 @@
     <string name="sort_by_title">Sort by title</string>
     <string name="delete">delete</string>
     <string name="failed_update">Failed update</string>
-    <string name="required_field" translatable="false">*</string>
+    <string name="required_field">required field</string>
     <string name="avatar">avatar</string>
     <string name="done_button">done</string>
     <plurals name="still_need_to_be_done">
@@ -44,4 +44,10 @@
     <plurals name="can_be_done">
         <item quantity="other">Can be done %1$d more times</item>
     </plurals>
+
+    <string-array name="priorities">
+        <item>Low</item>
+        <item>Middle</item>
+        <item>High</item>
+    </string-array>
 </resources>

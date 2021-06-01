@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:padding="2dp"
                 android:text="@string/title"
-                android:textSize="@dimen/h1"
+                android:textSize="@dimen/h2"
                 app:layout_constraintStart_toEndOf="@id/like_icon"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:padding="2dp"
-                android:textSize="@dimen/h3"
+                android:textSize="@dimen/h4"
                 android:text="@string/description"
                 app:layout_constraintEnd_toStartOf="@id/card_priority"
                 app:layout_constraintStart_toStartOf="parent"

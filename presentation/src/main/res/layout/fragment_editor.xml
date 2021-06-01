@@ -37,12 +37,11 @@
                         android:labelFor="@id/title_edit"
                         android:text="@string/title" />
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="3sp"
-                        android:text="@string/required_field"
-                        android:textColor="@color/red_200" />
+                        android:contentDescription="@string/required_field"
+                        android:src="@drawable/round_priority_high_20" />
 
                 </LinearLayout>
 
@@ -53,6 +52,7 @@
                     android:layout_height="wrap_content"
                     android:autofillHints="title"
                     android:inputType="text"
+                    android:layout_marginBottom="@dimen/editor_field_spacing"
                     android:text="@={viewModel.editor.title}"
                     app:error="@{viewModel.editor.titleError}"
                     app:onFocus="@{viewModel.onFocusTitle}" />
@@ -68,12 +68,11 @@
                         android:labelFor="@id/description_edit"
                         android:text="@string/description" />
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="3sp"
-                        android:text="@string/required_field"
-                        android:textColor="@color/red_200" />
+                        android:contentDescription="@string/required_field"
+                        android:src="@drawable/round_priority_high_20" />
 
                 </LinearLayout>
 
@@ -83,6 +82,7 @@
                     android:layout_height="wrap_content"
                     android:autofillHints="description"
                     android:ems="10"
+                    android:layout_marginBottom="@dimen/editor_field_spacing"
                     android:inputType="textMultiLine"
                     android:text="@={viewModel.editor.description}"
                     app:error="@{viewModel.editor.descriptionError}"
@@ -97,6 +97,7 @@
                 <RadioGroup
                     android:id="@+id/type_radio_group"
                     android:layout_width="match_parent"
+                    android:layout_marginBottom="@dimen/editor_field_spacing"
                     android:layout_height="wrap_content">
 
                     <RadioButton
@@ -122,14 +123,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/priority" />
 
-                <androidx.appcompat.widget.AppCompatSeekBar
-                    android:layout_margin="10dp"
-                    android:id="@+id/priority_seek_bar"
-                    android:layout_width="match_parent"
+                <Spinner
+                    android:id="@+id/priority_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/editor_field_spacing"
+                    android:layout_marginBottom="@dimen/editor_field_spacing"
                     android:layout_height="wrap_content"
-                    android:max="2"
-                    android:min="0"
-                    android:progress="@={viewModel.editor.priority}" />
+                    android:entries="@array/priorities"
+                    android:selectedItemPosition="@{viewModel.editor.priority.value}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -141,18 +142,18 @@
                         android:layout_height="wrap_content"
                         android:text="@string/periodicity" />
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="3sp"
-                        android:text="@string/required_field"
-                        android:textColor="@color/red_200" />
+                        android:contentDescription="@string/required_field"
+                        android:src="@drawable/round_priority_high_20" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/editor_field_spacing"
                     android:orientation="horizontal">
 
                     <EditText
@@ -160,6 +161,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:ems="2"
+                        android:gravity="center"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
                         android:text="@={viewModel.editor.repetitionsNumber}"
@@ -178,6 +180,7 @@
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:ems="2"
+                        android:gravity="center"
                         android:importantForAutofill="no"
                         android:inputType="numberDecimal"
                         android:text="@={viewModel.editor.daysNumber}"

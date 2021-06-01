@@ -3,6 +3,7 @@ package com.example.habittracker.ui.editor
 import android.graphics.Color
 import android.view.View
 import android.view.View.OnFocusChangeListener
+import android.widget.AdapterView
 import android.widget.EditText
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.*
@@ -14,6 +15,7 @@ import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.util.Event
 import kotlinx.coroutines.launch
+import kotlin.math.min
 import kotlin.random.Random
 
 class EditorViewModel constructor(
@@ -67,7 +69,7 @@ class EditorViewModel constructor(
             editor.description,
             period,
             editor.type,
-            Priority.valueOf(editor.priority),
+            editor.priority,
             generateColor()
         )
         original.value.let {
@@ -91,6 +93,20 @@ class EditorViewModel constructor(
     fun onDelete(view: View) {
         deleteOriginal()
         _onDeleteButtonClick.value = Event(view.id)
+    }
+
+    val onPrioritySelectedListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(
+            parent: AdapterView<*>?,
+            view: View?,
+            position: Int,
+            id: Long
+        ) {
+            editor.priority = Priority.valueOf(min(Priority.HIGH.value, position))
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+        }
     }
 
     val onFocusTitle: OnFocusChangeListener = OnFocusChangeListener { view, focused ->

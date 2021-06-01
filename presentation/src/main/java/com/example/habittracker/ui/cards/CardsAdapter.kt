@@ -78,7 +78,7 @@ class CardsAdapter(
         fun bind(habit: Habit, clickListener: OnItemClickListener) {
             title.text = habit.title
             description.text = habit.description
-            priority.text = habit.priority.value.toString()
+            priority.text = (habit.priority.value + 1).toString()
             periodicity.text = formatPeriodicity(habit.periodicity)
 
             if (habit.type == Type.GOOD) {
