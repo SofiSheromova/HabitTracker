@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Habits Tracker</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="type">Type</string>
+    <string name="priority">Priority</string>
+    <string name="periodicity">Periodicity</string>
+    <string name="everyday">Everyday</string>
+    <string name="times_in">times in</string>
+    <string name="days">days</string>
+    <string name="save">save</string>
+    <string name="custom_type">+ create type</string>
+    <string name="empty_field">the field must not be empty</string>
+    <string name="maximum_length">maximum insertion length reached</string>
+    <string name="invalid_value">Invalid value</string>
+    <string name="good">good</string>
+    <string name="bad">bad</string>
+    <string name="title_activity_main" translatable="false">Main Activity</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_info">Info</string>
+    <string name="menu_editor">Editor</string>
+    <string name="all_habits">all habits</string>
+    <string name="good_habits">good habits</string>
+    <string name="bad_habits">bad habits</string>
+    <string name="info">Apps for controlling good and bad habits</string>
+    <string name="error_too_short">Too short</string>
+    <string name="error_too_long">Too long</string>
+    <string name="card_create_button" translatable="false">card_create_button</string>
+    <string name="bottom_sheet_peek">Sorts and filters</string>
+    <string name="search_bar_hint">Search</string>
+    <string name="arrow_down">arrow_down</string>
+    <string name="arrow_up">arrow_up</string>
+    <string name="sort_by_title">Sort by title</string>
+    <string name="delete">delete</string>
+    <string name="failed_update">Failed update</string>
+    <string name="required_field" translatable="false">*</string>
+    <string name="avatar">avatar</string>
+    <string name="done_button">done</string>
+    <plurals name="still_need_to_be_done">
+        <item quantity="other">Need to be done %1$d more times</item>
+    </plurals>
+    <string name="breathtaking">You are breathtaking!</string>
+    <string name="stop_it">Stop doing it!</string>
+    <plurals name="can_be_done">
+        <item quantity="other">Can be done %1$d more times</item>
+    </plurals>
+</resources>

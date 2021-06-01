@@ -15,8 +15,9 @@ buildscript {
         junitVersion = '4.13.2'
         espressoVersion = '3.1.0'
         androidxJunitVersion = '1.1.2'
-        version_retrofit = '2.9.0'
-        version_moshi = '1.9.3'
+        retrofit = '2.9.0'
+        moshi = '1.9.3'
+        dagger2 = '2.35.1'
     }
 
     repositories {
