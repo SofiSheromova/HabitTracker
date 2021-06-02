@@ -143,10 +143,10 @@ class EditorFields : BaseObservable() {
     }
 
     companion object {
-        private const val TITLE_MIN_LENGTH: Int = 1
-        private const val TITLE_MAX_LENGTH: Int = 50
+        const val TITLE_MIN_LENGTH: Int = 1
+        const val TITLE_MAX_LENGTH: Int = 50
 
-        private const val DESCRIPTION_MIN_LENGTH: Int = 1
-        private const val DESCRIPTION_MAX_LENGTH: Int = 140
+        const val DESCRIPTION_MIN_LENGTH: Int = 1
+        const val DESCRIPTION_MAX_LENGTH: Int = 140
     }
 }
