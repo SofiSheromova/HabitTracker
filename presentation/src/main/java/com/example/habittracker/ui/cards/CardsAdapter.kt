@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.model.Habit
@@ -77,7 +78,7 @@ class CardsAdapter(
         fun bind(habit: Habit, clickListener: OnItemClickListener) {
             title.text = habit.title
             description.text = habit.description
-            priority.text = habit.priority.value.toString()
+            priority.text = (habit.priority.value + 1).toString()
             periodicity.text = formatPeriodicity(habit.periodicity)
 
             if (habit.type == Type.GOOD) {
@@ -93,8 +94,14 @@ class CardsAdapter(
             itemView.setOnClickListener {
                 clickListener.onItemClicked(habit)
             }
-            doneButton.setOnClickListener {
-                clickListener.onDoneButtonClicked(habit)
+            doneButton.setOnClickListener { view ->
+                if (view != null) {
+                    ViewCompat.postOnAnimationDelayed(
+                        view,
+                        { clickListener.onDoneButtonClicked(habit) },
+                        400
+                    )
+                }
             }
         }
 

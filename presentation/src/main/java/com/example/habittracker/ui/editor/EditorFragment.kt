@@ -57,5 +57,7 @@ class EditorFragment : Fragment() {
                 Navigation.findNavController(binding.root).popBackStack()
             }
         })
+
+        binding.prioritySpinner.onItemSelectedListener = editorViewModel.onPrioritySelectedListener
     }
 }
