@@ -2,7 +2,6 @@ package com.example.habittracker.editor
 
 import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.platform.app.InstrumentationRegistry
 import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
@@ -13,6 +12,7 @@ import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.ui.editor.EditorFields
 import com.example.habittracker.ui.editor.EditorViewModel
+import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -22,6 +22,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 
 class EditorViewModelTest {
@@ -31,7 +32,6 @@ class EditorViewModelTest {
     private var insertInputValue: Habit? = null
     private var updateInputValue: Habit? = null
     private var deleteInputValue: Habit? = null
-    private var markDoneInputValue: Pair<Habit?, Long?> = Pair(null, null)
 
     private val habitRepository = object : HabitRepository {
         override val allHabits: Flow<List<Habit>>
@@ -53,9 +53,7 @@ class EditorViewModelTest {
             deleteInputValue = habit
         }
 
-        override suspend fun markDone(habit: Habit, time: Long) {
-            markDoneInputValue = Pair(habit, time)
-        }
+        override suspend fun markDone(habit: Habit, time: Long) {}
     }
 
     private val insertHabitUseCase: InsertHabitUseCase = InsertHabitUseCase(habitRepository)
@@ -68,7 +66,6 @@ class EditorViewModelTest {
         insertInputValue = null
         updateInputValue = null
         deleteInputValue = null
-        markDoneInputValue = Pair(null, null)
 
         runBlocking {
             withContext(Dispatchers.Main) {
@@ -150,10 +147,11 @@ class EditorViewModelTest {
             Priority.HIGH
         )
         editorViewModel.setCard(originalHabit)
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val view = mock(View::class.java)
+        whenever(view.id).thenReturn(1)
 
         runBlocking {
-            val job = editorViewModel.onDelete(View(appContext))
+            val job = editorViewModel.onDelete(view)
             job.join()
 
             assertNotNull(deleteInputValue)
