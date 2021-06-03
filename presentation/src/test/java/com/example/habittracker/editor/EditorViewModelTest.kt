@@ -13,11 +13,10 @@ import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.ui.editor.EditorFields
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.nhaarman.mockitokotlin2.whenever
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -67,16 +66,16 @@ class EditorViewModelTest {
         updateInputValue = null
         deleteInputValue = null
 
-        runBlocking {
-            withContext(Dispatchers.Main) {
-                editorViewModel = EditorViewModel(
-                    insertHabitUseCase,
-                    updateHabitUseCase,
-                    deleteHabitUseCase
-                )
-            }
-        }
+        editorViewModel = EditorViewModel(
+            insertHabitUseCase,
+            updateHabitUseCase,
+            deleteHabitUseCase
+        )
+    }
 
+    @Test
+    fun test() {
+        assertTrue(true)
     }
 
     @Test
@@ -84,6 +83,7 @@ class EditorViewModelTest {
         assertFalse(editorViewModel.cardExists)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun insertHabit() {
         val expectedTitle = "new title"
@@ -95,7 +95,7 @@ class EditorViewModelTest {
         editor.description = expectedDescription
         editor.type = expectedType
 
-        runBlocking {
+        runBlockingTest {
             val job = editorViewModel.updateCard(editor)
             job.join()
 
@@ -106,6 +106,7 @@ class EditorViewModelTest {
         }
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun updateHabit() {
         val originalHabit = Habit(
@@ -126,7 +127,7 @@ class EditorViewModelTest {
         editor.description = expectedDescription
         editor.type = expectedType
 
-        runBlocking {
+        runBlockingTest {
             val job = editorViewModel.updateCard(editor)
             job.join()
 
@@ -137,6 +138,7 @@ class EditorViewModelTest {
         }
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun deleteHabit() {
         val originalHabit = Habit(
@@ -150,7 +152,7 @@ class EditorViewModelTest {
         val view = mock(View::class.java)
         whenever(view.id).thenReturn(1)
 
-        runBlocking {
+        runBlockingTest {
             val job = editorViewModel.onDelete(view)
             job.join()
 
