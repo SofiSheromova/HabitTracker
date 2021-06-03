@@ -17,6 +17,9 @@ dependencies {
 
     // Testing
     testImplementation "junit:junit:$rootProject.junitVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockito"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.mockitokotlin"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0'
 
     // Dagger 2
     implementation "com.google.dagger:dagger:$rootProject.dagger2"

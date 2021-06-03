@@ -217,7 +217,7 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/color_state_delete_button"
                         android:enabled="@{viewModel.cardExists}"
-                        android:onClick="@{viewModel::onDelete}"
+                        android:onClick="@{(view) -> viewModel.onDelete(view)}"
                         android:text="@string/delete"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

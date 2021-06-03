@@ -1,8 +1,10 @@
-package com.example.habittracker
+package com.example.habittracker.editor
 
 import androidx.navigation.findNavController
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.habittracker.MainActivity
+import com.example.habittracker.R
 import com.example.habittracker.screen.EditorScreen
 import com.example.habittracker.ui.editor.EditorFields
 import org.junit.Before
@@ -29,14 +31,6 @@ class EditorFragmentTest {
                 //    .fragments[0]
 
                 navController.navigate(R.id.action_nav_home_to_nav_editor)
-
-                // TODO: если так делать, то оно просто вечно грузится
-                //screen {
-                //    editTitle.replaceText("title")
-                //    editDescription.replaceText("description")
-                //    editRepetitionsNumber.replaceText("2")
-                //    editDaysNumber.replaceText("3")
-                //}
             }
     }
 
