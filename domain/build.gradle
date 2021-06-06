@@ -11,18 +11,15 @@ java {
 
 dependencies {
     // Kotlin components
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutines"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutines"
-
-    // Testing
-    testImplementation "junit:junit:$rootProject.junitVersion"
-    testImplementation "org.mockito:mockito-core:$rootProject.mockito"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.mockitokotlin"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutines"
 
     // Dagger 2
     implementation "com.google.dagger:dagger:$rootProject.dagger2"
     kapt "com.google.dagger:dagger-compiler:$rootProject.dagger2"
 
+    // Testing
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockito"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.mockitokotlin"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$rootProject.coroutinesTest"
 }
