@@ -1,13 +1,16 @@
 package com.example.habittracker.editor
 
-import androidx.navigation.findNavController
-import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.agoda.kakao.common.utilities.getResourceString
 import com.example.habittracker.MainActivity
 import com.example.habittracker.R
 import com.example.habittracker.screen.EditorScreen
+import com.example.habittracker.screen.HomeScreen
 import com.example.habittracker.ui.editor.EditorFields
 import org.junit.Before
 import org.junit.Rule
@@ -23,89 +26,142 @@ class EditorFragmentTest {
     val rule = ActivityScenarioRule(MainActivity::class.java)
 
     private val screen = EditorScreen()
+    private val homeScreen = HomeScreen()
 
     @Before
     fun setUp() {
-        ActivityScenario.launch(MainActivity::class.java)
-            .onActivity {
-                val navController = it.findNavController(R.id.nav_host_fragment)
-                // TODO а можно как-то установить фрагменту данные?
-                //val navHostFragment = it
-                //    .supportFragmentManager
-                //    .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-                //
-                //val homeFragment = navHostFragment
-                //    .childFragmentManager
-                //    .fragments[0]
-
-                navController.navigate(R.id.action_nav_home_to_nav_editor)
-            }
+        homeScreen {
+            cardCreateButton.click()
+        }
     }
 
     @Test
-    fun deleteButtonDisabled() {
+    fun checkEmptyFieldsAndDisabledButtonsOnStartup() {
         screen {
+            editTitle.hasEmptyText()
+            editDescription.hasEmptyText()
+            goodTypeButton.matches { isChecked() }
+            badTypeButton.matches { isNotChecked() }
+            editRepetitionsNumber.hasText("1")
+            editDaysNumber.hasText("1")
             deleteButton.isDisabled()
-        }
-    }
-
-    @Test
-    fun submitButtonDisabledWithEmptyTitle() {
-        screen {
-            editTitle.replaceText("")
             submitButton.isDisabled()
         }
     }
 
     @Test
-    fun submitButtonDisabledWithEmptyDescription() {
+    fun successfulSendingWithCorrectData() {
         screen {
-            editDescription.replaceText("")
-            submitButton.isDisabled()
-        }
-    }
-
-    @Test
-    fun submitButtonEnabledWithCorrectData() {
-        screen {
+            editTitle.click()
             editTitle.replaceText("title")
+            Espresso.closeSoftKeyboard()
+
+            editDescription.click()
             editDescription.replaceText("description")
+            Espresso.closeSoftKeyboard()
+
+            editRepetitionsNumber.click()
             editRepetitionsNumber.replaceText("2")
+            Espresso.closeSoftKeyboard()
+
+            editDaysNumber.click()
             editDaysNumber.replaceText("3")
+            Espresso.closeSoftKeyboard()
+
             submitButton.isEnabled()
+            submitButton.click()
+
+            // returned to home page
+            toolbar.check(matches(withText(getResourceString(R.string.menu_home))))
         }
     }
 
     @Test
-    fun submitButtonDisabledWithTooLongTitle() {
+    fun submitButtonDisabledWithEmpty() {
         screen {
+            editTitle.click()
+            editTitle.replaceText("")
+            Espresso.closeSoftKeyboard()
+
+            editDescription.click()
+            editDescription.replaceText("description")
+            Espresso.closeSoftKeyboard()
+
+            submitButton.isDisabled()
+        }
+    }
+
+    @Test
+    fun errorShownAndSubmitButtonDisabledWithTooLongTitle() {
+        screen {
+            editTitle.click()
             editTitle.replaceText("a".repeat(EditorFields.TITLE_MAX_LENGTH + 1))
+            Espresso.closeSoftKeyboard()
+
+            editDescription.click()
             editDescription.replaceText("description")
+            Espresso.closeSoftKeyboard()
 
-            // TODO нельзя проверить ошибку
-            //editTitle.matches { error("") }
-            //editTitle.hasHint(getResourceString(R.string.error_too_long))
-
+            editTitle.matches { hasErrorText(getResourceString(R.string.error_too_long)) }
             submitButton.isDisabled()
         }
     }
 
     @Test
-    fun submitButtonDisabledWithTooLongDescription() {
+    fun submitButtonDisabledWitEmptyDescription() {
         screen {
-            editDescription.replaceText("a".repeat(EditorFields.DESCRIPTION_MAX_LENGTH + 1))
-
-            submitButton.isDisabled()
-        }
-    }
-
-    @Test
-    fun submitButtonDisabledWithIncorrectDaysNumber() {
-        screen {
-            editDaysNumber.replaceText("")
+            editTitle.click()
             editTitle.replaceText("title")
-            editDescription.replaceText("description")
+            Espresso.closeSoftKeyboard()
 
+            editDescription.click()
+            editDescription.replaceText("")
+            Espresso.closeSoftKeyboard()
+
+            editRepetitionsNumber.click()
+            Espresso.closeSoftKeyboard()
+
+            submitButton.isDisabled()
+        }
+    }
+
+    @Test
+    fun errorShownAndSubmitButtonDisabledWithTooLongDescription() {
+        screen {
+            editTitle.click()
+            editTitle.replaceText("title")
+            Espresso.closeSoftKeyboard()
+
+            editDescription.click()
+            editDescription.replaceText("a".repeat(EditorFields.DESCRIPTION_MAX_LENGTH + 1))
+            Espresso.closeSoftKeyboard()
+
+            editRepetitionsNumber.click()
+            Espresso.closeSoftKeyboard()
+
+            editDescription.matches { hasErrorText(getResourceString(R.string.error_too_long)) }
+            submitButton.isDisabled()
+        }
+    }
+
+    @Test
+    fun errorShownAndSubmitButtonDisabledWithIncorrectDaysNumber() {
+        screen {
+            editTitle.click()
+            editTitle.replaceText("title")
+            Espresso.closeSoftKeyboard()
+
+            editDescription.click()
+            editDescription.replaceText("description")
+            Espresso.closeSoftKeyboard()
+
+            editDaysNumber.click()
+            editDaysNumber.replaceText("")
+            Espresso.closeSoftKeyboard()
+
+            editRepetitionsNumber.click()
+
+            editDaysNumber.matches { hasErrorText(getResourceString(R.string.invalid_value)) }
             submitButton.isDisabled()
         }
     }
@@ -113,9 +169,17 @@ class EditorFragmentTest {
     @Test
     fun submitButtonDisabledWithIncorrectRepetitionsNumber() {
         screen {
-            editRepetitionsNumber.replaceText("")
+            editTitle.click()
             editTitle.replaceText("title")
+            Espresso.closeSoftKeyboard()
+
+            editDescription.click()
             editDescription.replaceText("description")
+            Espresso.closeSoftKeyboard()
+
+            editRepetitionsNumber.click()
+            editRepetitionsNumber.replaceText("")
+            Espresso.closeSoftKeyboard()
 
             submitButton.isDisabled()
         }
@@ -123,18 +187,6 @@ class EditorFragmentTest {
 
     @Test
     fun checkNumberOfPriorities() {
-        screen {
-            assert(prioritySpinner.itemTypes.size == 3)
-        }
-    }
-
-    @Test
-    fun typeButtonsIsClickable() {
-        screen {
-            goodTypeButton.isEnabled()
-            goodTypeButton.isClickable()
-            badTypeButton.isEnabled()
-            badTypeButton.isClickable()
-        }
+        assert(screen.prioritySpinner.itemTypes.size == 3)
     }
 }

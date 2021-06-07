@@ -107,13 +107,13 @@ class EditorFields : BaseObservable() {
 
     fun isDescriptionValid(setMessage: Boolean): Boolean {
         if (description.trim().length in DESCRIPTION_MIN_LENGTH..DESCRIPTION_MAX_LENGTH) {
-            titleError.set(null)
+            descriptionError.set(null)
             return true
         }
         if (setMessage && description.trim().length < DESCRIPTION_MIN_LENGTH)
-            titleError.set(R.string.error_too_short)
+            descriptionError.set(R.string.error_too_short)
         else if (setMessage)
-            titleError.set(R.string.error_too_long)
+            descriptionError.set(R.string.error_too_long)
         return false
     }
 
