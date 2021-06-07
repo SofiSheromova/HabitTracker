@@ -10,21 +10,24 @@ import com.example.domain.repository.HabitRepository
 import com.example.domain.usecase.DeleteHabitUseCase
 import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
+import com.example.habittracker.CoroutineScopeRule
+import com.example.habittracker.CoroutineTest
 import com.example.habittracker.ui.editor.EditorFields
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
+import org.mockito.Mockito
 
+@ExperimentalCoroutinesApi
+class ExperimentalTest : CoroutineTest {
+    override val coroutineRule: CoroutineScopeRule = CoroutineScopeRule()
 
-class EditorViewModelTest {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
@@ -74,18 +77,12 @@ class EditorViewModelTest {
     }
 
     @Test
-    fun test() {
-        assertTrue(true)
-    }
-
-    @Test
     fun checkCardExist() {
-        assertFalse(editorViewModel.cardExists)
+        Assert.assertFalse(editorViewModel.cardExists)
     }
 
-    @ExperimentalCoroutinesApi
     @Test
-    fun insertHabit() {
+    fun insertHabit() = test {
         val expectedTitle = "new title"
         val expectedDescription = "new description"
         val expectedType = Type.BAD
@@ -95,20 +92,17 @@ class EditorViewModelTest {
         editor.description = expectedDescription
         editor.type = expectedType
 
-        runBlockingTest {
-            val job = editorViewModel.updateCard(editor)
-            job.join()
+        editorViewModel.updateCard(editor)
 
-            assertNotNull(insertInputValue)
-            assertEquals(expectedTitle, insertInputValue!!.title)
-            assertEquals(expectedDescription, insertInputValue!!.description)
-            assertEquals(expectedType, insertInputValue!!.type)
-        }
+        Assert.assertNotNull(insertInputValue)
+        Assert.assertEquals(expectedTitle, insertInputValue!!.title)
+        Assert.assertEquals(expectedDescription, insertInputValue!!.description)
+        Assert.assertEquals(expectedType, insertInputValue!!.type)
+
     }
 
-    @ExperimentalCoroutinesApi
     @Test
-    fun updateHabit() {
+    fun updateHabit() = test {
         val originalHabit = Habit(
             "title",
             "description",
@@ -127,20 +121,17 @@ class EditorViewModelTest {
         editor.description = expectedDescription
         editor.type = expectedType
 
-        runBlockingTest {
-            val job = editorViewModel.updateCard(editor)
-            job.join()
+        editorViewModel.updateCard(editor)
 
-            assertNotNull(updateInputValue)
-            assertEquals(expectedTitle, updateInputValue!!.title)
-            assertEquals(expectedDescription, updateInputValue!!.description)
-            assertEquals(expectedType, updateInputValue!!.type)
-        }
+        Assert.assertNotNull(updateInputValue)
+        Assert.assertEquals(expectedTitle, updateInputValue!!.title)
+        Assert.assertEquals(expectedDescription, updateInputValue!!.description)
+        Assert.assertEquals(expectedType, updateInputValue!!.type)
+
     }
 
-    @ExperimentalCoroutinesApi
     @Test
-    fun deleteHabit() {
+    fun deleteHabit() = test {
         val originalHabit = Habit(
             "title",
             "description",
@@ -149,15 +140,12 @@ class EditorViewModelTest {
             Priority.HIGH
         )
         editorViewModel.setCard(originalHabit)
-        val view = mock(View::class.java)
+        val view = Mockito.mock(View::class.java)
         whenever(view.id).thenReturn(1)
 
-        runBlockingTest {
-            val job = editorViewModel.onDelete(view)
-            job.join()
+        editorViewModel.onDelete(view)
 
-            assertNotNull(deleteInputValue)
-            assertEquals(originalHabit.title, deleteInputValue!!.title)
-        }
+        Assert.assertNotNull(deleteInputValue)
+        Assert.assertEquals(originalHabit.title, deleteInputValue!!.title)
     }
 }

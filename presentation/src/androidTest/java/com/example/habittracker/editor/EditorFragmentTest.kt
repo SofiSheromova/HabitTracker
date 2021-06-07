@@ -2,18 +2,26 @@ package com.example.habittracker.editor
 
 import androidx.navigation.findNavController
 import androidx.test.core.app.ActivityScenario
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import com.example.habittracker.MainActivity
 import com.example.habittracker.R
 import com.example.habittracker.screen.EditorScreen
 import com.example.habittracker.ui.editor.EditorFields
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 
+@LargeTest
 @RunWith(AndroidJUnit4::class)
 class EditorFragmentTest {
+    @Rule
+    @JvmField
+    val rule = ActivityScenarioRule(MainActivity::class.java)
+
     private val screen = EditorScreen()
 
     @Before
@@ -121,7 +129,7 @@ class EditorFragmentTest {
     }
 
     @Test
-    fun typeButtonsIsClicable() {
+    fun typeButtonsIsClickable() {
         screen {
             goodTypeButton.isEnabled()
             goodTypeButton.isClickable()
