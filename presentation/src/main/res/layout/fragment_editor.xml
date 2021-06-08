@@ -196,6 +196,38 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/color_widget_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Color" />
+
+                <LinearLayout
+                    android:id="@+id/color_widget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/editor_field_spacing"
+                    android:layout_marginBottom="@dimen/editor_field_spacing"
+                    android:background="@drawable/border"
+                    android:gravity="center"
+                    android:padding="7dp">
+
+                    <ImageView
+                        android:id="@+id/selected_color"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:contentDescription="@string/card_color"
+                        android:padding="0dp"
+                        android:src="@drawable/circle"
+                        app:tint="@{viewModel.editor.color}" />
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:contentDescription="@string/arrow_down"
+                        android:src="@drawable/ic_baseline_keyboard_arrow_down_24" />
+                </LinearLayout>
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

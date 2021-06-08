@@ -16,4 +16,22 @@
     <color name="colorAccent">@color/teal_200</color>
     <color name="textColor">@color/gray_900</color>
     <color name="colorSecondary">@color/teal_200</color>
+
+    <array name="colorPickerColors">
+        <item>#ffc9b5</item>
+        <item>#ffbcb5</item>
+        <item>#ffb5d1</item>
+        <item>#f4b5fd</item>
+        <item>#d6baff</item>
+        <item>#bdc9ff</item>
+        <item>#b6d4ff</item>
+        <item>#b5ebff</item>
+        <item>#cefff5</item>
+        <item>#c0ffc3</item>
+        <item>#e4ffc0</item>
+        <item>#f9ffb5</item>
+        <item>#fffdc0</item>
+        <item>#fff2b4</item>
+        <item>#ffe7b5</item>
+    </array>
 </resources>
