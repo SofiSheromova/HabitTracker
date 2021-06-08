@@ -14,6 +14,7 @@ import com.example.domain.usecase.DeleteHabitUseCase
 import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.util.Event
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.min
 import kotlin.random.Random
@@ -62,7 +63,7 @@ class EditorViewModel constructor(
         editor.clearFields()
     }
 
-    private fun updateCard(editor: EditorFields) {
+    fun updateCard(editor: EditorFields): Job {
         val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
         val state = Habit(
             editor.title,
@@ -74,10 +75,9 @@ class EditorViewModel constructor(
         )
         original.value.let {
             if (it != null) {
-                updateOriginal(state)
-            } else {
-                insertNew(state)
+                return updateOriginal(state)
             }
+            return insertNew(state)
         }
     }
 
@@ -90,9 +90,9 @@ class EditorViewModel constructor(
         }
     }
 
-    fun onDelete(view: View) {
-        deleteOriginal()
+    fun onDelete(view: View): Job {
         _onDeleteButtonClick.value = Event(view.id)
+        return deleteOriginal()
     }
 
     val onPrioritySelectedListener = object : AdapterView.OnItemSelectedListener {
