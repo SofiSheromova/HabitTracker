@@ -82,10 +82,10 @@ class HomeFragment : Fragment() {
         val sortButtonsByTitle = listOf(binding.titleSortButton, binding.titleReverseSortButton)
         setDefaultButtonsState(sortButtonsByTitle)
 
-        displayOptionsViewModel.checkedButtonLiveData.observe(viewLifecycleOwner, { btn ->
+        displayOptionsViewModel.checkedButtonLiveData.observe(viewLifecycleOwner, { id ->
             setDefaultButtonsState(sortButtonsByTitle)
-            if (btn == null) return@observe
-            sortButtonsByTitle.firstOrNull { it.id == btn.id }?.let { setCheckedButtonState(it) }
+            if (id == null) return@observe
+            sortButtonsByTitle.firstOrNull { it.id == id }?.let { setCheckedButtonState(it) }
         })
     }
 
