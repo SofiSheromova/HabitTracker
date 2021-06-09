@@ -29,7 +29,7 @@ class ColorPickerFragment : DialogFragment(), ColorPickerAdapter.OnItemClickList
             val builder = AlertDialog.Builder(it)
             builder.setTitle(getString(R.string.color_picker_title))
                 .setView(gridView)
-                .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+                .setNegativeButton(getString(R.string.cancel), null)
             builder.create()
         }
             ?: throw IllegalStateException("Activity cannot be null")
@@ -37,11 +37,12 @@ class ColorPickerFragment : DialogFragment(), ColorPickerAdapter.OnItemClickList
 
     private fun createGridView(context: Context): GridView {
         return GridView(context).apply {
-            numColumns = 3
+            numColumns = resources.getInteger(R.integer.colors_count_in_row)
             gravity = Gravity.CENTER
             columnWidth = GridView.AUTO_FIT
-            verticalSpacing = 50
-            setPadding(0, 50, 0, 50)
+            val itemSpacing = resources.getDimension(R.dimen.color_picker_item_spacing).toInt()
+            verticalSpacing = itemSpacing
+            setPadding(itemSpacing, itemSpacing, itemSpacing, itemSpacing)
             stretchMode = GridView.STRETCH_SPACING_UNIFORM
         }
     }

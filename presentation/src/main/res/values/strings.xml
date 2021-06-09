@@ -44,6 +44,7 @@
     <string name="card_color">card color</string>
     <string name="color_picker_title">Color picker</string>
     <string name="cancel">cancel</string>
+    <string name="color">color</string>
     <plurals name="can_be_done">
         <item quantity="other">Can be done %1$d more times</item>
     </plurals>
@@ -52,11 +53,5 @@
         <item>Low</item>
         <item>Middle</item>
         <item>High</item>
-    </string-array>
-
-    <string-array name="colors_array">
-        <item>red</item>
-        <item>green</item>
-        <item>blue</item>
     </string-array>
 </resources>

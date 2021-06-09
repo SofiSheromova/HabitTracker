@@ -34,6 +34,5 @@
     <dialog
         android:id="@+id/colorPickerFragment"
         android:name="com.example.habittracker.ui.colorpicker.ColorPickerFragment"
-        android:label="color_picker_fragment"
-        tools:layout="@layout/color_picker_fragment" />
+        android:label="color_picker_fragment" />
 </navigation>

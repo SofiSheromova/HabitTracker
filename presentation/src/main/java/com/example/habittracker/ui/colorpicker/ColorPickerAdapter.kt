@@ -12,9 +12,9 @@ import com.example.habittracker.R
 
 class ColorPickerAdapter(
     context: Context,
-    private val values: List<Int>,
+    private val colors: List<Int>,
     private val onItemClickListener: OnItemClickListener
-) : ArrayAdapter<Int>(context, -1, values) {
+) : ArrayAdapter<Int>(context, -1, colors) {
 
     interface OnItemClickListener {
         fun onItemClicked(color: Int)
@@ -27,8 +27,8 @@ class ColorPickerAdapter(
 
         val view: View = inflater.inflate(R.layout.color_picker_item_view, parent, false)
         val imageView: ImageView = view.findViewById<View>(R.id.color) as ImageView
-        imageView.setColorFilter(values[position])
-        view.setOnClickListener { onItemClickListener.onItemClicked(values[position]) }
+        imageView.setColorFilter(colors[position])
+        view.setOnClickListener { onItemClickListener.onItemClicked(colors[position]) }
         return view
     }
 }

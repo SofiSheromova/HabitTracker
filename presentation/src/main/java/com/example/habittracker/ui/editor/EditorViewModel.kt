@@ -1,6 +1,5 @@
 package com.example.habittracker.ui.editor
 
-import android.graphics.Color
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.AdapterView
@@ -18,12 +17,12 @@ import com.example.habittracker.util.Event
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.min
-import kotlin.random.Random
 
 class EditorViewModel constructor(
     private val insertHabitUseCase: InsertHabitUseCase,
     private val updateHabitUseCase: UpdateHabitUseCase,
-    private val deleteHabitUseCase: DeleteHabitUseCase
+    private val deleteHabitUseCase: DeleteHabitUseCase,
+    private val defaultCardColor: Int = -1
 ) : ViewModel() {
 
     private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
@@ -62,7 +61,8 @@ class EditorViewModel constructor(
     fun setEmptyCard() {
         original.value = null
         val habit = Habit()
-        habit.color = generateColor()
+
+        habit.color = defaultCardColor
         editor.fillFields(habit)
     }
 
@@ -163,18 +163,6 @@ class EditorViewModel constructor(
         @JvmStatic
         fun setTint(view: ImageView, color: Int) {
             view.setColorFilter(color)
-        }
-
-        private fun generateColor(): Int {
-            val color = String.format(
-                "#%06X", 0xFFFFFF and Color.argb(
-                    100,
-                    Random.nextInt(180, 240),
-                    Random.nextInt(180, 240),
-                    Random.nextInt(180, 240)
-                )
-            )
-            return Color.parseColor(color)
         }
     }
 
