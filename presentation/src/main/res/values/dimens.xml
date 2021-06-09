@@ -13,4 +13,10 @@
     <dimen name="h4">16sp</dimen>
     <dimen name="h5">14sp</dimen>
     <dimen name="editor_field_spacing">10dp</dimen>
+    <integer name="colors_count_in_row">3</integer>
+    <dimen name="color_picker_item_size">50dp</dimen>
+    <dimen name="color_picker_item_spacing">20dp</dimen>
+    <dimen name="color_widget_padding">7dp</dimen>
+    <dimen name="color_widget_selected_color_size">30dp</dimen>
+    <dimen name="color_widget_arrow_size">30dp</dimen>
 </resources>

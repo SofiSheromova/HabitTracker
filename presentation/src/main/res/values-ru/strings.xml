@@ -54,5 +54,12 @@
         <item>Средний</item>
         <item>Высокий</item>
     </string-array>
+
     <string name="required_field">обязательное поле</string>
+
+    <string name="color_picker_title">Палитра цветов</string>
+    <string name="cancel">отмена</string>
+    <string name="card_color">цвет карты</string>
+    <string name="card_create_button">кнопка создания карты</string>
+    <string name="color">цвет</string>
 </resources>

@@ -16,4 +16,20 @@
     <color name="colorAccent">@color/teal_200</color>
     <color name="textColor">@color/gray_900</color>
     <color name="colorSecondary">@color/teal_200</color>
+
+    <color name="defaultCardColor">#E1FDF8</color>
+    <array name="colorPickerColors">
+        <item>#FFF1DF</item>
+        <item>#FFE0E0</item>
+        <item>#FFE1F7</item>
+        <item>#F9DCFF</item>
+        <item>#EDE1FF</item>
+        <item>#E0EDFF</item>
+        <item>#DDF6FF</item>
+        <item>#E1FDF8</item>
+        <item>#DAFDDC</item>
+        <item>#EFFFD8</item>
+        <item>#FFFFD6</item>
+        <item>#FFF6D2</item>
+    </array>
 </resources>

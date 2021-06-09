@@ -2,6 +2,7 @@ package com.example.habittracker.di.module
 
 import androidx.lifecycle.ViewModel
 import com.example.domain.usecase.*
+import com.example.habittracker.di.interfaces.DefaultCardColor
 import com.example.habittracker.model.DisplayOptions
 import com.example.habittracker.model.HabitFulfillmentReportFormatter
 import com.example.habittracker.ui.cards.CardsViewModel
@@ -47,7 +48,8 @@ class FactoryModule {
     fun provideEditorViewModelFactory(
         insertHabitUseCase: InsertHabitUseCase,
         updateHabitUseCase: UpdateHabitUseCase,
-        deleteHabitUseCase: DeleteHabitUseCase
+        deleteHabitUseCase: DeleteHabitUseCase,
+        @DefaultCardColor defaultCardColor: Int,
     ): EditorViewModel.Factory {
         return object : EditorViewModel.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -56,7 +58,8 @@ class FactoryModule {
                     return EditorViewModel(
                         insertHabitUseCase,
                         updateHabitUseCase,
-                        deleteHabitUseCase
+                        deleteHabitUseCase,
+                        defaultCardColor
                     ) as T
                 }
                 throw IllegalArgumentException("Unknown ViewModel class")

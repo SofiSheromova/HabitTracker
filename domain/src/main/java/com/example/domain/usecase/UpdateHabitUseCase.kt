@@ -15,7 +15,7 @@ class UpdateHabitUseCase @Inject constructor(
             newState.periodicity,
             newState.type,
             newState.priority,
-            original.color, // newState.color
+            newState.color,
             original.uid,
             Date()
         ).apply {
