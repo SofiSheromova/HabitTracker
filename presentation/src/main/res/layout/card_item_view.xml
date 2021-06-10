@@ -98,6 +98,7 @@
                 android:layout_height="35dp"
                 android:gravity="center"
                 android:textSize="20sp"
+                android:textColor="@color/translucentTextColor"
                 android:background="@drawable/rounded_corner"
                 app:layout_constraintTop_toBottomOf="@id/card_description"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -113,6 +114,7 @@
                 app:cornerRadius="14dp"
                 app:layout_constraintTop_toBottomOf="@id/card_priority"
                 app:rippleColor="#14000000"
+                app:strokeColor="@color/translucentTextColor"
                 app:strokeWidth="2dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,6 +19,7 @@ import com.example.habittracker.ui.editor.EditorViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
+
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
 

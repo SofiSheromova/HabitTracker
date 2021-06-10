@@ -3,33 +3,59 @@
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="red_200">#FF5252</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <color name="teal_200">#80CBC4</color>
+    <color name="teal_400">#26A69A</color>
+    <color name="teal_700">#00796B</color>
+    <color name="teal_900">#004D40</color>
+
+    <color name="orange_200">#FFCC80</color>
+    <color name="orange_400">#FFA726</color>
+    <color name="orange_700">#F57C00</color>
+    <color name="orange_900">#e65100</color>
+
+    <color name="deep_orange_900">#bf360c</color>
+    <color name="deep_orange_accent_700">#dd2c00</color>
+
+    <color name="red_700">#D32F2F</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
     <color name="gray_200">#D3D3D3</color>
     <color name="gray_900">#393939</color>
 
-    <color name="colorPrimary">@color/purple_500</color>
-    <color name="colorPrimaryDark">@color/purple_700</color>
-    <color name="colorAccent">@color/teal_200</color>
-    <color name="textColor">@color/gray_900</color>
-    <color name="colorSecondary">@color/teal_200</color>
+    <color name="colorPrimary">@color/teal_200</color>
+    <color name="colorPrimaryVariant">@color/teal_400</color>
+    <color name="colorSecondary">@color/orange_200</color>
+    <color name="colorSecondaryVariant">@color/orange_400</color>
 
-    <color name="defaultCardColor">#E1FDF8</color>
-    <array name="colorPickerColors">
-        <item>#FFF1DF</item>
-        <item>#FFE0E0</item>
-        <item>#FFE1F7</item>
-        <item>#F9DCFF</item>
-        <item>#EDE1FF</item>
-        <item>#E0EDFF</item>
-        <item>#DDF6FF</item>
-        <item>#E1FDF8</item>
-        <item>#DAFDDC</item>
-        <item>#EFFFD8</item>
-        <item>#FFFFD6</item>
-        <item>#FFF6D2</item>
-    </array>
+    <color name="textColor">@color/gray_900</color>
+    <color name="translucentTextColor">#40393939</color>
+
+    <color name="peachCream">#FFF1DF</color>
+    <color name="pippin">#FFE0E0</color>
+    <color name="pinkLace">#FFE1F7</color>
+    <color name="blueChalk">#F9DCFF</color>
+    <color name="magnolia">#EDE1FF</color>
+    <color name="solitude">#E0EDFF</color>
+    <color name="pattensBlue">#DDF6FF</color>
+    <color name="foam">#E1FDF8</color>
+    <color name="snowyMint">#DAFDDC</color>
+    <color name="carla">#EFFFD8</color>
+    <color name="cumulus">#FFFFD6</color>
+    <color name="milkPunch">#FFF6D2</color>
+
+    <color name="peachCreamDark">#a29583</color>
+    <color name="pippinDark">#a28383</color>
+    <color name="pinkLaceDark">#a2849b</color>
+    <color name="blueChalkDark">#9e7fa2</color>
+    <color name="magnoliaDark">#9284a3</color>
+    <color name="solitudeDark">#8391a2</color>
+    <color name="pattensBlueDark">#819aa3</color>
+    <color name="foamDark">#83a29c</color>
+    <color name="snowyMintDark">#7da27f</color>
+    <color name="carlaDark">#93a37b</color>
+    <color name="cumulusDark">#a2a377</color>
+    <color name="milkPunchDark">#a39b74</color>
 </resources>
