@@ -30,8 +30,12 @@
     <color name="colorSecondary">@color/orange_200</color>
     <color name="colorSecondaryVariant">@color/orange_400</color>
 
+    <color name="transparentTextColor_25">#BF000000</color>
+    <color name="transparentTextColor_50">#80000000</color>
+    <color name="transparentTextColor_75">#40000000</color>
+
     <color name="textColor">@color/gray_900</color>
-    <color name="translucentTextColor">#40393939</color>
+    <color name="translucentTextColor">@color/transparentTextColor_75</color>
 
     <color name="peachCream">#FFF1DF</color>
     <color name="pippin">#FFE0E0</color>

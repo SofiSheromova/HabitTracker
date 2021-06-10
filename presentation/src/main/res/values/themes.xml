@@ -14,6 +14,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 
+        <item name="android:textViewStyle">@style/MyTextViewStyle</item>
     </style>
 
     <style name="Theme.HabitTracker.NoActionBar">
@@ -24,4 +25,8 @@
     <style name="Theme.HabitTracker.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.HabitTracker.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MyTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/transparentTextColor_50</item>
+    </style>
 </resources>
