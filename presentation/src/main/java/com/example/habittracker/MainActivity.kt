@@ -19,7 +19,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.example.data.remote.RequestManager
 import com.example.domain.repository.HabitRepository
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
@@ -31,9 +30,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     @Inject
     lateinit var repository: HabitRepository
-
-    @Inject
-    lateinit var requestManager: RequestManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,19 +83,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         currentFocus?.hideKeyboard()
     }
 
-    fun View.hideKeyboard() {
+    private fun View.hideKeyboard() {
         val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
-    }
-
-    // TODO сейчас нет гарантий, что данные сохранятся
-    //  Первый вариант решения: создать сервис для сохранения данных
-    //  Второй вариант: сделать обсервер
-    override fun onPause() {
-        lifecycleScope.launch {
-            requestManager.saveState()
-        }
-
-        super.onPause()
     }
 }
