@@ -14,7 +14,6 @@ import com.example.domain.usecase.DeleteHabitUseCase
 import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.util.Event
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -37,9 +36,6 @@ class EditorViewModel constructor(
     private val _onSaveButtonClick: MutableLiveData<Event<EditorFields>> =
         MutableLiveData<Event<EditorFields>>()
     val onSaveButtonClick: LiveData<Event<EditorFields>> = _onSaveButtonClick
-
-    private val _onDeleteButtonClick: MutableLiveData<Event<Int>> = MutableLiveData<Event<Int>>()
-    val onDeleteButtonClick: LiveData<Event<Int>> = _onDeleteButtonClick
 
     private fun updateOriginal(state: Habit) = viewModelScope.launch {
         original.value?.let { updateHabitUseCase.update(it, state) }
@@ -66,7 +62,7 @@ class EditorViewModel constructor(
         editor.fillFields(habit)
     }
 
-    fun updateCard(editor: EditorFields): Job {
+    private fun updateCard(editor: EditorFields) {
         val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
         val state = Habit(
             editor.title,
@@ -77,14 +73,14 @@ class EditorViewModel constructor(
             editor.color
         )
         original.value.let {
-            if (it != null) {
-                return updateOriginal(state)
-            }
-            return insertNew(state)
+            if (it != null)
+                updateOriginal(state)
+            else
+                insertNew(state)
         }
     }
 
-    fun onSave(view: View) {
+    fun onSave() {
         editor.let {
             if (it.isValid()) {
                 updateCard(it)
@@ -93,9 +89,8 @@ class EditorViewModel constructor(
         }
     }
 
-    fun onDelete(view: View): Job {
-        _onDeleteButtonClick.value = Event(view.id)
-        return deleteOriginal()
+    fun onDelete() {
+        deleteOriginal()
     }
 
     val onPrioritySelectedListener = object : AdapterView.OnItemSelectedListener {

@@ -45,6 +45,9 @@
     <string name="color_picker_title">Color picker</string>
     <string name="cancel">cancel</string>
     <string name="color">color</string>
+    <string name="yes">yes</string>
+    <string name="deletion">Deletion</string>
+    <string name="deletion_message">Sure you want to delete the habit?</string>
     <plurals name="can_be_done">
         <item quantity="other">Can be done %1$d more times</item>
     </plurals>

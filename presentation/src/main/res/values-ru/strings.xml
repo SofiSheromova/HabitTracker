@@ -62,4 +62,7 @@
     <string name="card_color">цвет карты</string>
     <string name="card_create_button">кнопка создания карты</string>
     <string name="color">цвет</string>
+    <string name="yes">да</string>
+    <string name="deletion">Удаление</string>
+    <string name="deletion_message">Уверены, что хотите удалить привычку?</string>
 </resources>

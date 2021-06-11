@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--    <style name="CardView.Custom" parent="CardView">-->
-    <!--        <item name="cardCornerRadius">10dp</item>-->
-    <!--        <item name="android:layout_height">300dp</item>-->
-    <!--        <item name="android:layout_width">match_parent</item>-->
-    <!--        <item name="android:layout_margin">10dp</item>-->
-    <!--    </style>-->
-
-    <!--    <style name="Button.Custom" parent="Widget.AppCompat.Button">-->
-    <!--        <item name="android:backgroundTint">@color/colorPrimary</item>-->
-    <!--        <item name="android:textColor">@color/textColor</item>-->
-    <!--    </style>-->
-
-    <!--    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">-->
-    <!--        <item name="spinBars">true</item>-->
-    <!--        <item name="color">@color/textColor</item>-->
-    <!--    </style>-->
+    <color name="defaultCardColor">@color/foamDark</color>
+    <array name="colorPickerColors">
+        <item>@color/peachCreamDark</item>
+        <item>@color/pippinDark</item>
+        <item>@color/pinkLaceDark</item>
+        <item>@color/blueChalkDark</item>
+        <item>@color/magnoliaDark</item>
+        <item>@color/solitudeDark</item>
+        <item>@color/pattensBlueDark</item>
+        <item>@color/foamDark</item>
+        <item>@color/snowyMintDark</item>
+        <item>@color/carlaDark</item>
+        <item>@color/cumulusDark</item>
+        <item>@color/milkPunchDark</item>
+    </array>
 </resources>

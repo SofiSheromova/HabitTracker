@@ -1,5 +1,6 @@
 package com.example.habittracker.ui.editor
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -57,12 +58,6 @@ class EditorFragment : Fragment() {
             }
         })
 
-        editorViewModel.onDeleteButtonClick.observe(viewLifecycleOwner, {
-            it?.getContentIfNotHandled()?.let {
-                Navigation.findNavController(binding.root).popBackStack()
-            }
-        })
-
         colorPickerViewModel.colorLiveData.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 editorViewModel.editor.color = it
@@ -74,6 +69,25 @@ class EditorFragment : Fragment() {
         binding.colorWidget.setOnClickListener {
             Navigation.findNavController(binding.root)
                 .navigate(R.id.action_nav_editor_to_color_picker_dialog)
+        }
+
+        binding.deleteButton.setOnClickListener {
+            createDeletionDialog().show()
+        }
+    }
+
+    private fun createDeletionDialog(): AlertDialog.Builder {
+        return AlertDialog.Builder(context).apply {
+            setIcon(R.drawable.ic_baseline_delete_24)
+            setTitle(getString(R.string.deletion))
+            setMessage(getString(R.string.deletion_message))
+
+            setPositiveButton(getString(R.string.yes)) { _, _ ->
+                editorViewModel.onDelete()
+                Navigation.findNavController(binding.root).popBackStack()
+            }
+
+            setNegativeButton(getString(R.string.cancel), null)
         }
     }
 }
