@@ -30,7 +30,7 @@ class HabitEntity(
 ) : ModelEntity {
     override fun toString(): String {
         val sb = StringBuilder()
-        sb.append(HabitEntity::class.java.getName()).append('@')
+        sb.append(HabitEntity::class.java.name).append('@')
             .append(Integer.toHexString(System.identityHashCode(this))).append('[')
         sb.append("uid")
         sb.append('=')
