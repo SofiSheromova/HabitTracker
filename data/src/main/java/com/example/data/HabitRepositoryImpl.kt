@@ -188,13 +188,9 @@ class HabitRepositoryImpl(
     }
 
     private suspend fun insertOnServer(entity: HabitEntity) {
-        // TODO если бы HabitEntity было дата классом, то было бы проще
-        val copyEntity = HabitEntity(
-            "", entity.title, entity.description, entity.priority, entity.type,
-            entity.count, entity.frequency, entity.color, entity.date, entity.doneDates
-        )
-
-        val serverUid = habitApi.updateHabit(copyEntity).uid
+        val serverUid = habitApi.updateHabit(
+            entity.copy().apply { uid = "" }
+        ).uid
 
         for (date in entity.doneDates) {
             markDoneOnServer(serverUid, date)

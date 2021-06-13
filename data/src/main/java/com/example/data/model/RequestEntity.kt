@@ -18,7 +18,7 @@ enum class ActionType(val value: Int) {
 
 @Entity(tableName = Constants.REQUEST_TABLE_NAME)
 @TypeConverters(ModificationTypeConverter::class)
-class RequestEntity(
+data class RequestEntity(
     @ColumnInfo(name = "type") var actionType: ActionType,
     @ColumnInfo(name = "habit_uid") var habitUid: String,
     @ColumnInfo(name = "extra") var habitDoneTime: Long = 0,
