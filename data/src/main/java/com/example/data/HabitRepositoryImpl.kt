@@ -19,18 +19,29 @@ class HabitRepositoryImpl(
     private val habitEntityMapper: HabitEntityMapper,
 ) : HabitRepository {
 
-    override val allHabits: Flow<List<Habit>> = habitDao.getAll().map { converter(it) }
-
-    private var completedCount: Int = 0
     private val allRequests: Flow<List<RequestEntity>> = requestDao.getAll()
 
-    private fun converter(habitEntities: List<HabitEntity>): List<Habit> {
-        return habitEntities.map { habitEntityMapper.mapToDomain(it) }
+    override val allHabits: Flow<List<Habit>> = habitDao.getAll().map {
+        it.map { entity -> habitEntityMapper.mapToDomain(entity) }
+    }
+
+    override suspend fun start() = withContext(Dispatchers.IO) {
+        refresh()
+
+        allRequests
+            .conflate()
+            .collect {
+                Log.d("TAG-E", "------Collect: ${it.size}")
+                fulfillRequests(it)
+            }
+
+        return@withContext
     }
 
     override suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
-        val uncompletedRequests = allRequests.first().uncompleted()
-        if (uncompletedRequests.isNotEmpty()) {
+        fulfillRequests(allRequests.first())
+
+        if (allRequests.first().isNotEmpty()) {
             return@withContext false
         }
 
@@ -44,51 +55,6 @@ class HabitRepositoryImpl(
         updateLocalHabits(remoteHabits)
 
         return@withContext true
-    }
-
-    override suspend fun start() = withContext(Dispatchers.IO) {
-        requestDao.deleteAll()
-        this.launch {
-            allRequests.collect {
-                val uncompletedRequests = it.uncompleted()
-                for (request in uncompletedRequests) {
-                    try {
-                        when (request.actionType) {
-                            ActionType.INSERT -> {
-                                val habitEntity = habitDao.getById(request.habitUid)
-                                insertOnServer(habitEntity)
-                            }
-                            ActionType.UPDATE -> {
-                                val habitEntity = habitDao.getById(request.habitUid)
-                                updateOnServer(habitEntity)
-                            }
-                            ActionType.DELETE -> {
-                                deleteOnServer(request.habitUid)
-                            }
-                            ActionType.MARK_DONE -> {
-                                markDoneOnServer(
-                                    request.habitUid,
-                                    request.extraInformation.toLong()
-                                )
-                            }
-                        }
-                        completedCount++
-                    } catch (e: Exception) {
-                        Log.d("TAG-NETWORK", "Failure: ${e.message}")
-                        break
-                    }
-                }
-
-                Log.d(
-                    "TAG-E",
-                    "all size = ${it.size}, uncompleted size = ${uncompletedRequests.size}"
-                )
-            }
-        }
-
-        refresh()
-
-        return@withContext
     }
 
     private suspend fun getRemoteHabits(): List<HabitEntity> = withContext(Dispatchers.IO) {
@@ -114,7 +80,7 @@ class HabitRepositoryImpl(
 
         habitDao.updateAll(entity)
 
-        val request = findByHabit(habit)
+        val request = findRequestByHabit(habit)
         if (request == null) {
             requestDao.insertAll(RequestEntity(ActionType.UPDATE, habit.uid))
         }
@@ -125,7 +91,7 @@ class HabitRepositoryImpl(
     override suspend fun delete(habit: Habit) = withContext(Dispatchers.IO) {
         habitDao.delete(habitEntityMapper.mapToEntity(habit))
 
-        val request = findByHabit(habit)
+        val request = findRequestByHabit(habit)
         if (request == null) {
             requestDao.insertAll(RequestEntity(ActionType.DELETE, habit.uid))
         } else {
@@ -135,7 +101,7 @@ class HabitRepositoryImpl(
                 }
                 ActionType.UPDATE -> {
                     requestDao.updateAll(
-                        RequestEntity(ActionType.DELETE, habit.uid, request.id)
+                        RequestEntity(ActionType.DELETE, habit.uid, id = request.id)
                     )
                 }
                 else -> {
@@ -149,17 +115,61 @@ class HabitRepositoryImpl(
     override suspend fun markDone(habit: Habit, time: Long) = withContext(Dispatchers.IO) {
         habitDao.updateAll(habitEntityMapper.mapToEntity(habit))
 
-        val request = findByHabit(habit)
-        if (request == null) {
-            requestDao.insertAll(
-                RequestEntity(ActionType.MARK_DONE, habit.uid, extraInformation = time.toString())
-            )
+        val request = findRequestByHabit(habit)
+        if (request == null || request.actionType != ActionType.INSERT) {
+            requestDao.insertAll(RequestEntity(ActionType.MARK_DONE, habit.uid, time))
         }
 
         return@withContext
     }
 
+    private suspend fun findRequestByHabit(habit: Habit): RequestEntity? {
+        return allRequests.first()
+            .find { it.habitUid == habit.uid }
+    }
+
+    private suspend fun fulfillRequests(requests: List<RequestEntity>) {
+        val fulfilledRequests = mutableListOf<RequestEntity>()
+
+        Log.d("TAG-E", "fulfillRequests count = ${requests.size}")
+        for (request in requests) {
+            try {
+                fulfillRequest(request)
+                fulfilledRequests.add(request)
+            } catch (e: Exception) {
+                Log.d("TAG-NETWORK", "Failure: ${e.message}")
+                break
+            }
+        }
+
+        if (fulfilledRequests.isNotEmpty())
+            requestDao.delete(*fulfilledRequests.map { it.id }.toTypedArray())
+    }
+
+    private suspend fun fulfillRequest(request: RequestEntity) {
+        when (request.actionType) {
+            ActionType.INSERT -> {
+                val habitEntity = habitDao.getById(request.habitUid)
+                insertOnServer(habitEntity)
+            }
+            ActionType.UPDATE -> {
+                val habitEntity = habitDao.getById(request.habitUid)
+                updateOnServer(habitEntity)
+            }
+            ActionType.DELETE -> {
+                deleteOnServer(request.habitUid)
+            }
+            ActionType.MARK_DONE -> {
+                markDoneOnServer(
+                    request.habitUid,
+                    request.habitDoneTime
+                )
+            }
+        }
+    }
+
     private suspend fun insertOnServer(entity: HabitEntity) {
+        // TODO если бы HabitEntity было дата классом, то было бы проще
         val copyEntity = HabitEntity(
             "", entity.title, entity.description, entity.priority, entity.type,
             entity.count, entity.frequency, entity.color, entity.date, entity.doneDates
@@ -167,13 +177,16 @@ class HabitRepositoryImpl(
 
         val serverUid = habitApi.updateHabit(copyEntity).uid
 
-        updateUid(entity, serverUid)
+        for (date in entity.doneDates) {
+            markDoneOnServer(serverUid, date)
+        }
+
+        updateLocalUid(entity, serverUid)
     }
 
-    private suspend fun updateUid(habitEntity: HabitEntity, uid: String) {
+    private suspend fun updateLocalUid(habitEntity: HabitEntity, uid: String) {
         habitDao.delete(habitEntity)
-        habitEntity.uid = uid
-        habitDao.insertAll(habitEntity)
+        habitDao.insertAll(habitEntity.apply { this.uid = uid })
     }
 
     private suspend fun updateOnServer(entity: HabitEntity) {
@@ -186,19 +199,5 @@ class HabitRepositoryImpl(
 
     private suspend fun markDoneOnServer(uid: String, time: Long) {
         habitApi.markHabitDone(HabitDone(uid, time))
-    }
-
-    private fun List<RequestEntity>.uncompleted(): List<RequestEntity> {
-        return this.subList(completedCount, this.size)
-    }
-
-//    private fun List<RequestEntity>.completed(): List<RequestEntity> {
-//        return this.subList(0, completedCount)
-//    }
-
-    private suspend fun findByHabit(habit: Habit): RequestEntity? {
-        return allRequests.firstOrNull()
-            ?.uncompleted()
-            ?.find { it.habitUid == habit.uid }
     }
 }

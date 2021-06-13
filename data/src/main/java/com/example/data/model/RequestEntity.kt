@@ -21,8 +21,8 @@ enum class ActionType(val value: Int) {
 class RequestEntity(
     @ColumnInfo(name = "type") var actionType: ActionType,
     @ColumnInfo(name = "habit_uid") var habitUid: String,
+    @ColumnInfo(name = "extra") var habitDoneTime: Long = 0,
     @PrimaryKey var id: String = UUID.randomUUID().toString(),
-    @ColumnInfo(name = "extra") var extraInformation: String = ""
 ) : ModelEntity
 
 class ModificationTypeConverter {
