@@ -143,23 +143,20 @@ class HabitRepositoryImpl(
         for (request in requests) {
             try {
                 fulfillRequest(request)
-                fulfilledRequests.add(request)
             } catch (e: Exception) {
                 Log.d("TAG-NETWORK", "Failure: ${e.message}")
 
-                // В эту ситуацию мы можем попасть в случае, когда успели выполнить запрос,
+                // Ошибка клиента может возникнуть, когда успели выполнить запрос,
                 // но из-за неожиданного завершения работы не успели удалить его из базы
-                if (e is HttpException && e.isClientError()) {
-                    fulfilledRequests.add(request)
-                    continue
-                }
+                val isClientError = e is HttpException && e.isClientError()
 
-                break
+                if (!isClientError)
+                    break
             }
-        }
 
-        if (fulfilledRequests.isNotEmpty())
-            requestDao.delete(*fulfilledRequests.map { it.id }.toTypedArray())
+            fulfilledRequests.add(request)
+            requestDao.delete(request)
+        }
 
         if (fulfilledRequests.size != requests.size) {
             throw UnfulfilledRequestException()
@@ -169,12 +166,14 @@ class HabitRepositoryImpl(
     private suspend fun fulfillRequest(request: RequestEntity) {
         when (request.actionType) {
             ActionType.INSERT -> {
-                val habitEntity = habitDao.getById(request.habitUid)
-                insertOnServer(habitEntity)
+                habitDao.getById(request.habitUid)?.let { habitEntity ->
+                    insertOnServer(habitEntity)
+                }
             }
             ActionType.UPDATE -> {
-                val habitEntity = habitDao.getById(request.habitUid)
-                updateOnServer(habitEntity)
+                habitDao.getById(request.habitUid)?.let { habitEntity ->
+                    updateOnServer(habitEntity)
+                }
             }
             ActionType.DELETE -> {
                 deleteOnServer(request.habitUid)

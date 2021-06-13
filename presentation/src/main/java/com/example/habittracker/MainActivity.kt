@@ -2,7 +2,6 @@ package com.example.habittracker
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
@@ -59,7 +58,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
             .into(avatarView)
 
         lifecycleScope.launch {
-            Log.d("TAG-ARCHITECTURE", repository.toString())
             repository.start()
         }
     }

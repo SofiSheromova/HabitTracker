@@ -18,9 +18,6 @@ interface RequestDao {
     @Delete
     suspend fun delete(request: RequestEntity)
 
-    @Query("DELETE from request_table WHERE id IN (:requestIds)")
-    suspend fun delete(vararg requestIds: String)
-
     @Query("DELETE FROM request_table")
     suspend fun deleteAll()
 }

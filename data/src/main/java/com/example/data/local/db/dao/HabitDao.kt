@@ -10,7 +10,7 @@ interface HabitDao {
     fun getAll(): Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM habit_table WHERE uid LIKE :uid LIMIT 1")
-    fun getById(uid: String): HabitEntity
+    fun getById(uid: String): HabitEntity?
 
     @Query("SELECT * FROM habit_table WHERE title LIKE :title LIMIT 1")
     fun findByTitle(title: String): Flow<HabitEntity>
