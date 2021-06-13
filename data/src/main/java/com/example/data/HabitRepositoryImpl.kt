@@ -1,6 +1,7 @@
 package com.example.data
 
 import android.util.Log
+import com.example.data.exception.UnfulfilledRequestException
 import com.example.data.local.db.dao.HabitDao
 import com.example.data.local.db.dao.RequestDao
 import com.example.data.model.*
@@ -10,6 +11,7 @@ import com.example.domain.repository.HabitRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import okhttp3.*
+import retrofit2.HttpException
 import java.util.*
 
 class HabitRepositoryImpl(
@@ -26,21 +28,28 @@ class HabitRepositoryImpl(
     }
 
     override suspend fun start() = withContext(Dispatchers.IO) {
-        refresh()
+        var habitsUpdated = false
 
         allRequests
             .conflate()
-            .collect {
-                Log.d("TAG-E", "------Collect: ${it.size}")
+            .onEach {
                 fulfillRequests(it)
+                if (!habitsUpdated) {
+                    habitsUpdated = refresh()
+                }
             }
+            .retry(RETRIES_FAILED_REQUEST) { e ->
+                (e is UnfulfilledRequestException).also {
+                    if (it) delay(DELAY_BETWEEN_RETRIES_OF_FAILED_REQUEST)
+                }
+            }
+            .catch { }
+            .collect()
 
         return@withContext
     }
 
     override suspend fun refresh(): Boolean = withContext(Dispatchers.IO) {
-        fulfillRequests(allRequests.first())
-
         if (allRequests.first().isNotEmpty()) {
             return@withContext false
         }
@@ -131,19 +140,30 @@ class HabitRepositoryImpl(
     private suspend fun fulfillRequests(requests: List<RequestEntity>) {
         val fulfilledRequests = mutableListOf<RequestEntity>()
 
-        Log.d("TAG-E", "fulfillRequests count = ${requests.size}")
         for (request in requests) {
             try {
                 fulfillRequest(request)
                 fulfilledRequests.add(request)
             } catch (e: Exception) {
                 Log.d("TAG-NETWORK", "Failure: ${e.message}")
+
+                // В эту ситуацию мы можем попасть в случае, когда успели выполнить запрос,
+                // но из-за неожиданного завершения работы не успели удалить его из базы
+                if (e is HttpException && e.isClientError()) {
+                    fulfilledRequests.add(request)
+                    continue
+                }
+
                 break
             }
         }
 
         if (fulfilledRequests.isNotEmpty())
             requestDao.delete(*fulfilledRequests.map { it.id }.toTypedArray())
+
+        if (fulfilledRequests.size != requests.size) {
+            throw UnfulfilledRequestException()
+        }
     }
 
     private suspend fun fulfillRequest(request: RequestEntity) {
@@ -199,5 +219,14 @@ class HabitRepositoryImpl(
 
     private suspend fun markDoneOnServer(uid: String, time: Long) {
         habitApi.markHabitDone(HabitDone(uid, time))
+    }
+
+    private fun HttpException.isClientError(): Boolean {
+        return this.code() in 400..499
+    }
+
+    companion object {
+        private const val RETRIES_FAILED_REQUEST: Long = 3
+        private const val DELAY_BETWEEN_RETRIES_OF_FAILED_REQUEST: Long = 2000
     }
 }

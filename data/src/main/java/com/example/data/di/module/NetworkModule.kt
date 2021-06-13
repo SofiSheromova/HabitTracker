@@ -34,13 +34,10 @@ class NetworkModule {
         headerInterceptor: HeaderInterceptor,
         httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
-        val dispatcher = Dispatcher()
-        dispatcher.maxRequests = 1
 
         return OkHttpClient.Builder()
             .addInterceptor(headerInterceptor)
             .addInterceptor(httpLoggingInterceptor)
-            .dispatcher(dispatcher)
             .build()
     }
 
