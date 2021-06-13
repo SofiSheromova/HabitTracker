@@ -1,57 +1,38 @@
 package com.example.data.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
-import com.example.data.Constants.REQUEST_TABLE_NAME
-import com.example.data.base.EntityMapper
+import androidx.room.*
+import com.example.data.Constants
 import com.example.data.base.ModelEntity
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okio.Buffer
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Entity(tableName = REQUEST_TABLE_NAME)
-@TypeConverters(BodyConverter::class)
-class RequestEntity(
-    var url: String,
-    var method: String,
-    var body: RequestBody?,
-    @PrimaryKey var id: String = UUID.randomUUID().toString(),
-) : ModelEntity
+enum class ActionType(val value: Int) {
+    INSERT(0),
+    UPDATE(1),
+    DELETE(2),
+    MARK_DONE(3);
 
-class BodyConverter {
-    @TypeConverter
-    fun fromRequestBody(body: RequestBody?): String {
-        val buffer = Buffer()
-        body?.writeTo(buffer)
-        return buffer.readUtf8()
-    }
-
-    @TypeConverter
-    fun toRequestBody(json: String): RequestBody {
-        return json.toRequestBody("application/json".toMediaTypeOrNull())
+    companion object {
+        fun valueOf(value: Int): ActionType? = values().find { it.value == value }
     }
 }
 
-@Singleton
-class RequestEntityMapper @Inject constructor() : EntityMapper<Request, RequestEntity> {
-    override fun mapToDomain(entity: RequestEntity): Request {
-        return Request.Builder()
-            .url(entity.url)
-            .method(
-                entity.method,
-                if (entity.method == "GET") null else entity.body
-            )
-            .build()
+@Entity(tableName = Constants.REQUEST_TABLE_NAME)
+@TypeConverters(ModificationTypeConverter::class)
+data class RequestEntity(
+    @ColumnInfo(name = "type") var actionType: ActionType,
+    @ColumnInfo(name = "habit_uid") var habitUid: String,
+    @ColumnInfo(name = "extra") var habitDoneTime: Long = 0,
+    @PrimaryKey var id: String = UUID.randomUUID().toString(),
+) : ModelEntity
+
+class ModificationTypeConverter {
+    @TypeConverter
+    fun fromModificationType(type: ActionType): Int {
+        return type.value
     }
 
-    override fun mapToEntity(model: Request): RequestEntity {
-        return RequestEntity(model.url.toString(), model.method, model.body)
+    @TypeConverter
+    fun toModificationType(value: Int): ActionType {
+        return ActionType.valueOf(value) ?: throw IllegalArgumentException()
     }
 }

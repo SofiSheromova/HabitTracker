@@ -2,11 +2,12 @@ package com.example.data.local.db.dao
 
 import androidx.room.*
 import com.example.data.model.RequestEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RequestDao {
     @Query("SELECT * FROM request_table")
-    fun getAll(): List<RequestEntity>
+    fun getAll(): Flow<List<RequestEntity>>
 
     @Update
     suspend fun updateAll(vararg requests: RequestEntity)
