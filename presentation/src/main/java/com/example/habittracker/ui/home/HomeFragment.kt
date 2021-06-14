@@ -74,8 +74,7 @@ class HomeFragment : Fragment() {
         val tabLayout = binding.cardCollectionsTabLayout
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> resources.getString(R.string.all_habits)
-                1 -> resources.getString(R.string.good_habits)
+                0 -> resources.getString(R.string.good_habits)
                 else -> resources.getString(R.string.bad_habits)
             }
         }.attach()
