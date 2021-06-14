@@ -6,7 +6,6 @@ import com.example.data.remote.builder.RetrofitBuilder
 import com.example.data.remote.interceptor.HeaderInterceptor
 import dagger.Module
 import dagger.Provides
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -51,6 +50,6 @@ class NetworkModule {
     @Provides
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor { message -> Log.d("TAG-NETWORK", message) }
-            .apply { level = HttpLoggingInterceptor.Level.BODY }
+            .apply { level = HttpLoggingInterceptor.Level.BASIC }
     }
 }
