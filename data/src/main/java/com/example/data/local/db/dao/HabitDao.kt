@@ -6,14 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HabitDao {
-    @Query("SELECT * FROM habit_table")
+    @Query("SELECT * FROM habit_table ORDER BY date DESC")
     fun getAll(): Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM habit_table WHERE uid LIKE :uid LIMIT 1")
     fun getById(uid: String): HabitEntity?
-
-    @Query("SELECT * FROM habit_table WHERE title LIKE :title LIMIT 1")
-    fun findByTitle(title: String): Flow<HabitEntity>
 
     @Update
     suspend fun updateAll(vararg habits: HabitEntity)
