@@ -67,9 +67,12 @@ class EditorFields : BaseObservable() {
             _daysNumber = value.toIntOrNull()
         }
 
-    fun clearFields() {
-        fillFields(Habit())
-    }
+    @Bindable
+    var color: Int = -1
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.color)
+        }
 
     fun fillFields(state: Habit) {
         title = state.title
@@ -78,6 +81,7 @@ class EditorFields : BaseObservable() {
         priority = state.priority
         _repetitionsNumber = state.periodicity.repetitionsNumber
         _daysNumber = state.periodicity.daysNumber
+        color = state.color
     }
 
     var titleError: ObservableField<Int> = ObservableField()

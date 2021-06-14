@@ -25,7 +25,7 @@
     <string name="info">Apps for controlling good and bad habits</string>
     <string name="error_too_short">Too short</string>
     <string name="error_too_long">Too long</string>
-    <string name="card_create_button" translatable="false">card_create_button</string>
+    <string name="card_create_button">card create button</string>
     <string name="bottom_sheet_peek">Sorts and filters</string>
     <string name="search_bar_hint">Search</string>
     <string name="arrow_down">arrow_down</string>
@@ -41,6 +41,13 @@
     </plurals>
     <string name="breathtaking">You are breathtaking!</string>
     <string name="stop_it">Stop doing it!</string>
+    <string name="card_color">card color</string>
+    <string name="color_picker_title">Color picker</string>
+    <string name="cancel">Cancel</string>
+    <string name="color">color</string>
+    <string name="yes">yes</string>
+    <string name="deletion">Deletion</string>
+    <string name="deletion_message">Sure you want to delete the habit?</string>
     <plurals name="can_be_done">
         <item quantity="other">Can be done %1$d more times</item>
     </plurals>

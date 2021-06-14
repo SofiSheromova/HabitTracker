@@ -14,8 +14,6 @@ class RetrofitBuilder @Inject constructor() {
     private var okHttpClientBuilder: OkHttpClient.Builder? = null
     private var interceptors = mutableListOf<Interceptor>()
 
-    //    private var logEnable: Boolean = BuildConfig.DEBUG
-    private var logEnable: Boolean = true
     private var baseUrl = "https://droid-test-server.doubletapp.ru/api/"
     private val moshi: Moshi by lazy {
         Moshi.Builder()
@@ -33,11 +31,6 @@ class RetrofitBuilder @Inject constructor() {
         return this
     }
 
-    fun loggingEnable(enable: Boolean): RetrofitBuilder {
-        this.logEnable = enable
-        return this
-    }
-
     fun setBaseURL(baseUrl: String): RetrofitBuilder {
         this.baseUrl = baseUrl
         return this
@@ -45,14 +38,6 @@ class RetrofitBuilder @Inject constructor() {
 
     fun build(): Retrofit {
         val clientBuilder = (okHttpClientBuilder ?: OkHttpClient.Builder()).apply {
-//            if (logEnable) {
-//                addInterceptor(
-//                    HttpLoggingInterceptor { message -> Log.d("TAG-NETWORK", message) }.apply {
-//                        level = HttpLoggingInterceptor.Level.BODY
-//                    }
-//                )
-//            }
-
             interceptors.forEach { addInterceptor(it) }
         }
 

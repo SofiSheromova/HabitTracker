@@ -13,7 +13,7 @@ import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
-import com.example.domain.model.Type
+import com.example.domain.model.Priority
 import com.example.habittracker.R
 
 class CardsAdapter(
@@ -64,10 +64,9 @@ class CardsAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = itemView.findViewById<View>(R.id.card_title) as TextView
         var description: TextView = itemView.findViewById<View>(R.id.card_description) as TextView
-        var priority: TextView = itemView.findViewById<View>(R.id.card_priority) as TextView
+        val priority: ImageView = itemView.findViewById(R.id.priority_icon)
         var periodicity: TextView = itemView.findViewById<View>(R.id.card_periodicity) as TextView
-        var like: ImageView = itemView.findViewById<View>(R.id.like_icon) as ImageView
-        var dislike: ImageView = itemView.findViewById<View>(R.id.dislike_icon) as ImageView
+
         var doneButton: Button = itemView.findViewById<View>(R.id.done_button) as Button
 
         var card: CardView = itemView.findViewById<View>(R.id.card) as CardView
@@ -78,15 +77,12 @@ class CardsAdapter(
         fun bind(habit: Habit, clickListener: OnItemClickListener) {
             title.text = habit.title
             description.text = habit.description
-            priority.text = (habit.priority.value + 1).toString()
             periodicity.text = formatPeriodicity(habit.periodicity)
 
-            if (habit.type == Type.GOOD) {
-                like.visibility = View.VISIBLE
-                dislike.visibility = View.INVISIBLE
-            } else {
-                like.visibility = View.INVISIBLE
-                dislike.visibility = View.VISIBLE
+            when (habit.priority) {
+                Priority.LOW -> priority.setImageResource(R.drawable.ic_digit_three_24)
+                Priority.MIDDLE -> priority.setImageResource(R.drawable.ic_digit_two_24)
+                Priority.HIGH -> priority.setImageResource(R.drawable.ic_digit_one_24)
             }
 
             setColor(habit.color)

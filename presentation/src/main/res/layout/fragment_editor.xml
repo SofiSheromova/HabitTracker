@@ -196,17 +196,48 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/color_widget_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Color" />
+
+                <LinearLayout
+                    android:id="@+id/color_widget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/editor_field_spacing"
+                    android:layout_marginBottom="@dimen/editor_field_spacing"
+                    android:background="@drawable/color_widget_border"
+                    android:gravity="center"
+                    android:padding="@dimen/color_widget_padding">
+
+                    <ImageView
+                        android:id="@+id/selected_color"
+                        android:layout_width="@dimen/color_widget_selected_color_size"
+                        android:layout_height="@dimen/color_widget_selected_color_size"
+                        android:contentDescription="@string/card_color"
+                        android:src="@drawable/solid_circle"
+                        app:tint="@{viewModel.editor.color}" />
+
+                    <ImageView
+                        android:layout_width="@dimen/color_widget_arrow_size"
+                        android:layout_height="@dimen/color_widget_arrow_size"
+                        android:contentDescription="@string/arrow_down"
+                        android:src="@drawable/ic_baseline_keyboard_arrow_down_24" />
+                </LinearLayout>
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_margin="@dimen/editor_field_spacing">
 
                     <Button
                         android:id="@+id/submit_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:enabled="@{viewModel.editor.valid}"
-                        android:onClick="@{viewModel::onSave}"
+                        android:onClick="@{(view) -> viewModel.onSave()}"
                         android:text="@string/save"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -217,7 +248,6 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/color_state_delete_button"
                         android:enabled="@{viewModel.cardExists}"
-                        android:onClick="@{(view) -> viewModel.onDelete(view)}"
                         android:text="@string/delete"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

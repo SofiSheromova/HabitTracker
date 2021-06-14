@@ -1,6 +1,5 @@
 package com.example.habittracker.editor
 
-import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.domain.model.Habit
 import com.example.domain.model.Periodicity
@@ -12,9 +11,7 @@ import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.CoroutineScopeRule
 import com.example.habittracker.CoroutineTest
-import com.example.habittracker.ui.editor.EditorFields
 import com.example.habittracker.ui.editor.EditorViewModel
-import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -22,7 +19,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
 
 @ExperimentalCoroutinesApi
 class ExperimentalTest : CoroutineTest {
@@ -87,12 +83,11 @@ class ExperimentalTest : CoroutineTest {
         val expectedDescription = "new description"
         val expectedType = Type.BAD
 
-        val editor = EditorFields()
-        editor.title = expectedTitle
-        editor.description = expectedDescription
-        editor.type = expectedType
+        editorViewModel.editor.title = expectedTitle
+        editorViewModel.editor.description = expectedDescription
+        editorViewModel.editor.type = expectedType
 
-        editorViewModel.updateCard(editor)
+        editorViewModel.onSave()
 
         Assert.assertNotNull(insertInputValue)
         Assert.assertEquals(expectedTitle, insertInputValue!!.title)
@@ -116,12 +111,11 @@ class ExperimentalTest : CoroutineTest {
         val expectedDescription = "new description"
         val expectedType = Type.BAD
 
-        val editor = EditorFields()
-        editor.title = expectedTitle
-        editor.description = expectedDescription
-        editor.type = expectedType
+        editorViewModel.editor.title = expectedTitle
+        editorViewModel.editor.description = expectedDescription
+        editorViewModel.editor.type = expectedType
 
-        editorViewModel.updateCard(editor)
+        editorViewModel.onSave()
 
         Assert.assertNotNull(updateInputValue)
         Assert.assertEquals(expectedTitle, updateInputValue!!.title)
@@ -140,10 +134,8 @@ class ExperimentalTest : CoroutineTest {
             Priority.HIGH
         )
         editorViewModel.setCard(originalHabit)
-        val view = Mockito.mock(View::class.java)
-        whenever(view.id).thenReturn(1)
 
-        editorViewModel.onDelete(view)
+        editorViewModel.onDelete()
 
         Assert.assertNotNull(deleteInputValue)
         Assert.assertEquals(originalHabit.title, deleteInputValue!!.title)

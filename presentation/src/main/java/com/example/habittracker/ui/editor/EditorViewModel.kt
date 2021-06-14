@@ -1,10 +1,10 @@
 package com.example.habittracker.ui.editor
 
-import android.graphics.Color
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.AdapterView
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.*
 import com.example.domain.model.Habit
@@ -14,15 +14,14 @@ import com.example.domain.usecase.DeleteHabitUseCase
 import com.example.domain.usecase.InsertHabitUseCase
 import com.example.domain.usecase.UpdateHabitUseCase
 import com.example.habittracker.util.Event
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.min
-import kotlin.random.Random
 
 class EditorViewModel constructor(
     private val insertHabitUseCase: InsertHabitUseCase,
     private val updateHabitUseCase: UpdateHabitUseCase,
-    private val deleteHabitUseCase: DeleteHabitUseCase
+    private val deleteHabitUseCase: DeleteHabitUseCase,
+    private val defaultCardColor: Int = -1
 ) : ViewModel() {
 
     private val original: MutableLiveData<Habit> = MutableLiveData<Habit>()
@@ -37,9 +36,6 @@ class EditorViewModel constructor(
     private val _onSaveButtonClick: MutableLiveData<Event<EditorFields>> =
         MutableLiveData<Event<EditorFields>>()
     val onSaveButtonClick: LiveData<Event<EditorFields>> = _onSaveButtonClick
-
-    private val _onDeleteButtonClick: MutableLiveData<Event<Int>> = MutableLiveData<Event<Int>>()
-    val onDeleteButtonClick: LiveData<Event<Int>> = _onDeleteButtonClick
 
     private fun updateOriginal(state: Habit) = viewModelScope.launch {
         original.value?.let { updateHabitUseCase.update(it, state) }
@@ -60,10 +56,13 @@ class EditorViewModel constructor(
 
     fun setEmptyCard() {
         original.value = null
-        editor.clearFields()
+        val habit = Habit()
+
+        habit.color = defaultCardColor
+        editor.fillFields(habit)
     }
 
-    fun updateCard(editor: EditorFields): Job {
+    private fun updateCard(editor: EditorFields) {
         val period = Periodicity(editor.repetitionsNumber.toInt(), editor.daysNumber.toInt())
         val state = Habit(
             editor.title,
@@ -71,17 +70,17 @@ class EditorViewModel constructor(
             period,
             editor.type,
             editor.priority,
-            generateColor()
+            editor.color
         )
         original.value.let {
-            if (it != null) {
-                return updateOriginal(state)
-            }
-            return insertNew(state)
+            if (it != null)
+                updateOriginal(state)
+            else
+                insertNew(state)
         }
     }
 
-    fun onSave(view: View) {
+    fun onSave() {
         editor.let {
             if (it.isValid()) {
                 updateCard(it)
@@ -90,9 +89,8 @@ class EditorViewModel constructor(
         }
     }
 
-    fun onDelete(view: View): Job {
-        _onDeleteButtonClick.value = Event(view.id)
-        return deleteOriginal()
+    fun onDelete() {
+        deleteOriginal()
     }
 
     val onPrioritySelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -137,18 +135,6 @@ class EditorViewModel constructor(
         }
     }
 
-    private fun generateColor(): Int {
-        val color = String.format(
-            "#%06X", 0xFFFFFF and Color.argb(
-                100,
-                Random.nextInt(180, 240),
-                Random.nextInt(180, 240),
-                Random.nextInt(180, 240)
-            )
-        )
-        return Color.parseColor(color)
-    }
-
     companion object {
         @BindingAdapter("error")
         @JvmStatic
@@ -166,6 +152,12 @@ class EditorViewModel constructor(
             if (editText.onFocusChangeListener == null) {
                 editText.onFocusChangeListener = onFocusChangeListener
             }
+        }
+
+        @BindingAdapter("app:tint")
+        @JvmStatic
+        fun setTint(view: ImageView, color: Int) {
+            view.setColorFilter(color)
         }
     }
 
