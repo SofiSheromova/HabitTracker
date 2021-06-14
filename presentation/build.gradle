@@ -122,5 +122,5 @@ dependencies {
     })
     androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
-    androidTestImplementation "com.kaspersky.android-components:kaspresso:$rootProject.kaspresso"
+    androidTestImplementation "io.github.kakaocup:kakao:$rootProject.kakao"
 }
