@@ -10,16 +10,12 @@
     <string name="times_in">раз в</string>
     <string name="days">дня</string>
     <string name="save">сохранить</string>
-    <string name="custom_type">+ новый тип</string>
-    <string name="empty_field">поле не должно быть пустым</string>
-    <string name="maximum_length">достигнута максимальная длина ввода</string>
     <string name="invalid_value">Некорректное значение</string>
     <string name="good">Хорошая</string>
     <string name="bad">Плохая</string>
     <string name="menu_home">Главная</string>
     <string name="menu_info">Информация</string>
     <string name="menu_editor">Редактор</string>
-    <string name="info">Приложения для контроля за плохими и хорошими привычками</string>
     <string name="good_habits">хорошие привычки</string>
     <string name="bad_habits">плохие привычки</string>
     <string name="error_too_short">Слишком коротко</string>
@@ -28,7 +24,6 @@
     <string name="sort_by_title">Сортировка по названию</string>
     <string name="arrow_down">вниз</string>
     <string name="arrow_up">вверх</string>
-    <string name="all_habits">все привычки</string>
     <string name="error_too_long">Cлишко длинно</string>
     <string name="delete">удалить</string>
     <string name="failed_update">Произошла ошибка при обновлении</string>
@@ -49,19 +44,30 @@
         <item quantity="other">Можно выполнить еще %1$d раз</item>
     </plurals>
 
+    <plurals name="times_in">
+        <item quantity="one">%1$d раз в</item>
+        <item quantity="few">%1$d раза в</item>
+        <item quantity="many">%1$d раз в</item>
+        <item quantity="other">%1$d раз в</item>
+    </plurals>
+    <plurals name="days">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дней</item>
+    </plurals>
+
     <string-array name="priorities">
         <item>Низкий</item>
         <item>Средний</item>
         <item>Высокий</item>
     </string-array>
 
-    <string name="required_field">обязательное поле</string>
-
     <string name="color_picker_title">Палитра цветов</string>
     <string name="cancel">отмена</string>
     <string name="card_color">цвет карты</string>
     <string name="card_create_button">кнопка создания карты</string>
-    <string name="color">цвет</string>
+    <string name="color">Цвет</string>
     <string name="yes">да</string>
     <string name="deletion">Удаление</string>
     <string name="deletion_message">Уверены, что хотите удалить привычку?</string>

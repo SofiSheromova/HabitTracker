@@ -9,20 +9,14 @@
     <string name="times_in">times in</string>
     <string name="days">days</string>
     <string name="save">save</string>
-    <string name="custom_type">+ create type</string>
-    <string name="empty_field">the field must not be empty</string>
-    <string name="maximum_length">maximum insertion length reached</string>
     <string name="invalid_value">Invalid value</string>
     <string name="good">Good</string>
     <string name="bad">Bad</string>
-    <string name="title_activity_main" translatable="false">Main Activity</string>
     <string name="menu_home">Home</string>
     <string name="menu_info">Info</string>
     <string name="menu_editor">Editor</string>
-    <string name="all_habits">all habits</string>
     <string name="good_habits">good habits</string>
     <string name="bad_habits">bad habits</string>
-    <string name="info">Apps for controlling good and bad habits</string>
     <string name="error_too_short">Too short</string>
     <string name="error_too_long">Too long</string>
     <string name="card_create_button">card create button</string>
@@ -33,7 +27,6 @@
     <string name="sort_by_title">Sort by title</string>
     <string name="delete">delete</string>
     <string name="failed_update">Failed update</string>
-    <string name="required_field">required field</string>
     <string name="avatar">avatar</string>
     <string name="done_button">done</string>
     <plurals name="still_need_to_be_done">
@@ -44,12 +37,18 @@
     <string name="card_color">card color</string>
     <string name="color_picker_title">Color picker</string>
     <string name="cancel">Cancel</string>
-    <string name="color">color</string>
+    <string name="color">Color</string>
     <string name="yes">yes</string>
     <string name="deletion">Deletion</string>
     <string name="deletion_message">Sure you want to delete the habit?</string>
     <plurals name="can_be_done">
         <item quantity="other">Can be done %1$d more times</item>
+    </plurals>
+    <plurals name="times_in">
+        <item quantity="other">%1$d times in</item>
+    </plurals>
+    <plurals name="days">
+        <item quantity="other">%1$d days</item>
     </plurals>
 
     <string-array name="priorities">

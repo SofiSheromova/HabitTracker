@@ -1,6 +1,5 @@
 package com.example.habittracker.ui.cards
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,22 +11,17 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.model.Habit
-import com.example.domain.model.Periodicity
 import com.example.domain.model.Priority
 import com.example.habittracker.R
+import com.example.habittracker.model.PeriodicityFormatter
 
 class CardsAdapter(
     private val cardsLiveData: LiveData<List<Habit>>,
     private val onItemClickListener: OnItemClickListener,
-    private val context: Context,
-    private val filter: ((Habit) -> Boolean)? = null
+    private val periodicityFormatter: PeriodicityFormatter
 ) : RecyclerView.Adapter<CardsAdapter.CardViewHolder?>() {
     private val habits: List<Habit>
-        get() {
-            val value = cardsLiveData.value ?: listOf()
-            filter?.let { return value.filter(it) }
-            return value
-        }
+        get() = cardsLiveData.value ?: listOf()
 
     interface OnItemClickListener {
         fun onItemClicked(habit: Habit)
@@ -38,7 +32,7 @@ class CardsAdapter(
         val view: View = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.card_item_view, parent, false)
-        return CardViewHolder(view, context)
+        return CardViewHolder(view, periodicityFormatter)
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
@@ -54,13 +48,9 @@ class CardsAdapter(
         return habits.getOrNull(itemPosition)
     }
 
-    fun indexOf(habit: Habit): Int {
-        return habits.indexOf(habit)
-    }
-
     class CardViewHolder(
         itemView: View,
-        private val context: Context
+        private val periodicityFormatter: PeriodicityFormatter
     ) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = itemView.findViewById<View>(R.id.card_title) as TextView
         var description: TextView = itemView.findViewById<View>(R.id.card_description) as TextView
@@ -77,7 +67,7 @@ class CardsAdapter(
         fun bind(habit: Habit, clickListener: OnItemClickListener) {
             title.text = habit.title
             description.text = habit.description
-            periodicity.text = formatPeriodicity(habit.periodicity)
+            periodicity.text = periodicityFormatter.periodicityToString(habit.periodicity)
 
             when (habit.priority) {
                 Priority.LOW -> priority.setImageResource(R.drawable.ic_digit_three_24)
@@ -98,19 +88,6 @@ class CardsAdapter(
                         400
                     )
                 }
-            }
-        }
-
-        private fun formatPeriodicity(periodicity: Periodicity): String {
-            val repetitionsNumber = periodicity.repetitionsNumber
-            val daysNumber = periodicity.daysNumber
-            return if (repetitionsNumber == 1 && daysNumber == 1) {
-                context.resources.getString(R.string.everyday)
-            } else {
-                "$repetitionsNumber " +
-                        context.resources.getString(R.string.times_in) + " " +
-                        "$daysNumber " +
-                        context.resources.getString(R.string.days)
             }
         }
     }
