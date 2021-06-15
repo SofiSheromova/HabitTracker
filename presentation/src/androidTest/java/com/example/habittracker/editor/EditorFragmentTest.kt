@@ -5,12 +5,12 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.agoda.kakao.common.utilities.getResourceString
 import com.example.habittracker.MainActivity
 import com.example.habittracker.R
 import com.example.habittracker.screen.EditorScreen
 import com.example.habittracker.screen.HomeScreen
 import com.example.habittracker.ui.editor.EditorFields
+import io.github.kakaocup.kakao.common.utilities.getResourceString
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -68,12 +68,6 @@ class EditorFragmentTest {
             Espresso.closeSoftKeyboard()
 
             submitButton.isEnabled()
-
-            // Следующие строчки закомментированы, чтобы не создавать новые привычки в базе данных
-            // Эту проблему можно решить заглушками, но dagger её усугубляет
-            // TODO: разобраться в этом
-            // submitButton.click()
-            // toolbar.check(matches(withText(getResourceString(R.string.menu_home))))
         }
     }
 

@@ -21,7 +21,7 @@ class DisplayOptions(
 
     companion object {
         var searchBarData: String? = null
-        var sortedFunction: ((List<Habit>) -> List<Habit>)? = null
+        private var sortedFunction: ((List<Habit>) -> List<Habit>)? = null
 
         fun sortByTitle(reverse: Boolean = false) {
             sortedFunction = if (reverse) {

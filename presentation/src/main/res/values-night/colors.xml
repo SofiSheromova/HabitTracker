@@ -10,5 +10,4 @@
     <color name="transparentTextColor_75">#40FFFFFF</color>
 
     <color name="textColor">@color/white</color>
-    <color name="translucentTextColor">@color/transparentTextColor_75</color>
 </resources>

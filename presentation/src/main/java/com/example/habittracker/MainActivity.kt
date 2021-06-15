@@ -40,18 +40,21 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         setSupportActionBar(toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
-        navController.addOnDestinationChangedListener(this)
         appBarConfiguration = AppBarConfiguration(
             setOf(R.id.nav_home, R.id.nav_info), drawerLayout
         )
+
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val navController = findNavController(R.id.nav_host_fragment)
+        navController.addOnDestinationChangedListener(this)
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
         val header = navView.inflateHeaderView(R.layout.nav_header_main)
         val avatarView: ImageView = header.findViewById(R.id.headerImageView)
         Glide.with(this)
-            .load("https://data.whicdn.com/images/327972713/original.jpg")
+            .load(getString(R.string.avatarLink))
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.error)
             .transform(CircleCrop())

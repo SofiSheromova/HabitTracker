@@ -15,6 +15,7 @@ import com.example.habittracker.HabitTrackerApplication
 import com.example.habittracker.R
 import com.example.habittracker.databinding.FragmentCardsBinding
 import com.example.habittracker.model.DisplayOptions
+import com.example.habittracker.model.PeriodicityFormatter
 import com.example.habittracker.ui.editor.EditorViewModel
 import com.example.habittracker.ui.home.DisplayOptionsViewModel
 import javax.inject.Inject
@@ -39,6 +40,9 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
     @Inject
     lateinit var displayOptionsViewModelFactory: DisplayOptionsViewModel.Factory
 
+    @Inject
+    lateinit var periodicityFormatter: PeriodicityFormatter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,7 +64,7 @@ class CardsFragment : Fragment(), CardsAdapter.OnItemClickListener {
             cardsViewModelFactory.setDisplayOptions(displayOptions)
         ).get(CardsViewModel::class.java)
 
-        adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, requireContext())
+        adapter = CardsAdapter(cardsViewModel.habitsLiveData, this, periodicityFormatter)
 
         displayOptionsViewModel.optionsLiveData.observe(this, {
             cardsViewModel.refreshHabits()
