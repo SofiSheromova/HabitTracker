@@ -18,4 +18,5 @@
     <dimen name="bordered_field_padding">7dp</dimen>
     <dimen name="color_widget_selected_color_size">30dp</dimen>
     <dimen name="color_widget_arrow_size">25dp</dimen>
+    <dimen name="standard_line_margin">10dp</dimen>
 </resources>
