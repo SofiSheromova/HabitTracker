@@ -68,12 +68,6 @@ class EditorFragmentTest {
             Espresso.closeSoftKeyboard()
 
             submitButton.isEnabled()
-
-            // Следующие строчки закомментированы, чтобы не создавать новые привычки в базе данных
-            // Эту проблему можно решить заглушками, но dagger её усугубляет
-            // TODO: разобраться в этом
-            // submitButton.click()
-            // toolbar.check(matches(withText(getResourceString(R.string.menu_home))))
         }
     }
 
