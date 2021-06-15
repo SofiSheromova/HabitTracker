@@ -23,7 +23,7 @@
 ## Архитектура
 
 Clean Architecture (используется 3 слоя) с Model-View-ViewModel паттерном.  
-*\*красивая картинка про MVVM паттерн\**
+*\*красивая картинка про MVVM паттерн\**  
 <img width="500px" src="content\mvvm.png">
 
 ## Разработка
