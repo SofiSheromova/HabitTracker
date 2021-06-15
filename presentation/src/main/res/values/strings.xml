@@ -43,6 +43,7 @@
     <string name="deletion_message">Sure you want to delete the habit?</string>
     <string name="link">Githab repository <a href="https://github.com/SofiSheromova/HabitTracker">link</a></string>
     <string name="app_version">Version: %1$s</string>
+    <string name="avatarLink" translatable="false">https://data.whicdn.com/images/327972713/original.jpg</string>
 
     <plurals name="can_be_done">
         <item quantity="other">Can be done %1$d more times</item>
