@@ -221,7 +221,7 @@ class HabitRepositoryImpl(
     }
 
     companion object {
-        private const val RETRIES_FAILED_REQUEST: Long = 5
+        private const val RETRIES_FAILED_REQUEST: Long = Long.MAX_VALUE
         private const val DELAY_BETWEEN_RETRIES_OF_FAILED_REQUEST: Long = 5000
     }
 }
